@@ -1,0 +1,23 @@
+---
+interface Props {
+  size?: number; // px, default 24
+  withWordmark?: boolean; // default true
+  href?: string; // wrap in <a> if provided
+}
+const { size = 24, withWordmark = true, href } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+<Tag class="leaf-logo" href={href} aria-label="Leaf home" style={`--logo-size: ${size}px`}>
+  <picture>
+    <source srcset={`/assets/logo/leaf-3x.png 3x, /assets/logo/leaf-2x.png 2x, /assets/logo/leaf-1x.png 1x`} />
+    <img src="/assets/logo/leaf-1x.png" alt="Leaf" width={size} height={size} />
+  </picture>
+  {withWordmark && <span class="wordmark">Leaf</span>}
+</Tag>
+
+<style>
+.leaf-logo { display: inline-flex; align-items: center; gap: var(--space-sm); }
+.leaf-logo img { width: var(--logo-size); height: var(--logo-size); }
+.wordmark { font: 600 17px/1 var(--font-body); letter-spacing: -0.01em; color: var(--text-primary); }
+a.leaf-logo { text-decoration: none; }
+</style>
