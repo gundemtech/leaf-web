@@ -1,0 +1,50 @@
+---
+import LeafCard from '../LeafCard.astro';
+import LeafEyebrow from '../LeafEyebrow.astro';
+import LeafButton from '../LeafButton.astro';
+import LeafBadge from '../LeafBadge.astro';
+const plans = [
+  { name: 'Free', price: '$0', period: 'forever', features: ['Solo use', 'All Mac captures', 'MCP local', 'Open source'], cta: 'Get free', href: '/signup' },
+  { name: 'Team', price: '$30', period: 'per seat / month', recommended: true, features: ['Up to 20 seats', 'Team presence', 'E2E sharing', 'Slack bot'], cta: 'Get team access', href: '/pricing' },
+  { name: 'Enterprise', price: 'Custom', period: '', features: ['SSO', 'Audit log', 'SLA', 'Dedicated relay'], cta: 'Contact us', href: 'mailto:hello@gundem.tech' },
+];
+---
+<section id="pricing-teaser" class="pricing">
+  <div class="wrap">
+    <LeafEyebrow number="06" label="SIMPLE PRICING" />
+    <h2 class="t-display">Pricing that scales<br />with your team.</h2>
+
+    <div class="grid">
+      {plans.map(p => (
+        <LeafCard variant={p.recommended ? 'glass' : 'raised'} padding="generous" class={p.recommended ? 'recommended' : ''}>
+          {p.recommended && <LeafBadge variant="accent">Recommended</LeafBadge>}
+          <h3 class="t-title-lg">{p.name}</h3>
+          <p class="price">
+            <span class="t-display amount">{p.price}</span>
+            {p.period && <span class="t-body-sm period">{p.period}</span>}
+          </p>
+          <ul class="features t-body">
+            {p.features.map(f => <li>✓ {f}</li>)}
+          </ul>
+          <LeafButton variant={p.recommended ? 'primary' : 'secondary'} size="lg" href={p.href}>{p.cta}</LeafButton>
+        </LeafCard>
+      ))}
+    </div>
+
+    <p class="footer-link"><a href="/pricing">See full comparison →</a></p>
+  </div>
+</section>
+
+<style>
+.pricing { padding: var(--space-5xl) 0; }
+.pricing h2 { margin: var(--space-md) 0 var(--space-3xl); }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); align-items: start; }
+@media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+.pricing :global(.recommended) { border-color: var(--accent-primary) !important; }
+.price { display: flex; align-items: baseline; gap: var(--space-sm); margin: var(--space-md) 0 var(--space-lg); }
+.amount { color: var(--text-primary); }
+.period { color: var(--text-tertiary); }
+.features { display: flex; flex-direction: column; gap: var(--space-sm); margin-bottom: var(--space-lg); color: var(--text-secondary); }
+.footer-link { text-align: center; margin-top: var(--space-xl); }
+.footer-link a { color: var(--accent-primary); }
+</style>
