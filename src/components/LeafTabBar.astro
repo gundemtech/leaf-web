@@ -1,0 +1,30 @@
+---
+interface Props {
+  tabs: { id: string; label: string }[];
+  active: string;
+}
+const { tabs, active } = Astro.props;
+---
+<div class="tabs" role="tablist">
+  {tabs.map(t => (
+    <button
+      class={`tab ${t.id === active ? 'active' : ''}`}
+      role="tab"
+      aria-selected={t.id === active}
+      data-tab={t.id}
+    >{t.label}</button>
+  ))}
+</div>
+
+<style>
+.tabs { display: flex; gap: var(--space-lg); border-bottom: 1px solid var(--border-subtle); }
+.tab {
+  padding: var(--space-md) 0; background: transparent; border: none;
+  color: var(--text-secondary); font: 500 15px/1 var(--font-body);
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: color var(--dur-snap) var(--ease-standard), border-color var(--dur-snap) var(--ease-standard);
+  cursor: pointer;
+}
+.tab:hover { color: var(--text-primary); }
+.tab.active { color: var(--accent-primary); border-bottom-color: var(--accent-primary); }
+</style>
