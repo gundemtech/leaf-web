@@ -1,0 +1,33 @@
+---
+interface Props {
+  question: string;
+  open?: boolean;
+}
+const { question, open = false } = Astro.props;
+---
+<details class="accordion" open={open}>
+  <summary class="t-title-sm">
+    <span class="q">{question}</span>
+    <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+      <path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </summary>
+  <div class="body t-body">
+    <slot />
+  </div>
+</details>
+
+<style>
+.accordion { border-bottom: 1px solid var(--border-subtle); padding: var(--space-lg) 0; }
+.accordion summary {
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; list-style: none;
+  color: var(--text-primary);
+  transition: color var(--dur-snap) var(--ease-standard);
+}
+.accordion summary::-webkit-details-marker { display: none; }
+.accordion summary:hover { color: var(--accent-primary); }
+.chevron { color: var(--text-tertiary); transition: transform var(--dur-short) var(--ease-standard); }
+.accordion[open] .chevron { transform: rotate(180deg); }
+.accordion .body { padding-top: var(--space-md); color: var(--text-secondary); }
+</style>
