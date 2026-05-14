@@ -1,0 +1,45 @@
+---
+import LeafCard from '../LeafCard.astro';
+import LeafButton from '../LeafButton.astro';
+import LeafInput from '../LeafInput.astro';
+---
+<section id="waitlist" class="waitlist">
+  <div class="wrap-narrow">
+    <h2 class="t-display">Want it now?</h2>
+
+    <LeafCard variant="glass" padding="generous" class="early">
+      <h3 class="t-title-md">Get early access</h3>
+      <p class="t-body muted">Crypto payment via OxaPay · $10 · macOS .dmg + Sparkle updates</p>
+      <LeafButton variant="primary" size="lg" href="https://pay.oxapay.com/15460469" external>Buy early access →</LeafButton>
+    </LeafCard>
+
+    <p class="or t-body-sm">— or wait for general availability —</p>
+
+    <LeafCard variant="raised" padding="generous">
+      <h3 class="t-title-sm">Get notified on release</h3>
+      <form id="waitlist-form" class="form">
+        <LeafInput type="email" name="email" placeholder="you@email.com" required autocomplete="email" />
+        <input type="text" name="hp" class="honeypot" tabindex="-1" autocomplete="off" />
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAADCjktFBs6RTYJTZ"></div>
+        <LeafButton type="submit" variant="primary">Notify me →</LeafButton>
+      </form>
+      <p class="status t-body-sm" data-status></p>
+    </LeafCard>
+  </div>
+</section>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<style>
+.waitlist { padding: var(--space-5xl) 0; }
+.waitlist h2 { margin-bottom: var(--space-xl); text-align: center; }
+.waitlist :global(.early) { margin-bottom: var(--space-md); text-align: center; }
+.waitlist :global(.early h3) { margin-bottom: var(--space-sm); }
+.muted { color: var(--text-secondary); margin-bottom: var(--space-lg); }
+.or { text-align: center; color: var(--text-tertiary); padding: var(--space-md) 0; }
+.form { display: flex; flex-direction: column; gap: var(--space-md); margin-top: var(--space-md); }
+.honeypot { display: none; }
+.status { margin-top: var(--space-md); }
+.status[data-state="success"] { color: var(--status-success); }
+.status[data-state="error"] { color: var(--status-danger); }
+</style>
