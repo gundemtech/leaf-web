@@ -1,0 +1,56 @@
+---
+import LeafLogo from './LeafLogo.astro';
+const cols = [
+  { title: 'Product', links: [
+    { href: '/product', label: 'Product' },
+    { href: '/pricing', label: 'Pricing' },
+    { href: '/privacy', label: 'Privacy' },
+    { href: '/open-source', label: 'Open Source' },
+  ]},
+  { title: 'Resources', links: [
+    { href: 'https://leaf-docs.gundem.tech', label: 'Docs', external: true },
+    { href: '/changelog', label: 'Changelog' },
+    { href: '/changelog/feed.xml', label: 'RSS' },
+  ]},
+  { title: 'Company', links: [
+    { href: 'https://github.com/gundemtech/leaf', label: 'GitHub', external: true },
+    { href: '/terms', label: 'Terms' },
+  ]},
+];
+---
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="brand">
+      <LeafLogo size={20} withWordmark />
+    </div>
+    <div class="cols">
+      {cols.map(col => (
+        <div class="col">
+          <h4 class="t-label">{col.title}</h4>
+          <ul>
+            {col.links.map(l => (
+              <li><a href={l.href} target={l.external ? '_blank' : undefined} rel={l.external ? 'noopener' : undefined}>{l.label}{l.external && ' ↗'}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+    <div class="bottom t-caption">
+      <span>© 2026 Gundem Technologies</span>
+      <span class="mono">v1.0.0-alpha.15</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+.footer { border-top: 1px solid var(--border-subtle); margin-top: var(--space-5xl); padding: var(--space-3xl) 0; }
+.footer-inner { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--space-xl); }
+.brand { margin-bottom: var(--space-xl); }
+.cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-xl); margin-bottom: var(--space-xl); }
+@media (max-width: 640px) { .cols { grid-template-columns: 1fr; } }
+.col h4 { color: var(--text-tertiary); margin-bottom: var(--space-md); }
+.col ul { display: flex; flex-direction: column; gap: var(--space-sm); }
+.col a { color: var(--text-secondary); font: 400 14px/1.4 var(--font-body); transition: color var(--dur-snap) var(--ease-standard); }
+.col a:hover { color: var(--text-primary); }
+.bottom { display: flex; justify-content: space-between; padding-top: var(--space-lg); border-top: 1px solid var(--border-subtle); color: var(--text-tertiary); }
+</style>
