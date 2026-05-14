@@ -6,7 +6,7 @@ import LeafButton from '../LeafButton.astro';
     <div class="lede">
       <p class="kicker mono">Memory layer for AI dev teams</p>
 
-      <h1 class="t-display-lg headline">
+      <h1 class="headline">
         Stop briefing your AI.<br/>It can just know.
       </h1>
 
@@ -27,77 +27,115 @@ import LeafButton from '../LeafButton.astro';
       </div>
     </div>
 
-    <div class="appwindow" role="img" aria-label="Leaf macOS app — Activity tab preview">
+    <div class="appwindow" role="img" aria-label="Leaf macOS app — Home view">
       <div class="winbar">
         <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
-        <span class="wintitle mono">Leaf — Activity</span>
-        <span class="wintail mono">3h 41m focused · today</span>
+        <button class="sb-toggle" aria-hidden="true" tabindex="-1">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+            <rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/>
+            <line x1="6" y1="2.5" x2="6" y2="13.5"/>
+          </svg>
+        </button>
       </div>
+
       <div class="winbody">
         <aside class="sidebar">
-          <p class="side-section">Workspace</p>
+          <p class="sb-section">Leaf</p>
           <ul>
-            <li>Home</li>
-            <li class="active"><span class="bar"></span>Activity</li>
-            <li>Team</li>
-            <li>Connections</li>
+            <li class="active">
+              <span class="bar"></span>
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+              Home
+            </li>
+            <li>
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 7 10 12 5 17"/><line x1="12" y1="17" x2="20" y2="17"/></svg>
+              Activity
+            </li>
           </ul>
-          <p class="side-section">You</p>
+
+          <p class="sb-section">Collaboration</p>
           <ul>
-            <li>Profile</li>
-            <li>Settings</li>
+            <li>
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3"/><circle cx="17" cy="11" r="2.4"/><path d="M3 19c0-3 2.7-5 6-5s6 2 6 5"/><path d="M14 19c.4-2.4 2.4-4 5-4s4.6 1.6 5 4" transform="translate(-2 0)"/></svg>
+              Team
+            </li>
+            <li>
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5M15 4v5M7 9h10v3a5 5 0 0 1-10 0z"/><line x1="12" y1="14" x2="12" y2="20"/></svg>
+              Connections
+            </li>
+            <li>
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="7" x2="10" y2="7"/><line x1="14" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="10" y2="11"/><line x1="14" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="10" y2="15"/><line x1="14" y1="15" x2="16" y2="15"/></svg>
+              Organization
+            </li>
+          </ul>
+
+          <p class="sb-section">Account</p>
+          <ul>
+            <li>
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.7l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.6 1.6 0 0 0-1.7-.3 1.6 1.6 0 0 0-1 1.46V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.7.3l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.6 1.6 0 0 0 .3-1.7 1.6 1.6 0 0 0-1.46-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.7l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.6 1.6 0 0 0 1.7.3H9a1.6 1.6 0 0 0 1-1.46V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.46 1.6 1.6 0 0 0 1.7-.3l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.6 1.6 0 0 0-.3 1.7V9a1.6 1.6 0 0 0 1.46 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.46 1z"/></svg>
+              Settings
+            </li>
+            <li>
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M5.5 18.5c1.2-2.3 3.6-3.5 6.5-3.5s5.3 1.2 6.5 3.5"/></svg>
+              Profile
+            </li>
           </ul>
         </aside>
+
         <main class="mainpane">
           <header class="mainhead">
-            <h2 class="t-title-sm">Today</h2>
-            <span class="mono mainmeta">17 events · 4 sessions</span>
+            <span class="apptitle">Leaf</span>
+            <span class="status-pill"><span class="status-dot"></span>Idle</span>
           </header>
-          <ol class="feed">
-            <li class="row">
-              <span class="time mono">09:42</span>
-              <span class="chip xc">Xc</span>
-              <div class="rowtext">
-                <p class="title">Editing <code>SessionAggregator.swift</code></p>
-                <p class="sub mono">Xcode · 27 min focused</p>
-              </div>
-            </li>
-            <li class="row">
-              <span class="time mono">10:11</span>
-              <span class="chip cc">CC</span>
-              <div class="rowtext">
-                <p class="title">Read 5 files · 2 tool calls</p>
-                <p class="sub mono">Claude Code · session 4f2a</p>
-              </div>
-            </li>
-            <li class="row">
-              <span class="time mono">10:19</span>
-              <span class="chip ln">Ln</span>
-              <div class="rowtext">
-                <p class="title"><code>LEA-431</code> → In Review</p>
-                <p class="sub mono">Linear · status transition</p>
-              </div>
-            </li>
-            <li class="row">
-              <span class="time mono">10:23</span>
-              <span class="chip gh">Gh</span>
-              <div class="rowtext">
-                <p class="title">3 commits → <code>feature/track-5</code></p>
-                <p class="sub mono">GitHub · 117c710 ↑ 5995e7d</p>
-              </div>
-            </li>
-            <li class="row dim">
-              <span class="time mono">10:47</span>
-              <span class="chip sk">Sk</span>
-              <div class="rowtext">
-                <p class="title">Reaction in <code>#frontend</code></p>
-                <p class="sub mono">Slack · ✓</p>
-              </div>
-            </li>
-          </ol>
-          <footer class="mainfoot mono">
-            <span class="rec-dot"></span> recording · encrypted on device
-          </footer>
+
+          <div class="hero-text">
+            <h2 class="h-listening">Leaf is listening</h2>
+            <p class="sub-listening">Connect a provider in Connections to enrich</p>
+          </div>
+
+          <p class="block-label">Right now</p>
+          <div class="rn-card">
+            <div class="rn-col">
+              <p class="rn-head">GITHUB</p>
+              <p class="rn-row">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 11V5l5 5h-3M10 5h2"/></svg>
+                27 of mine open
+              </p>
+              <p class="rn-row">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5a3.5 3.5 0 0 0-3.5 3.5v3l-1 2h9l-1-2V6A3.5 3.5 0 0 0 8 2.5zM7 13.5a1 1 0 0 0 2 0"/></svg>
+                31 unread
+              </p>
+              <p class="rn-row success">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M5 8.5l2 2 4-4.5"/></svg>
+                checks: success
+              </p>
+            </div>
+            <div class="rn-col">
+              <p class="rn-head">LINEAR</p>
+              <p class="rn-row success">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M6.5 5.5l4 2.5-4 2.5z" fill="currentColor"/></svg>
+                1 issue started
+              </p>
+            </div>
+            <div class="rn-col">
+              <p class="rn-head">SLACK</p>
+              <p class="rn-row danger">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M11 2a6 6 0 1 0 3 11A6 6 0 0 1 11 2z" fill="currentColor"/></svg>
+                Do not disturb
+              </p>
+            </div>
+          </div>
+
+          <p class="block-label">Recent sessions · today</p>
+          <div class="rs-card">
+            <div class="empty-icon">
+              <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+                <path d="M4 9a2 2 0 0 1 2-2h6l2 3h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>
+              </svg>
+            </div>
+            <p class="empty-title">No sessions yet</p>
+            <p class="empty-sub">Switch between apps for a few minutes to start your timeline</p>
+          </div>
         </main>
       </div>
     </div>
@@ -111,8 +149,8 @@ import LeafButton from '../LeafButton.astro';
 }
 .hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-  gap: var(--space-4xl);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: var(--space-3xl);
   max-width: var(--content-max);
   margin: 0 auto;
   padding: 0 var(--space-xl);
@@ -131,13 +169,14 @@ import LeafButton from '../LeafButton.astro';
   border-bottom: 1px solid var(--border-subtle);
 }
 .headline {
-  margin-bottom: var(--space-xl);
-  max-width: 14ch;
+  font: 600 56px/1.04 var(--font-body);
   letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin-bottom: var(--space-xl);
 }
 .lead {
   color: var(--text-secondary);
-  max-width: 52ch;
+  max-width: 50ch;
   margin-bottom: var(--space-xl);
 }
 .stamps {
@@ -145,9 +184,8 @@ import LeafButton from '../LeafButton.astro';
   flex-direction: column;
   gap: var(--space-xs);
   margin-bottom: var(--space-xl);
-  padding: var(--space-md) 0;
-  border-top: 1px dashed var(--border-subtle);
-  border-bottom: 1px dashed var(--border-subtle);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-subtle);
 }
 .stamps li {
   display: flex;
@@ -171,94 +209,98 @@ import LeafButton from '../LeafButton.astro';
   color: var(--text-secondary);
   font-size: 13px;
   text-decoration: none;
-  border-bottom: 1px solid var(--border-strong);
-  padding-bottom: 2px;
-  transition: color var(--dur-snap) var(--ease-standard), border-color var(--dur-snap) var(--ease-standard);
+  transition: color var(--dur-snap) var(--ease-standard);
 }
-.textlink:hover {
-  color: var(--text-primary);
-  border-bottom-color: var(--text-primary);
-}
+.textlink:hover { color: var(--text-primary); }
 
-/* APP WINDOW ────────────────────────────────────────── */
+/* APP WINDOW — 1:1 replica of Leaf Home ────────────── */
 .appwindow {
-  background: var(--surface-raised);
+  background: var(--surface-canvas);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   box-shadow: var(--elev-modal);
   overflow: hidden;
   min-width: 0;
-  /* Slight overflow off-grid for asymmetric tension */
   margin-right: calc(-1 * var(--space-3xl));
-  font-feature-settings: 'ss01', 'cv01';
+  font-feature-settings: 'ss01';
 }
 .winbar {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
   padding: 10px 14px;
-  background: var(--surface-inset);
+  background: var(--surface-raised);
   border-bottom: 1px solid var(--border-subtle);
+  position: relative;
 }
 .tl { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
 .tl.r { background: #FF5F57; }
 .tl.y { background: #FEBC2E; }
 .tl.g { background: #28C840; }
-.wintitle {
-  margin-left: var(--space-md);
-  color: var(--text-secondary);
-  font-size: 11px;
-}
-.wintail {
-  margin-left: auto;
+.sb-toggle {
+  position: absolute;
+  left: 200px;
+  width: 22px; height: 22px;
+  background: transparent;
+  border: 0;
   color: var(--text-tertiary);
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
 }
+.sb-toggle svg { width: 16px; height: 16px; }
 
 .winbody {
   display: grid;
-  grid-template-columns: 152px 1fr;
-  min-height: 380px;
+  grid-template-columns: 224px 1fr;
+  min-height: 460px;
 }
 
 /* sidebar */
 .sidebar {
-  background: var(--surface-canvas);
+  background: var(--surface-raised);
+  padding: var(--space-md) var(--space-sm);
   border-right: 1px solid var(--border-subtle);
-  padding: var(--space-lg) var(--space-sm);
 }
-.side-section {
-  font-size: 10px;
-  text-transform: uppercase;
+.sb-section {
+  font: 500 10px/1 var(--font-body);
   letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--text-quaternary);
-  padding: 0 var(--space-sm);
-  margin-bottom: var(--space-xs);
+  padding: var(--space-md) var(--space-sm) var(--space-xs);
 }
 .sidebar ul {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-bottom: var(--space-md);
+  gap: 1px;
 }
 .sidebar li {
   position: relative;
   display: flex;
   align-items: center;
-  padding: 6px var(--space-sm);
+  gap: var(--space-md);
+  padding: 7px var(--space-sm) 7px 12px;
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 13.5px;
   cursor: default;
+  line-height: 1;
+}
+.sidebar .ico {
+  width: 17px; height: 17px;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
 }
 .sidebar li.active {
-  background: var(--surface-inset);
-  color: var(--text-primary);
+  background: color-mix(in srgb, var(--accent-primary) 12%, transparent);
+  color: var(--accent-primary);
 }
+.sidebar li.active .ico { color: var(--accent-primary); }
 .sidebar li.active .bar {
   position: absolute;
   left: -1px;
-  top: 6px; bottom: 6px;
+  top: 7px; bottom: 7px;
   width: 2px;
   border-radius: 1px;
   background: var(--accent-primary);
@@ -269,113 +311,147 @@ import LeafButton from '../LeafButton.astro';
   display: flex;
   flex-direction: column;
   min-width: 0;
+  padding: var(--space-lg) var(--space-xl) var(--space-xl);
 }
 .mainhead {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  padding: var(--space-lg) var(--space-xl) var(--space-md);
-  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: var(--space-lg);
 }
-.mainmeta {
+.apptitle {
+  font: 600 14px/1 var(--font-body);
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--surface-inset);
+  border-radius: var(--radius-pill);
   color: var(--text-tertiary);
-  font-size: 11px;
+  font: 500 11px/1 var(--font-body);
 }
-.feed {
+.status-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--text-quaternary);
+}
+
+.hero-text {
+  margin-bottom: var(--space-xl);
+}
+.h-listening {
+  font: 600 24px/1.15 var(--font-body);
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.sub-listening {
+  font: 400 12.5px/1.4 var(--font-body);
+  color: var(--text-tertiary);
+}
+
+.block-label {
+  font: 500 10px/1 var(--font-body);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-quaternary);
+  margin-bottom: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+/* Right now card — 3 columns */
+.rn-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+}
+.rn-col {
+  padding: var(--space-md) var(--space-md);
+  border-right: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
-  padding: var(--space-xs) 0;
-  flex: 1;
+  gap: 6px;
 }
-.row {
-  display: grid;
-  grid-template-columns: 56px 28px 1fr;
-  gap: var(--space-md);
-  padding: 10px var(--space-xl);
+.rn-col:last-child { border-right: 0; }
+.rn-head {
+  font: 600 9.5px/1 var(--font-body);
+  letter-spacing: 0.1em;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.rn-row {
+  display: flex;
   align-items: center;
-  border-bottom: 1px solid color-mix(in srgb, var(--border-subtle) 60%, transparent);
+  gap: 6px;
+  font: 400 12px/1.2 var(--font-body);
+  color: var(--text-primary);
 }
-.row:last-child { border-bottom: 0; }
-.row.dim { opacity: 0.55; }
-.time {
+.rn-row svg {
+  width: 13px; height: 13px;
   color: var(--text-tertiary);
-  font-size: 11px;
-  text-align: right;
+  flex-shrink: 0;
 }
-.chip {
-  width: 24px; height: 24px;
-  border-radius: var(--radius-sm);
+.rn-row.success svg { color: var(--status-success); }
+.rn-row.danger svg { color: var(--status-danger); }
+
+/* Recent sessions empty state */
+.rs-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3xl) var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+.empty-icon {
+  width: 44px; height: 44px;
+  background: var(--surface-inset);
+  border-radius: var(--radius-md);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font: 600 10px/1 var(--font-mono);
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-}
-.chip.xc { background: #2C7CD1; color: white; }
-.chip.cc { background: #D97757; color: white; }
-.chip.ln { background: #5E6AD2; color: white; }
-.chip.gh { background: #1B1F23; color: white; border: 1px solid var(--border-subtle); }
-.chip.sk { background: #4A154B; color: white; }
-.rowtext { min-width: 0; }
-.title {
-  font: 400 13px/1.4 var(--font-body);
-  color: var(--text-primary);
-  margin-bottom: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.title code {
-  font: 500 12px/1 var(--font-mono);
-  background: var(--surface-inset);
-  padding: 1px 5px;
-  border-radius: 3px;
-  color: var(--text-primary);
-}
-.sub {
-  font-size: 11px;
   color: var(--text-tertiary);
+  margin-bottom: 4px;
 }
-.mainfoot {
-  padding: var(--space-sm) var(--space-xl);
-  border-top: 1px solid var(--border-subtle);
-  background: var(--surface-canvas);
+.empty-icon svg { width: 22px; height: 22px; }
+.empty-title {
+  font: 600 14px/1.2 var(--font-body);
+  color: var(--text-primary);
+}
+.empty-sub {
+  font: 400 12px/1.45 var(--font-body);
   color: var(--text-tertiary);
-  font-size: 10px;
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-.rec-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--status-success);
-  display: inline-block;
-  animation: pulse 2.4s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.3; transform: scale(0.85); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .rec-dot { animation: none; }
+  max-width: 32ch;
 }
 
 /* Responsive ──────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .headline { font-size: 48px; }
+}
 @media (max-width: 960px) {
   .hero-grid {
     grid-template-columns: 1fr;
     gap: var(--space-3xl);
   }
   .appwindow { margin-right: 0; }
-  .headline { max-width: none; }
 }
 @media (max-width: 640px) {
-  .headline { font-size: 44px; line-height: 1.05; }
+  .headline { font-size: 40px; }
   .winbody { grid-template-columns: 1fr; min-height: auto; }
   .sidebar { display: none; }
-  .row { grid-template-columns: 48px 24px 1fr; padding: 10px var(--space-lg); }
-  .mainhead { padding: var(--space-md) var(--space-lg); }
+  .rn-card { grid-template-columns: 1fr; }
+  .rn-col { border-right: 0; border-bottom: 1px solid var(--border-subtle); }
+  .rn-col:last-child { border-bottom: 0; }
+  .sb-toggle { display: none; }
 }
 </style>
