@@ -1,0 +1,89 @@
+---
+import LeafCard from '../LeafCard.astro';
+import LeafButton from '../LeafButton.astro';
+import LeafBadge from '../LeafBadge.astro';
+---
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow-row">
+      <LeafBadge variant="accent">Alpha</LeafBadge>
+      <span class="meta mono">v1.0.0-alpha.15 · macOS-native · Open Source</span>
+    </div>
+
+    <h1 class="t-display-lg headline">
+      Stop briefing your AI.<br />
+      <span class="accent">It can just know.</span>
+    </h1>
+
+    <p class="t-body-lg lead">
+      Your team's working memory, captured automatically across your tools.
+      Queryable from Claude Code, Cursor, and Slack. Private by architecture —
+      managers can't peek without your consent.
+    </p>
+
+    <div class="ctas">
+      <LeafButton variant="primary" size="lg" href="/signup">Install for macOS →</LeafButton>
+      <LeafButton variant="ghost" size="lg" href="https://leaf-docs.gundem.tech" external>Read the whitepaper ↗</LeafButton>
+    </div>
+
+    <LeafCard variant="glass" padding="generous" class="demo">
+      <div class="demo-header mono">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        <span class="demo-title">leaf · live mcp query</span>
+      </div>
+      <div class="demo-body">
+        <div class="prompt mono"><span class="prompt-sign">$</span> <span class="typed" data-text='get_team_focus(period: "today")'>get_team_focus(period: "today")</span></div>
+        <ul class="results">
+          <li class="result"><span class="arrow">→</span> 3 teammates in deep work <span class="meta">(Xcode, Cursor)</span></li>
+          <li class="result"><span class="arrow">→</span> 1 in async sync <span class="meta">(Slack #frontend)</span></li>
+          <li class="result"><span class="arrow">→</span> last decision logged: <span class="quote">"ship Track-4 to alpha.16"</span></li>
+        </ul>
+        <div class="footnote t-caption">
+          <span class="ok-dot"></span> encrypted on device &nbsp; <span class="ok-dot"></span> never leaves laptop unwrapped
+        </div>
+      </div>
+    </LeafCard>
+  </div>
+</section>
+
+<style>
+.hero { padding: var(--space-5xl) 0 var(--space-4xl); }
+.eyebrow-row { display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-xl); }
+.meta { color: var(--text-tertiary); font-size: 12px; }
+.headline { margin-bottom: var(--space-lg); max-width: 18ch; }
+.lead { color: var(--text-secondary); max-width: 60ch; margin-bottom: var(--space-xl); }
+.ctas { display: flex; gap: var(--space-md); flex-wrap: wrap; margin-bottom: var(--space-3xl); }
+.demo { transform: perspective(1200px) rotateY(-2deg) rotateX(2deg); transform-origin: center; }
+.demo-header { display: flex; align-items: center; gap: var(--space-xs); padding-bottom: var(--space-md); border-bottom: 1px solid var(--border-subtle); color: var(--text-tertiary); }
+.demo-title { margin-left: var(--space-sm); font-size: 12px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.dot-r { background: #FF5F57; }
+.dot-y { background: #FEBC2E; }
+.dot-g { background: var(--accent-primary); }
+.demo-body { padding-top: var(--space-md); }
+.prompt { color: var(--text-primary); margin-bottom: var(--space-md); }
+.prompt-sign { color: var(--accent-primary); margin-right: var(--space-xs); }
+.results { display: flex; flex-direction: column; gap: var(--space-sm); margin-bottom: var(--space-md); }
+.result { font: 400 14px/1.5 var(--font-mono); color: var(--text-secondary); }
+.arrow { color: var(--accent-primary); margin-right: var(--space-xs); }
+.quote { color: var(--text-primary); }
+.footnote { color: var(--text-tertiary); padding-top: var(--space-md); border-top: 1px dashed var(--border-subtle); display: flex; align-items: center; gap: var(--space-xs); }
+.ok-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-primary); display: inline-block; }
+@media (max-width: 768px) {
+  .demo { transform: none; }
+  .headline { font-size: 44px; }
+}
+</style>
+
+<script>
+const typed = document.querySelector<HTMLElement>('.typed');
+if (typed && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const text = typed.dataset.text ?? '';
+  typed.textContent = '';
+  let i = 0;
+  const id = setInterval(() => {
+    if (i >= text.length) { clearInterval(id); return; }
+    typed.textContent += text[i++];
+  }, 60);
+}
+</script>
