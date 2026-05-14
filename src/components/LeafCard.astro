@@ -1,0 +1,33 @@
+---
+interface Props {
+  variant?: 'rest' | 'raised' | 'glass';
+  padding?: 'tight' | 'regular' | 'generous';
+  as?: string;
+  class?: string;
+}
+const { variant = 'rest', padding = 'regular', as: Tag = 'div', class: extraClass } = Astro.props;
+const classes = `card card-${variant} pad-${padding}${extraClass ? ' ' + extraClass : ''}`;
+---
+<Tag class={classes}>
+  <slot />
+</Tag>
+
+<style>
+.card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+}
+.pad-tight { padding: var(--space-md); }
+.pad-regular { padding: var(--space-lg); }
+.pad-generous { padding: var(--space-xl); }
+
+.card-rest { background: transparent; }
+.card-raised { background: var(--surface-raised); box-shadow: var(--elev-raised); }
+.card-glass {
+  background: color-mix(in srgb, var(--surface-raised) 60%, transparent);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  box-shadow: var(--elev-floating);
+  border-color: color-mix(in srgb, var(--accent-primary) 8%, var(--border-subtle));
+}
+</style>
