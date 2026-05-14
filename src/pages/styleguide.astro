@@ -1,0 +1,141 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LeafNav from '../components/LeafNav.astro';
+import LeafFooter from '../components/LeafFooter.astro';
+import LeafButton from '../components/LeafButton.astro';
+import LeafInput from '../components/LeafInput.astro';
+import LeafCard from '../components/LeafCard.astro';
+import LeafBadge from '../components/LeafBadge.astro';
+import LeafEyebrow from '../components/LeafEyebrow.astro';
+import LeafLogo from '../components/LeafLogo.astro';
+import LeafCodeBlock from '../components/LeafCodeBlock.astro';
+import LeafAccordion from '../components/LeafAccordion.astro';
+import LeafTabBar from '../components/LeafTabBar.astro';
+import LeafTable from '../components/LeafTable.astro';
+import LeafAnchorNav from '../components/LeafAnchorNav.astro';
+---
+<BaseLayout title="Styleguide" description="Component reference" noIndex>
+  <LeafNav slot="nav" />
+  <div class="wrap" style="padding: var(--space-3xl) var(--space-xl)">
+    <h1 class="t-display">Styleguide</h1>
+    <p class="t-body-lg" style="color: var(--text-secondary); margin-top: var(--space-md);">All 13 atomic components in every variant. Toggle macOS Light/Dark to verify theming.</p>
+
+    <section style="margin-top: var(--space-3xl)">
+      <h2 class="t-title-lg">Logo</h2>
+      <div style="display: flex; gap: 24px; align-items: center; margin-top: 16px;">
+        <LeafLogo size={20} withWordmark />
+        <LeafLogo size={32} withWordmark />
+        <LeafLogo size={48} withWordmark={false} />
+      </div>
+    </section>
+
+    <section style="margin-top: var(--space-3xl)">
+      <h2 class="t-title-lg">Eyebrow</h2>
+      <div style="display: flex; gap: 24px; flex-direction: column; margin-top: 16px;">
+        <LeafEyebrow number="01" label="ON YOUR MAC" />
+        <LeafEyebrow label="JUST LABEL" />
+      </div>
+    </section>
+
+    <section style="margin-top: var(--space-3xl)">
+      <h2 class="t-title-lg">Badges</h2>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px;">
+        <LeafBadge variant="accent">Accent</LeafBadge>
+        <LeafBadge variant="muted">Muted</LeafBadge>
+        <LeafBadge variant="success">Success</LeafBadge>
+        <LeafBadge variant="warning">Warning</LeafBadge>
+        <LeafBadge variant="danger">Danger</LeafBadge>
+        <LeafBadge variant="info">Info</LeafBadge>
+      </div>
+    </section>
+
+    <section style="margin-top: var(--space-3xl)">
+      <h2 class="t-title-lg">Buttons</h2>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px;">
+        <LeafButton variant="primary" size="sm">Primary sm</LeafButton>
+        <LeafButton variant="primary" size="md">Primary md</LeafButton>
+        <LeafButton variant="primary" size="lg">Primary lg</LeafButton>
+        <LeafButton variant="secondary">Secondary</LeafButton>
+        <LeafButton variant="ghost">Ghost</LeafButton>
+        <LeafButton variant="destructive">Destructive</LeafButton>
+        <LeafButton variant="primary" disabled>Disabled</LeafButton>
+      </div>
+    </section>
+
+    <section style="margin-top: var(--space-3xl)">
+      <h2 class="t-title-lg">Inputs</h2>
+      <div style="display: flex; flex-direction: column; gap: 16px; max-width: 320px; margin-top: 16px;">
+        <LeafInput label="Email" type="email" placeholder="you@email.com" autocomplete="email" />
+        <LeafInput label="Password (lg)" type="password" size="lg" />
+        <LeafInput label="With error" type="email" placeholder="you@email.com" error="That email isn't right." />
+      </div>
+    </section>
+
+    <section style="margin-top: var(--space-3xl)">
+      <h2 class="t-title-lg">Cards</h2>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px;">
+        <LeafCard variant="rest"><p class="t-body">Rest card — hairline border, transparent.</p></LeafCard>
+        <LeafCard variant="raised"><p class="t-body">Raised card — surface-raised + elev-raised shadow.</p></LeafCard>
+        <LeafCard variant="glass"><p class="t-body">Glass card — backdrop-filter blur + saturate.</p></LeafCard>
+      </div>
+    </section>
+
+    <section style="margin-top: var(--space-3xl)">
+      <h2 class="t-title-lg">CodeBlock</h2>
+      <div style="margin-top: 16px;">
+        <LeafCodeBlock code={`$ get_team_focus(period: "today")\n→ 3 teammates in deep work\n→ 1 in async sync`} />
+      </div>
+    </section>
+
+    <section style="margin-top: var(--space-3xl)">
+      <h2 class="t-title-lg">Accordion</h2>
+      <div style="margin-top: 16px;">
+        <LeafAccordion question="Is my code captured?">No. Only metadata — file paths, commit hashes, event timestamps. Never file contents.</LeafAccordion>
+        <LeafAccordion question="Can my manager peek?">Not without your consent. Default share list = nothing. Admin has no override.</LeafAccordion>
+        <LeafAccordion question="Does it work offline?">Yes. All capture and queries are local.</LeafAccordion>
+      </div>
+    </section>
+
+    <section style="margin-top: var(--space-3xl)">
+      <h2 class="t-title-lg">TabBar</h2>
+      <div style="margin-top: 16px;">
+        <LeafTabBar
+          tabs={[
+            { id: 'signin', label: 'Sign in' },
+            { id: 'create', label: 'Create account' },
+            { id: 'verify', label: 'Verify' },
+          ]}
+          active="create"
+        />
+      </div>
+    </section>
+
+    <section style="margin-top: var(--space-3xl)">
+      <h2 class="t-title-lg">Table</h2>
+      <div style="margin-top: 16px;">
+        <LeafTable>
+          <thead>
+            <tr><th>Feature</th><th>Free</th><th>Team</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Mac capture</td><td class="checkmark">✓</td><td class="checkmark">✓</td></tr>
+            <tr><td>E2E sharing</td><td class="dash">—</td><td class="checkmark">✓</td></tr>
+            <tr><td>Seats</td><td>1</td><td>20</td></tr>
+          </tbody>
+        </LeafTable>
+      </div>
+    </section>
+
+    <section style="margin-top: var(--space-3xl)">
+      <h2 class="t-title-lg">AnchorNav</h2>
+      <p class="t-body-sm" style="color: var(--text-tertiary); margin-top: 8px;">Sticky at top: 56px. Scroll to see active highlight (IntersectionObserver on sections).</p>
+      <LeafAnchorNav items={[
+        { id: 'logo', label: 'Logo' },
+        { id: 'badges', label: 'Badges' },
+        { id: 'cards', label: 'Cards' },
+        { id: 'table', label: 'Table' },
+      ]} />
+    </section>
+  </div>
+  <LeafFooter slot="footer" />
+</BaseLayout>
