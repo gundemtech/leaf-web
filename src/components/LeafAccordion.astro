@@ -25,7 +25,7 @@ const { question, open = false } = Astro.props;
 }
 .accordion summary::-webkit-details-marker { display: none; }
 .accordion summary:hover { color: var(--accent-primary); }
-.chevron { color: var(--text-tertiary); transition: transform var(--dur-medium) var(--spring-snappy); }
+.chevron { color: var(--text-tertiary); transition: transform 260ms cubic-bezier(.20, .00, .00, 1); }
 .accordion[open] .chevron { transform: rotate(180deg); }
 
 /* WAAPI animates height; CSS just sets resting visual + overflow for clipping. */
@@ -40,7 +40,7 @@ const { question, open = false } = Astro.props;
 // WAAPI-based open/close — animates height both directions smoothly.
 // Falls back to native instant toggle if WAAPI unavailable or reduced motion.
 const PREFERS_REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const DURATION = 320;
+const DURATION = 260;
 const EASING = 'cubic-bezier(.20, .00, .00, 1)';
 
 document.querySelectorAll<HTMLDetailsElement>('.accordion').forEach((details) => {
