@@ -28,22 +28,17 @@ const classes = `btn btn-${variant} btn-${size}${extraClass ? ' ' + extraClass :
 
 <style>
 .btn {
-  position: relative;
   display: inline-flex; align-items: center; justify-content: center;
   gap: var(--space-sm);
   border-radius: var(--radius-md);
   font-family: var(--font-body); font-weight: 500;
   border: 1px solid transparent;
-  transition:
-    background var(--dur-short) var(--ease-standard),
-    border-color var(--dur-short) var(--ease-standard),
-    box-shadow var(--dur-short) var(--ease-standard),
-    transform var(--dur-snap) var(--spring-snappy);
+  transition: background var(--dur-snap) var(--ease-standard),
+              border-color var(--dur-snap) var(--ease-standard),
+              transform var(--dur-snap) var(--spring-snappy);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
-  overflow: hidden;
-  isolation: isolate;
 }
 .btn[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
 
@@ -51,34 +46,16 @@ const classes = `btn btn-${variant} btn-${size}${extraClass ? ' ' + extraClass :
 .btn-md { height: 36px; padding: 0 var(--space-lg); font-size: 15px; }
 .btn-lg { height: 44px; padding: 0 var(--space-xl); font-size: 17px; }
 
-/* Primary — gradient surface + top shine + green glow */
-.btn-primary {
-  background: linear-gradient(180deg, var(--accent-emphasis) 0%, var(--accent-primary) 100%);
-  color: var(--text-inverse);
-  box-shadow:
-    inset 0 1px 0 0 color-mix(in srgb, white 24%, transparent),
-    0 1px 2px rgba(0, 0, 0, .18),
-    0 0 0 0 color-mix(in srgb, var(--accent-primary) 40%, transparent);
-}
-.btn-primary:hover {
-  box-shadow:
-    inset 0 1px 0 0 color-mix(in srgb, white 32%, transparent),
-    0 2px 6px rgba(0, 0, 0, .22),
-    0 0 24px 0 color-mix(in srgb, var(--accent-primary) 38%, transparent);
-  transform: translateY(-1px);
-}
-.btn-primary:active { transform: translateY(0); }
+.btn-primary { background: var(--accent-primary); color: var(--text-inverse); }
+.btn-primary:hover { background: var(--accent-emphasis); }
+.btn-primary:active { transform: translateY(1px); }
 
 .btn-secondary { background: var(--surface-raised); color: var(--text-primary); border-color: var(--border-subtle); }
-.btn-secondary:hover { background: var(--surface-inset); border-color: var(--border-strong); transform: translateY(-1px); }
-.btn-secondary:active { transform: translateY(0); }
+.btn-secondary:hover { background: var(--surface-inset); border-color: var(--border-strong); }
 
 .btn-ghost { background: transparent; color: var(--text-primary); }
 .btn-ghost:hover { background: var(--surface-raised); }
 
 .btn-destructive { background: var(--status-danger); color: var(--text-inverse); }
-.btn-destructive:hover {
-  background: color-mix(in srgb, var(--status-danger) 85%, black);
-  box-shadow: 0 0 24px 0 color-mix(in srgb, var(--status-danger) 30%, transparent);
-}
+.btn-destructive:hover { background: color-mix(in srgb, var(--status-danger) 85%, black); }
 </style>
