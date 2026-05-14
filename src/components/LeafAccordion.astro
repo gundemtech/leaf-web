@@ -28,25 +28,83 @@ const { question, open = false } = Astro.props;
 .chevron { color: var(--text-tertiary); transition: transform var(--dur-medium) var(--spring-snappy); }
 .accordion[open] .chevron { transform: rotate(180deg); }
 
-/* Smooth expand using grid-template-rows 0fr → 1fr.
-   Works without JS because we override the browser's default hide-on-closed
-   behavior by laying out .body as a grid (kept in flow even when not open). */
+/* WAAPI animates height; CSS just sets resting visual + overflow for clipping. */
 .accordion .body {
-  display: grid;
-  grid-template-rows: 0fr;
-  opacity: 0;
+  overflow: hidden;
   color: var(--text-secondary);
-  transition:
-    grid-template-rows var(--dur-medium) var(--ease-emphasized),
-    opacity var(--dur-medium) var(--ease-emphasized),
-    padding-top var(--dur-medium) var(--ease-emphasized);
-  padding-top: 0;
 }
-.accordion[open] .body {
-  grid-template-rows: 1fr;
-  opacity: 1;
-  padding-top: var(--space-md);
-}
-.accordion .body-inner { overflow: hidden; min-height: 0; }
+.accordion[open] .body-inner { padding-top: var(--space-md); }
 </style>
 
+<script>
+// WAAPI-based open/close — animates height both directions smoothly.
+// Falls back to native instant toggle if WAAPI unavailable or reduced motion.
+const PREFERS_REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const DURATION = 320;
+const EASING = 'cubic-bezier(.20, .00, .00, 1)';
+
+document.querySelectorAll<HTMLDetailsElement>('.accordion').forEach((details) => {
+  const summary = details.querySelector<HTMLElement>('summary');
+  const body = details.querySelector<HTMLElement>('.body');
+  if (!summary || !body) return;
+
+  let animation: Animation | null = null;
+  let isClosing = false;
+  let isExpanding = false;
+
+  summary.addEventListener('click', (e) => {
+    if (PREFERS_REDUCED) return; // let native behavior run
+    e.preventDefault();
+    details.style.overflow = 'hidden';
+
+    if (isClosing || !details.open) {
+      open();
+    } else if (isExpanding || details.open) {
+      shrink();
+    }
+  });
+
+  function shrink() {
+    isClosing = true;
+    const startHeight = `${details.offsetHeight}px`;
+    const endHeight = `${summary.offsetHeight + parseInt(getComputedStyle(details).paddingTop) + parseInt(getComputedStyle(details).paddingBottom)}px`;
+
+    animation?.cancel();
+    animation = details.animate(
+      { height: [startHeight, endHeight] },
+      { duration: DURATION, easing: EASING }
+    );
+    animation.onfinish = () => onAnimationFinish(false);
+    animation.oncancel = () => { isClosing = false; };
+  }
+
+  function open() {
+    details.style.height = `${details.offsetHeight}px`;
+    details.open = true;
+    window.requestAnimationFrame(expand);
+  }
+
+  function expand() {
+    isExpanding = true;
+    const startHeight = `${details.offsetHeight}px`;
+    const endHeight = `${summary.offsetHeight + body.scrollHeight + parseInt(getComputedStyle(details).paddingTop) + parseInt(getComputedStyle(details).paddingBottom)}px`;
+
+    animation?.cancel();
+    animation = details.animate(
+      { height: [startHeight, endHeight] },
+      { duration: DURATION, easing: EASING }
+    );
+    animation.onfinish = () => onAnimationFinish(true);
+    animation.oncancel = () => { isExpanding = false; };
+  }
+
+  function onAnimationFinish(opened: boolean) {
+    details.open = opened;
+    animation = null;
+    isClosing = false;
+    isExpanding = false;
+    details.style.height = '';
+    details.style.overflow = '';
+  }
+});
+</script>
