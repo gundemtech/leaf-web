@@ -1,0 +1,26 @@
+---
+interface Props {
+  variant?: 'accent' | 'muted' | 'success' | 'warning' | 'danger' | 'info';
+}
+const { variant = 'muted' } = Astro.props;
+---
+<span class={`badge badge-${variant} t-caption mono`}>
+  <slot />
+</span>
+
+<style>
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-pill);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.badge-accent { background: var(--accent-subtle); color: var(--accent-emphasis); }
+.badge-muted { background: var(--surface-inset); color: var(--text-secondary); }
+.badge-success { background: color-mix(in srgb, var(--status-success) 15%, transparent); color: var(--status-success); }
+.badge-warning { background: color-mix(in srgb, var(--status-warning) 15%, transparent); color: var(--status-warning); }
+.badge-danger { background: color-mix(in srgb, var(--status-danger) 15%, transparent); color: var(--status-danger); }
+.badge-info { background: color-mix(in srgb, var(--status-info) 15%, transparent); color: var(--status-info); }
+</style>
