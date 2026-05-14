@@ -15,12 +15,14 @@ import LeafButton from '../LeafButton.astro';
 
   <div class="wrap hero-body">
     <div class="ticker mono" aria-hidden="true">
-      <span class="t-row" id="tickerRow">
-        <span class="t-time">10:42</span>
-        <span class="t-app">Xcode</span>
-        <span class="t-sep">→</span>
-        <span class="t-text">SessionAggregator.swift</span>
-      </span>
+      <div class="ticker-stage" id="tickerStage">
+        <div class="t-row">
+          <span class="t-time">10:42</span>
+          <span class="t-app">Xcode</span>
+          <span class="t-sep">→</span>
+          <span class="t-text">SessionAggregator.swift</span>
+        </div>
+      </div>
     </div>
 
     <h1 class="big">
@@ -109,36 +111,41 @@ import LeafButton from '../LeafButton.astro';
   padding-bottom: var(--space-5xl);
 }
 
-/* TICKER — single line of live-feel event, sits above headline */
+/* TICKER — vertical conveyor with soft gradient mask top/bottom */
 .ticker {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-md);
-  margin-bottom: var(--space-xl);
+  position: relative;
+  height: 44px;
+  margin-bottom: var(--space-lg);
+  overflow: hidden;
   font-size: 11.5px;
   color: var(--text-tertiary);
-  height: 16px;
-  overflow: hidden;
-  opacity: 0;
-  animation: fadeUp 700ms 350ms cubic-bezier(.18, .89, .32, 1.28) forwards;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 38%, black 62%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, black 38%, black 62%, transparent 100%);
+}
+.ticker-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 .t-row {
-  display: inline-flex;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
   align-items: center;
   gap: var(--space-md);
   white-space: nowrap;
+  will-change: transform, opacity;
 }
 .t-time { color: var(--text-quaternary); }
 .t-app { color: var(--text-primary); }
 .t-sep { color: var(--text-quaternary); }
 .t-text { color: var(--text-secondary); }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 @media (prefers-reduced-motion: reduce) {
-  .ticker { opacity: 1; animation: none; }
+  .ticker { -webkit-mask-image: none; mask-image: none; }
 }
 
 /* HEADLINE — the moment */
@@ -206,8 +213,8 @@ import LeafButton from '../LeafButton.astro';
 </style>
 
 <script>
-// Ticker cycles through a small set of realistic event lines every ~3.5s.
-// Pure data — no fake values, just illustrative event shapes.
+// Vertical conveyor: outgoing row slides down through the bottom gradient
+// while the incoming row slides in from above the top gradient.
 const events = [
   { t: '10:42', app: 'Xcode',        sep: '→', text: 'SessionAggregator.swift' },
   { t: '10:43', app: 'Linear',       sep: '→', text: 'LEA-431 ▸ In Review' },
@@ -216,20 +223,54 @@ const events = [
   { t: '10:51', app: 'Slack',        sep: '→', text: '#frontend · reaction' },
   { t: '10:57', app: 'Calendar',     sep: '→', text: 'design review · in 8 min' },
 ];
-const row = document.getElementById('tickerRow');
+const stage = document.getElementById('tickerStage');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-if (row && !reduceMotion) {
-  let i = 0;
-  setInterval(() => {
-    i = (i + 1) % events.length;
-    const e = events[i];
-    row.style.opacity = '0';
-    setTimeout(() => {
-      row.innerHTML = `<span class="t-time">${e.t}</span><span class="t-app">${e.app}</span><span class="t-sep">${e.sep}</span><span class="t-text">${e.text}</span>`;
-      row.style.opacity = '1';
-    }, 220);
-  }, 3500);
-  // smooth opacity transitions
-  row.style.transition = 'opacity 200ms ease';
+
+function buildRow(e: typeof events[number]): HTMLDivElement {
+  const row = document.createElement('div');
+  row.className = 't-row';
+  row.innerHTML = `<span class="t-time">${e.t}</span><span class="t-app">${e.app}</span><span class="t-sep">${e.sep}</span><span class="t-text">${e.text}</span>`;
+  return row;
+}
+
+if (stage && !reduceMotion) {
+  let idx = 0;
+  const DURATION = 1100;
+  const EASE = 'cubic-bezier(.7, 0, .25, 1)';
+  const INTERVAL = 3200;
+
+  const cycle = () => {
+    const current = stage.querySelector<HTMLDivElement>('.t-row');
+    if (!current) return;
+    idx = (idx + 1) % events.length;
+    const next = buildRow(events[idx]);
+    next.style.transform = 'translateY(-100%)';
+    next.style.opacity = '0';
+    stage.appendChild(next);
+    // force reflow so the starting transform is applied
+    next.getBoundingClientRect();
+
+    current.animate(
+      [
+        { transform: 'translateY(0)',    opacity: 1 },
+        { transform: 'translateY(100%)', opacity: 0 },
+      ],
+      { duration: DURATION, easing: EASE, fill: 'forwards' },
+    );
+    const inAnim = next.animate(
+      [
+        { transform: 'translateY(-100%)', opacity: 0 },
+        { transform: 'translateY(0)',     opacity: 1 },
+      ],
+      { duration: DURATION, easing: EASE, fill: 'forwards' },
+    );
+    inAnim.onfinish = () => {
+      next.style.transform = 'translateY(0)';
+      next.style.opacity = '1';
+      current.remove();
+    };
+  };
+
+  setInterval(cycle, INTERVAL);
 }
 </script>
