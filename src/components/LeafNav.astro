@@ -1,0 +1,73 @@
+---
+import LeafLogo from './LeafLogo.astro';
+import LeafButton from './LeafButton.astro';
+const navItems = [
+  { href: '/product', label: 'Product' },
+  { href: '/pricing', label: 'Pricing' },
+  { href: '/privacy', label: 'Privacy' },
+  { href: '/open-source', label: 'Open Source' },
+  { href: 'https://leaf-docs.gundem.tech', label: 'Docs', external: true },
+];
+---
+<header class="nav">
+  <div class="nav-inner">
+    <LeafLogo href="/" size={24} withWordmark />
+    <ul class="nav-links">
+      {navItems.map(item => (
+        <li>
+          <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noopener' : undefined}>
+            {item.label}{item.external && ' ↗'}
+          </a>
+        </li>
+      ))}
+    </ul>
+    <div class="nav-cta" data-auth="anon">
+      <LeafButton href="/signup" variant="ghost" size="sm">Sign in</LeafButton>
+    </div>
+    <div class="nav-cta" data-auth="user" hidden>
+      <LeafButton href="/dashboard" variant="secondary" size="sm">Dashboard</LeafButton>
+    </div>
+  </div>
+</header>
+
+<style>
+.nav {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--surface-canvas) 80%, transparent);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border-bottom: 1px solid var(--border-subtle);
+  height: 56px;
+}
+.nav-inner { display: flex; align-items: center; gap: var(--space-xl); max-width: var(--content-max); margin: 0 auto; padding: 0 var(--space-xl); height: 100%; }
+.nav-links { display: flex; gap: var(--space-lg); flex: 1; }
+.nav-links a {
+  color: var(--text-secondary); font: 500 14px/1 var(--font-body);
+  transition: color var(--dur-snap) var(--ease-standard);
+}
+.nav-links a:hover { color: var(--text-primary); }
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+}
+</style>
+
+<script>
+// Session-aware nav: shows Sign in by default, swaps to Dashboard if Supabase session detected.
+// supabase-client.ts (T5.2) populates window.supabase.
+const showAuth = (state: 'anon' | 'user') => {
+  document.querySelectorAll<HTMLElement>('.nav-cta').forEach(el => {
+    el.hidden = el.dataset.auth !== state;
+  });
+};
+(async () => {
+  // Wait up to 6s for Supabase to load
+  for (let i = 0; i < 30; i++) {
+    if ((window as any).supabase) break;
+    await new Promise(r => setTimeout(r, 200));
+  }
+  const sb = (window as any).supabase;
+  if (!sb) { showAuth('anon'); return; }
+  const { data } = await sb.auth.getSession();
+  showAuth(data?.session ? 'user' : 'anon');
+})();
+</script>
