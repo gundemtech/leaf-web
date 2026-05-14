@@ -1,0 +1,24 @@
+---
+interface Props {
+  caption?: string;
+}
+const { caption } = Astro.props;
+---
+<div class="table-wrap">
+  <table class="table">
+    {caption && <caption class="t-caption">{caption}</caption>}
+    <slot />
+  </table>
+</div>
+
+<style is:global>
+.table-wrap { overflow-x: auto; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
+.table { width: 100%; border-collapse: collapse; font: 400 15px/1.5 var(--font-body); }
+.table caption { padding: var(--space-md); color: var(--text-secondary); text-align: left; }
+.table thead th { padding: var(--space-md); text-align: left; background: var(--surface-raised); color: var(--text-secondary); font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
+.table tbody td { padding: var(--space-md); border-top: 1px solid var(--border-subtle); }
+.table tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--surface-raised) 40%, transparent); }
+.table tbody td:first-child { font-weight: 500; color: var(--text-primary); }
+.table .checkmark { color: var(--accent-primary); }
+.table .dash { color: var(--text-quaternary); }
+</style>
