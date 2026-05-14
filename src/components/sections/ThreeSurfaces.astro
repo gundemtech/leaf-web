@@ -1,0 +1,44 @@
+---
+import LeafCard from '../LeafCard.astro';
+import LeafEyebrow from '../LeafEyebrow.astro';
+import LeafButton from '../LeafButton.astro';
+const surfaces = [
+  { icon: 'terminal', title: 'MCP server', subtitle: 'For AI agents', desc: 'Claude Code, Cursor, Claude Desktop. 15 tools that return structured JSON.', cta: 'View MCP reference', href: '/product#surfaces' },
+  { icon: 'macwindow', title: 'Native macOS app', subtitle: 'For humans', desc: 'Activity feed, team presence, derived insights — all on your Mac.', cta: 'See screenshots', href: '/product#surfaces' },
+  { icon: 'comment-chat', title: 'Slack bot', subtitle: 'For async teams', desc: 'Ask in any channel: "@leaf what did Dima do today?"', cta: 'Slack examples', href: '/product#surfaces' },
+];
+---
+<section id="surfaces" class="surfaces">
+  <div class="wrap">
+    <LeafEyebrow number="03" label="THREE WAYS TO QUERY" />
+    <h2 class="t-display">One memory layer.<br /><span class="accent">Three surfaces.</span></h2>
+
+    <div class="grid">
+      {surfaces.map(s => (
+        <LeafCard variant="raised" padding="generous" interactive>
+          <svg width="32" height="32" style="color: var(--accent-primary)"><use href={`/assets/icons/sprite.svg#${s.icon}`} /></svg>
+          <h3 class="t-title-md">{s.title}</h3>
+          <p class="subtitle t-caption mono">{s.subtitle}</p>
+          <p class="desc t-body">{s.desc}</p>
+          <a class="t-body-sm cta" href={s.href}>{s.cta} →</a>
+        </LeafCard>
+      ))}
+    </div>
+
+    <div class="footer-cta">
+      <LeafButton href="/product" variant="secondary">Read product details →</LeafButton>
+    </div>
+  </div>
+</section>
+
+<style>
+.surfaces { padding: var(--space-5xl) 0; }
+.surfaces h2 { margin: var(--space-md) 0 var(--space-3xl); }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); }
+@media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+.grid h3 { margin: var(--space-md) 0 var(--space-xs); }
+.subtitle { color: var(--text-tertiary); margin-bottom: var(--space-md); text-transform: uppercase; letter-spacing: 0.04em; }
+.desc { color: var(--text-secondary); margin-bottom: var(--space-md); }
+.cta { color: var(--accent-primary); }
+.footer-cta { margin-top: var(--space-xl); }
+</style>
