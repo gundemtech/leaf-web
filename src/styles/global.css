@@ -1,0 +1,41 @@
+html, body {
+  background: var(--surface-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+}
+
+.mono { font-family: var(--font-mono); }
+
+.t-display-lg { font: 600 64px/1.05 var(--font-body); letter-spacing: -0.02em; }
+.t-display    { font: 600 48px/1.08 var(--font-body); letter-spacing: -0.02em; }
+.t-title-lg   { font: 600 28px/1.20 var(--font-body); letter-spacing: -0.01em; }
+.t-title-md   { font: 600 22px/1.25 var(--font-body); }
+.t-title-sm   { font: 600 17px/1.35 var(--font-body); }
+.t-body-lg    { font: 400 17px/1.55 var(--font-body); }
+.t-body       { font: 400 15px/1.55 var(--font-body); }
+.t-body-sm    { font: 400 13px/1.50 var(--font-body); }
+.t-caption    { font: 400 12px/1.45 var(--font-body); }
+.t-label      { font: 500 11px/1.20 var(--font-body); letter-spacing: 0.04em; text-transform: uppercase; }
+.t-mono       { font: 400 14px/1.50 var(--font-mono); }
+
+/* Responsive type shrink — H1 scales down on smaller screens */
+@media (max-width: 768px) {
+  .t-display-lg { font-size: 44px; }
+  .t-display    { font-size: 36px; }
+  .t-title-lg   { font-size: 24px; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Layout containers */
+.wrap { width: 100%; max-width: var(--content-max); margin: 0 auto; padding: 0 var(--space-xl); }
+.wrap-narrow { width: 100%; max-width: var(--content-narrow); margin: 0 auto; padding: 0 var(--space-xl); }
