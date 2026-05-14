@@ -1,0 +1,47 @@
+---
+interface Props {
+  code: string;
+  lang?: string;
+  copyable?: boolean;
+}
+const { code, lang = '', copyable = true } = Astro.props;
+---
+<div class="codeblock">
+  <pre class="mono"><code data-lang={lang}>{code}</code></pre>
+  {copyable && (
+    <button class="copy-btn t-caption mono" data-code={code} aria-label="Copy code">copy</button>
+  )}
+</div>
+
+<style>
+.codeblock {
+  position: relative;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  overflow: auto;
+}
+.codeblock pre { color: var(--text-primary); font: 400 14px/1.5 var(--font-mono); }
+.copy-btn {
+  position: absolute; top: var(--space-sm); right: var(--space-sm);
+  padding: 2px var(--space-sm);
+  background: var(--surface-inset); color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  opacity: 0; transition: opacity var(--dur-short) var(--ease-standard);
+}
+.codeblock:hover .copy-btn { opacity: 1; }
+.copy-btn:hover { color: var(--text-primary); }
+</style>
+
+<script>
+document.querySelectorAll<HTMLButtonElement>('.copy-btn').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    const code = btn.dataset.code ?? '';
+    await navigator.clipboard.writeText(code);
+    const orig = btn.textContent;
+    btn.textContent = 'copied';
+    setTimeout(() => { btn.textContent = orig; }, 1200);
+  });
+});
+</script>
