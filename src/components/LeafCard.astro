@@ -3,10 +3,11 @@ interface Props {
   variant?: 'rest' | 'raised' | 'glass';
   padding?: 'tight' | 'regular' | 'generous';
   as?: string;
+  interactive?: boolean; // adds lift-on-hover
   class?: string;
 }
-const { variant = 'rest', padding = 'regular', as: Tag = 'div', class: extraClass } = Astro.props;
-const classes = `card card-${variant} pad-${padding}${extraClass ? ' ' + extraClass : ''}`;
+const { variant = 'rest', padding = 'regular', as: Tag = 'div', interactive = false, class: extraClass } = Astro.props;
+const classes = `card card-${variant} pad-${padding}${interactive ? ' interactive' : ''}${extraClass ? ' ' + extraClass : ''}`;
 ---
 <Tag class={classes}>
   <slot />
@@ -14,20 +15,44 @@ const classes = `card card-${variant} pad-${padding}${extraClass ? ' ' + extraCl
 
 <style>
 .card {
+  position: relative;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
+  transition:
+    transform var(--dur-short) var(--spring-snappy),
+    border-color var(--dur-short) var(--ease-standard),
+    box-shadow var(--dur-short) var(--ease-standard);
 }
 .pad-tight { padding: var(--space-md); }
 .pad-regular { padding: var(--space-lg); }
 .pad-generous { padding: var(--space-xl); }
 
 .card-rest { background: transparent; }
-.card-raised { background: var(--surface-raised); box-shadow: var(--elev-raised); }
+
+.card-raised {
+  background: var(--surface-raised);
+  box-shadow: var(--elev-raised);
+}
+
+/* Glass — backdrop blur + accent corner halo (subtle radial gradient top-left) */
 .card-glass {
-  background: color-mix(in srgb, var(--surface-raised) 60%, transparent);
+  background:
+    radial-gradient(120% 80% at 0% 0%, color-mix(in srgb, var(--accent-primary) 10%, transparent) 0%, transparent 55%),
+    color-mix(in srgb, var(--surface-raised) 60%, transparent);
   backdrop-filter: blur(24px) saturate(1.4);
   -webkit-backdrop-filter: blur(24px) saturate(1.4);
-  box-shadow: var(--elev-floating);
-  border-color: color-mix(in srgb, var(--accent-primary) 8%, var(--border-subtle));
+  box-shadow:
+    var(--elev-floating),
+    inset 0 1px 0 0 color-mix(in srgb, white 8%, transparent);
+  border-color: color-mix(in srgb, var(--accent-primary) 14%, var(--border-subtle));
 }
+
+/* Interactive — lift on hover */
+.card.interactive { cursor: pointer; }
+.card.interactive:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent-primary) 30%, var(--border-strong));
+}
+.card-raised.interactive:hover { box-shadow: var(--elev-floating); }
+.card-glass.interactive:hover { box-shadow: var(--elev-modal), inset 0 1px 0 0 color-mix(in srgb, white 12%, transparent); }
 </style>

@@ -5,6 +5,24 @@ html, body {
   font-size: 16px;
 }
 
+/* Ambient page glow — two very faint accent halos that anchor the page without
+   competing with content. Fixed so they don't scroll. */
+body {
+  position: relative;
+  min-height: 100vh;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(60ch 60ch at 92% -10%, color-mix(in srgb, var(--accent-primary) 9%, transparent), transparent 60%),
+    radial-gradient(80ch 60ch at -10% 110%, color-mix(in srgb, var(--accent-primary) 6%, transparent), transparent 60%);
+}
+main, header, footer, section { position: relative; z-index: 1; }
+
 .mono { font-family: var(--font-mono); }
 
 .t-display-lg { font: 600 64px/1.05 var(--font-body); letter-spacing: -0.02em; }
@@ -18,6 +36,15 @@ html, body {
 .t-caption    { font: 400 12px/1.45 var(--font-body); }
 .t-label      { font: 500 11px/1.20 var(--font-body); letter-spacing: 0.04em; text-transform: uppercase; }
 .t-mono       { font: 400 14px/1.50 var(--font-mono); }
+
+/* Display headings — gradient text accent on the second-line emphasis */
+.t-display-lg .accent,
+.t-display .accent {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-emphasis) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 
 /* Responsive type shrink — H1 scales down on smaller screens */
 @media (max-width: 768px) {

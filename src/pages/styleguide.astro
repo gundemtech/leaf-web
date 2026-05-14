@@ -17,8 +17,9 @@ import LeafAnchorNav from '../components/LeafAnchorNav.astro';
 <BaseLayout title="Styleguide" description="Component reference" noIndex>
   <LeafNav slot="nav" />
   <div class="wrap" style="padding: var(--space-3xl) var(--space-xl)">
-    <h1 class="t-display">Styleguide</h1>
-    <p class="t-body-lg" style="color: var(--text-secondary); margin-top: var(--space-md);">All 13 atomic components in every variant. Toggle macOS Light/Dark to verify theming.</p>
+    <LeafEyebrow number="00" label="DESIGN SYSTEM" />
+    <h1 class="t-display-lg" style="margin-top: var(--space-sm);">All <span class="accent">13 atoms</span>,<br />in one place.</h1>
+    <p class="t-body-lg" style="color: var(--text-secondary); margin-top: var(--space-md); max-width: 56ch;">Toggle macOS Light/Dark to verify both themes. Hover the interactive cards. Click accordions. Everything that animates respects <span class="mono" style="color: var(--text-primary);">prefers-reduced-motion</span>.</p>
 
     <section style="margin-top: var(--space-3xl)">
       <h2 class="t-title-lg">Logo</h2>
@@ -74,9 +75,9 @@ import LeafAnchorNav from '../components/LeafAnchorNav.astro';
     <section style="margin-top: var(--space-3xl)">
       <h2 class="t-title-lg">Cards</h2>
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px;">
-        <LeafCard variant="rest"><p class="t-body">Rest card — hairline border, transparent.</p></LeafCard>
-        <LeafCard variant="raised"><p class="t-body">Raised card — surface-raised + elev-raised shadow.</p></LeafCard>
-        <LeafCard variant="glass"><p class="t-body">Glass card — backdrop-filter blur + saturate.</p></LeafCard>
+        <LeafCard variant="rest" interactive><p class="t-body">Rest card — hairline border, transparent. <span class="mono" style="color: var(--text-tertiary);">hover →</span></p></LeafCard>
+        <LeafCard variant="raised" interactive><p class="t-body">Raised card — surface + shadow. <span class="mono" style="color: var(--text-tertiary);">hover →</span></p></LeafCard>
+        <LeafCard variant="glass" interactive><p class="t-body">Glass — backdrop-blur + accent corner halo. <span class="mono" style="color: var(--text-tertiary);">hover →</span></p></LeafCard>
       </div>
     </section>
 
