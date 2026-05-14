@@ -1,89 +1,381 @@
 ---
-import LeafCard from '../LeafCard.astro';
 import LeafButton from '../LeafButton.astro';
-import LeafBadge from '../LeafBadge.astro';
 ---
 <section class="hero">
-  <div class="wrap">
-    <div class="eyebrow-row">
-      <LeafBadge variant="accent">Alpha</LeafBadge>
-      <span class="meta mono">v1.0.0-alpha.15 · macOS-native · Open Source</span>
+  <div class="hero-grid">
+    <div class="lede">
+      <p class="kicker mono">Memory layer for AI dev teams</p>
+
+      <h1 class="t-display-lg headline">
+        Stop briefing your AI.<br/>It can just know.
+      </h1>
+
+      <p class="t-body-lg lead">
+        Leaf captures what your tools are doing — on your Mac, encrypted locally.
+        Your AI queries it through MCP. Your team's context, structured like data.
+      </p>
+
+      <ul class="stamps">
+        <li><span class="dot"></span><span class="mono">default share: nothing</span></li>
+        <li><span class="dot"></span><span class="mono">nothing leaves your Mac unencrypted</span></li>
+        <li><span class="dot"></span><span class="mono">admin has no override</span></li>
+      </ul>
+
+      <div class="actions">
+        <LeafButton variant="primary" size="lg" href="/signup">Install for macOS →</LeafButton>
+        <a class="textlink mono" href="https://leaf-docs.gundem.tech" target="_blank" rel="noopener">read the whitepaper ↗</a>
+      </div>
     </div>
 
-    <h1 class="t-display-lg headline">
-      Stop briefing your AI.<br />
-      <span class="accent">It can just know.</span>
-    </h1>
-
-    <p class="t-body-lg lead">
-      Your team's working memory, captured automatically across your tools.
-      Queryable from Claude Code, Cursor, and Slack. Private by architecture —
-      managers can't peek without your consent.
-    </p>
-
-    <div class="ctas">
-      <LeafButton variant="primary" size="lg" href="/signup">Install for macOS →</LeafButton>
-      <LeafButton variant="ghost" size="lg" href="https://leaf-docs.gundem.tech" external>Read the whitepaper ↗</LeafButton>
+    <div class="appwindow" role="img" aria-label="Leaf macOS app — Activity tab preview">
+      <div class="winbar">
+        <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
+        <span class="wintitle mono">Leaf — Activity</span>
+        <span class="wintail mono">3h 41m focused · today</span>
+      </div>
+      <div class="winbody">
+        <aside class="sidebar">
+          <p class="side-section">Workspace</p>
+          <ul>
+            <li>Home</li>
+            <li class="active"><span class="bar"></span>Activity</li>
+            <li>Team</li>
+            <li>Connections</li>
+          </ul>
+          <p class="side-section">You</p>
+          <ul>
+            <li>Profile</li>
+            <li>Settings</li>
+          </ul>
+        </aside>
+        <main class="mainpane">
+          <header class="mainhead">
+            <h2 class="t-title-sm">Today</h2>
+            <span class="mono mainmeta">17 events · 4 sessions</span>
+          </header>
+          <ol class="feed">
+            <li class="row">
+              <span class="time mono">09:42</span>
+              <span class="chip xc">Xc</span>
+              <div class="rowtext">
+                <p class="title">Editing <code>SessionAggregator.swift</code></p>
+                <p class="sub mono">Xcode · 27 min focused</p>
+              </div>
+            </li>
+            <li class="row">
+              <span class="time mono">10:11</span>
+              <span class="chip cc">CC</span>
+              <div class="rowtext">
+                <p class="title">Read 5 files · 2 tool calls</p>
+                <p class="sub mono">Claude Code · session 4f2a</p>
+              </div>
+            </li>
+            <li class="row">
+              <span class="time mono">10:19</span>
+              <span class="chip ln">Ln</span>
+              <div class="rowtext">
+                <p class="title"><code>LEA-431</code> → In Review</p>
+                <p class="sub mono">Linear · status transition</p>
+              </div>
+            </li>
+            <li class="row">
+              <span class="time mono">10:23</span>
+              <span class="chip gh">Gh</span>
+              <div class="rowtext">
+                <p class="title">3 commits → <code>feature/track-5</code></p>
+                <p class="sub mono">GitHub · 117c710 ↑ 5995e7d</p>
+              </div>
+            </li>
+            <li class="row dim">
+              <span class="time mono">10:47</span>
+              <span class="chip sk">Sk</span>
+              <div class="rowtext">
+                <p class="title">Reaction in <code>#frontend</code></p>
+                <p class="sub mono">Slack · ✓</p>
+              </div>
+            </li>
+          </ol>
+          <footer class="mainfoot mono">
+            <span class="rec-dot"></span> recording · encrypted on device
+          </footer>
+        </main>
+      </div>
     </div>
-
-    <LeafCard variant="glass" padding="generous" class="demo">
-      <div class="demo-header mono">
-        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
-        <span class="demo-title">leaf · live mcp query</span>
-      </div>
-      <div class="demo-body">
-        <div class="prompt mono"><span class="prompt-sign">$</span> <span class="typed" data-text='get_team_focus(period: "today")'>get_team_focus(period: "today")</span></div>
-        <ul class="results">
-          <li class="result"><span class="arrow">→</span> 3 teammates in deep work <span class="meta">(Xcode, Cursor)</span></li>
-          <li class="result"><span class="arrow">→</span> 1 in async sync <span class="meta">(Slack #frontend)</span></li>
-          <li class="result"><span class="arrow">→</span> last decision logged: <span class="quote">"ship Track-4 to alpha.16"</span></li>
-        </ul>
-        <div class="footnote t-caption">
-          <span class="ok-dot"></span> encrypted on device &nbsp; <span class="ok-dot"></span> never leaves laptop unwrapped
-        </div>
-      </div>
-    </LeafCard>
   </div>
 </section>
 
 <style>
-.hero { padding: var(--space-5xl) 0 var(--space-4xl); }
-.eyebrow-row { display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-xl); }
-.meta { color: var(--text-tertiary); font-size: 12px; }
-.headline { margin-bottom: var(--space-lg); max-width: 18ch; }
-.lead { color: var(--text-secondary); max-width: 60ch; margin-bottom: var(--space-xl); }
-.ctas { display: flex; gap: var(--space-md); flex-wrap: wrap; margin-bottom: var(--space-3xl); }
-.demo { transform: perspective(1200px) rotateY(-2deg) rotateX(2deg); transform-origin: center; }
-.demo-header { display: flex; align-items: center; gap: var(--space-xs); padding-bottom: var(--space-md); border-bottom: 1px solid var(--border-subtle); color: var(--text-tertiary); }
-.demo-title { margin-left: var(--space-sm); font-size: 12px; }
-.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-.dot-r { background: #FF5F57; }
-.dot-y { background: #FEBC2E; }
-.dot-g { background: var(--accent-primary); }
-.demo-body { padding-top: var(--space-md); }
-.prompt { color: var(--text-primary); margin-bottom: var(--space-md); }
-.prompt-sign { color: var(--accent-primary); margin-right: var(--space-xs); }
-.results { display: flex; flex-direction: column; gap: var(--space-sm); margin-bottom: var(--space-md); }
-.result { font: 400 14px/1.5 var(--font-mono); color: var(--text-secondary); }
-.arrow { color: var(--accent-primary); margin-right: var(--space-xs); }
-.quote { color: var(--text-primary); }
-.footnote { color: var(--text-tertiary); padding-top: var(--space-md); border-top: 1px dashed var(--border-subtle); display: flex; align-items: center; gap: var(--space-xs); }
-.ok-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-primary); display: inline-block; }
-@media (max-width: 768px) {
-  .demo { transform: none; }
-  .headline { font-size: 44px; }
+.hero {
+  padding: var(--space-5xl) 0 var(--space-4xl);
+  overflow: hidden;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: var(--space-4xl);
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 var(--space-xl);
+  align-items: center;
+}
+
+/* LEDE ──────────────────────────────────────────────── */
+.lede { min-width: 0; }
+.kicker {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--accent-primary);
+  text-transform: lowercase;
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.headline {
+  margin-bottom: var(--space-xl);
+  max-width: 14ch;
+  letter-spacing: -0.025em;
+}
+.lead {
+  color: var(--text-secondary);
+  max-width: 52ch;
+  margin-bottom: var(--space-xl);
+}
+.stamps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xl);
+  padding: var(--space-md) 0;
+  border-top: 1px dashed var(--border-subtle);
+  border-bottom: 1px dashed var(--border-subtle);
+}
+.stamps li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.stamps .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent-primary);
+  flex-shrink: 0;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+}
+.textlink {
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-strong);
+  padding-bottom: 2px;
+  transition: color var(--dur-snap) var(--ease-standard), border-color var(--dur-snap) var(--ease-standard);
+}
+.textlink:hover {
+  color: var(--text-primary);
+  border-bottom-color: var(--text-primary);
+}
+
+/* APP WINDOW ────────────────────────────────────────── */
+.appwindow {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elev-modal);
+  overflow: hidden;
+  min-width: 0;
+  /* Slight overflow off-grid for asymmetric tension */
+  margin-right: calc(-1 * var(--space-3xl));
+  font-feature-settings: 'ss01', 'cv01';
+}
+.winbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 10px 14px;
+  background: var(--surface-inset);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.tl { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+.tl.r { background: #FF5F57; }
+.tl.y { background: #FEBC2E; }
+.tl.g { background: #28C840; }
+.wintitle {
+  margin-left: var(--space-md);
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+.wintail {
+  margin-left: auto;
+  color: var(--text-tertiary);
+  font-size: 11px;
+}
+
+.winbody {
+  display: grid;
+  grid-template-columns: 152px 1fr;
+  min-height: 380px;
+}
+
+/* sidebar */
+.sidebar {
+  background: var(--surface-canvas);
+  border-right: 1px solid var(--border-subtle);
+  padding: var(--space-lg) var(--space-sm);
+}
+.side-section {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-quaternary);
+  padding: 0 var(--space-sm);
+  margin-bottom: var(--space-xs);
+}
+.sidebar ul {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: var(--space-md);
+}
+.sidebar li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 6px var(--space-sm);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: default;
+}
+.sidebar li.active {
+  background: var(--surface-inset);
+  color: var(--text-primary);
+}
+.sidebar li.active .bar {
+  position: absolute;
+  left: -1px;
+  top: 6px; bottom: 6px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--accent-primary);
+}
+
+/* main pane */
+.mainpane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.mainhead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-xl) var(--space-md);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.mainmeta {
+  color: var(--text-tertiary);
+  font-size: 11px;
+}
+.feed {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-xs) 0;
+  flex: 1;
+}
+.row {
+  display: grid;
+  grid-template-columns: 56px 28px 1fr;
+  gap: var(--space-md);
+  padding: 10px var(--space-xl);
+  align-items: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--border-subtle) 60%, transparent);
+}
+.row:last-child { border-bottom: 0; }
+.row.dim { opacity: 0.55; }
+.time {
+  color: var(--text-tertiary);
+  font-size: 11px;
+  text-align: right;
+}
+.chip {
+  width: 24px; height: 24px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: 600 10px/1 var(--font-mono);
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+.chip.xc { background: #2C7CD1; color: white; }
+.chip.cc { background: #D97757; color: white; }
+.chip.ln { background: #5E6AD2; color: white; }
+.chip.gh { background: #1B1F23; color: white; border: 1px solid var(--border-subtle); }
+.chip.sk { background: #4A154B; color: white; }
+.rowtext { min-width: 0; }
+.title {
+  font: 400 13px/1.4 var(--font-body);
+  color: var(--text-primary);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.title code {
+  font: 500 12px/1 var(--font-mono);
+  background: var(--surface-inset);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--text-primary);
+}
+.sub {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+.mainfoot {
+  padding: var(--space-sm) var(--space-xl);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-canvas);
+  color: var(--text-tertiary);
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.rec-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--status-success);
+  display: inline-block;
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.85); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rec-dot { animation: none; }
+}
+
+/* Responsive ──────────────────────────────────────── */
+@media (max-width: 960px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3xl);
+  }
+  .appwindow { margin-right: 0; }
+  .headline { max-width: none; }
+}
+@media (max-width: 640px) {
+  .headline { font-size: 44px; line-height: 1.05; }
+  .winbody { grid-template-columns: 1fr; min-height: auto; }
+  .sidebar { display: none; }
+  .row { grid-template-columns: 48px 24px 1fr; padding: 10px var(--space-lg); }
+  .mainhead { padding: var(--space-md) var(--space-lg); }
 }
 </style>
-
-<script>
-const typed = document.querySelector<HTMLElement>('.typed');
-if (typed && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  const text = typed.dataset.text ?? '';
-  typed.textContent = '';
-  let i = 0;
-  const id = setInterval(() => {
-    if (i >= text.length) { clearInterval(id); return; }
-    typed.textContent += text[i++];
-  }, 60);
-}
-</script>
