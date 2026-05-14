@@ -226,17 +226,21 @@ const events = [
 const stage = document.getElementById('tickerStage');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function rowHTML(e: typeof events[number]): string {
-  return `<span class="t-time">${e.t}</span><span class="t-app">${e.app}</span><span class="t-sep">${e.sep}</span><span class="t-text">${e.text}</span>`;
-}
+// Clone the template row from the DOM — preserves Astro's data-astro-cid-*
+// attribute so scoped CSS (display: flex, gap, span colors) keeps applying.
+const templateRow = stage?.querySelector<HTMLDivElement>('.t-row');
 function buildRow(e: typeof events[number]): HTMLDivElement {
-  const div = document.createElement('div');
-  div.className = 't-row';
-  div.innerHTML = rowHTML(e);
+  const div = templateRow!.cloneNode(true) as HTMLDivElement;
+  div.querySelector('.t-time')!.textContent = e.t;
+  div.querySelector('.t-app')!.textContent = e.app;
+  div.querySelector('.t-sep')!.textContent = e.sep;
+  div.querySelector('.t-text')!.textContent = e.text;
+  div.style.transform = '';
+  div.style.opacity = '';
   return div;
 }
 
-if (stage && !reduceMotion) {
+if (stage && templateRow && !reduceMotion) {
   const DURATION = 1100;
   const EASE = 'cubic-bezier(.7, 0, .25, 1)';
   const INTERVAL = 3200;
