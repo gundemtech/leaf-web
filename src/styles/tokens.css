@@ -1,0 +1,111 @@
+/* Tokens — verbatim port of Leaf app design system (LeafColor / LeafType /
+   LeafSpace / LeafRadius / LeafElevation / LeafMotion).
+   Spec: docs/superpowers/specs/2026-05-15-leaf-web-redesign-design.md §5
+   in gundemtech/leaf (commit 276297f). */
+
+:root {
+  /* Surface */
+  --surface-canvas: #FAFAF9;
+  --surface-raised: #F5F5F4;
+  --surface-inset: #E7E5E4;
+  --surface-glass-tint: #22C55E;
+
+  /* Text */
+  --text-primary: #0C0A09;
+  --text-secondary: #44403C;
+  --text-tertiary: #787176;
+  --text-quaternary: #A8A29E;
+  --text-inverse: #FAFAF9;
+
+  /* Accent (green) */
+  --accent-primary: #22C55E;
+  --accent-subtle: #DCFCE7;
+  --accent-emphasis: #16A34A;
+
+  /* Border */
+  --border-subtle: #E7E5E4;
+  --border-strong: #D6D3D1;
+  --border-focus: #22C55E;
+
+  /* Status */
+  --status-success: #16A34A;
+  --status-warning: #D97706;
+  --status-danger: #DC2626;
+  --status-info: #2563EB;
+
+  /* Spacing (4pt baseline) */
+  --space-xxs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+  --space-3xl: 48px;
+  --space-4xl: 64px;
+  --space-5xl: 96px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-xxl: 28px;
+  --radius-pill: 999px;
+
+  /* Elevation */
+  --elev-raised: 0 1px 3px rgba(0, 0, 0, .04);
+  --elev-floating: 0 4px 12px rgba(0, 0, 0, .08);
+  --elev-modal: 0 24px 48px rgba(0, 0, 0, .18);
+
+  /* Motion */
+  --dur-snap: 120ms;
+  --dur-short: 200ms;
+  --dur-medium: 350ms;
+  --dur-long: 550ms;
+  --ease-standard: cubic-bezier(.25, .10, .25, 1);
+  --ease-emphasized: cubic-bezier(.20, .00, .00, 1);
+  --spring-snappy: cubic-bezier(.18, .89, .32, 1.28);
+
+  /* Fonts */
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "Menlo", monospace;
+
+  /* Layout */
+  --content-max: 1200px;
+  --content-narrow: 720px;
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-canvas: #0A0A0B;
+    --surface-raised: #131316;
+    --surface-inset: #1D1D22;
+    --surface-glass-tint: #4ADE80;
+
+    --text-primary: #F4F4F7;
+    --text-secondary: #A0A0AB;
+    --text-tertiary: #7E7E89;
+    --text-quaternary: #595962;
+    --text-inverse: #0A0A0B;
+
+    --accent-primary: #4ADE80;
+    --accent-subtle: #14532D;
+    --accent-emphasis: #86EFAC;
+
+    --border-subtle: #1D1D22;
+    --border-strong: #2A2A30;
+    --border-focus: #4ADE80;
+
+    --status-success: #4ADE80;
+    --status-warning: #F59E0B;
+    --status-danger: #EF4444;
+    --status-info: #3B82F6;
+
+    --elev-raised: 0 1px 3px rgba(0, 0, 0, .50);
+    --elev-floating: 0 4px 12px rgba(0, 0, 0, .60);
+    --elev-modal: 0 24px 48px rgba(0, 0, 0, .70);
+  }
+}
