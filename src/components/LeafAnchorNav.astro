@@ -1,0 +1,48 @@
+---
+interface Props {
+  items: { id: string; label: string }[];
+}
+const { items } = Astro.props;
+---
+<nav class="anchornav" aria-label="Section navigation">
+  <ul>
+    {items.map(item => (
+      <li><a href={`#${item.id}`} data-anchor={item.id}>{item.label}</a></li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+.anchornav {
+  position: sticky; top: 56px; z-index: 10;
+  background: color-mix(in srgb, var(--surface-canvas) 80%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--space-sm) 0;
+}
+.anchornav ul { display: flex; gap: var(--space-xl); max-width: var(--content-max); margin: 0 auto; padding: 0 var(--space-xl); overflow-x: auto; }
+.anchornav a {
+  color: var(--text-secondary); font: 500 14px/1 var(--font-body);
+  padding: var(--space-xs) 0;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color var(--dur-snap) var(--ease-standard), border-color var(--dur-snap) var(--ease-standard);
+}
+.anchornav a:hover { color: var(--text-primary); }
+.anchornav a.active { color: var(--accent-primary); border-bottom-color: var(--accent-primary); }
+</style>
+
+<script>
+const links = document.querySelectorAll<HTMLAnchorElement>('.anchornav a');
+const sections = Array.from(links).map(a => document.getElementById(a.dataset.anchor!)).filter(Boolean) as HTMLElement[];
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      links.forEach(l => l.classList.toggle('active', l.dataset.anchor === id));
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sections.forEach(s => obs.observe(s));
+</script>
