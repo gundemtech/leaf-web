@@ -1,0 +1,49 @@
+---
+interface Props {
+  size?: 'md' | 'lg';
+  type?: string;
+  name?: string;
+  id?: string;
+  placeholder?: string;
+  required?: boolean;
+  autocomplete?: HTMLInputElement['autocomplete'];
+  error?: string;
+  label?: string;
+}
+const { size = 'md', type = 'text', name, id, placeholder, required = false, autocomplete, error, label } = Astro.props;
+const inputId = id || name;
+---
+<label class={`field field-${size}`}>
+  {label && <span class="field-label t-body-sm">{label}</span>}
+  <input
+    type={type}
+    name={name}
+    id={inputId}
+    placeholder={placeholder}
+    required={required}
+    autocomplete={autocomplete}
+    aria-invalid={error ? 'true' : undefined}
+    aria-describedby={error ? `${inputId}-error` : undefined}
+  />
+  {error && <span id={`${inputId}-error`} class="field-error t-body-sm">{error}</span>}
+</label>
+
+<style>
+.field { display: flex; flex-direction: column; gap: var(--space-xs); }
+.field-label { color: var(--text-secondary); font-weight: 500; }
+.field input {
+  height: 36px; padding: 0 var(--space-md);
+  background: var(--surface-canvas);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font: 400 15px/1 var(--font-body);
+  transition: border-color var(--dur-snap) var(--ease-standard);
+}
+.field-lg input { height: 44px; font-size: 17px; }
+.field input::placeholder { color: var(--text-tertiary); }
+.field input:hover { border-color: var(--border-strong); }
+.field input:focus-visible { outline: none; border-color: var(--border-focus); border-width: 2px; padding: 0 calc(var(--space-md) - 1px); }
+.field input[aria-invalid="true"] { border-color: var(--status-danger); }
+.field-error { color: var(--status-danger); }
+</style>
