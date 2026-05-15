@@ -1,0 +1,126 @@
+---
+import AuthLayout from '../layouts/AuthLayout.astro';
+import LeafLogo from '../components/LeafLogo.astro';
+import LeafButton from '../components/LeafButton.astro';
+import LeafCard from '../components/LeafCard.astro';
+import LeafBadge from '../components/LeafBadge.astro';
+
+const DMG_URL = 'https://updates.gundem.tech/Leaf.dmg';
+---
+<AuthLayout title="Dashboard — Leaf" description="Your Leaf account.">
+  <div class="dash-wrap">
+    <header class="dash-head">
+      <a href="/" aria-label="Leaf home"><LeafLogo size={28} withWordmark /></a>
+      <div class="head-right">
+        <span class="t-body-sm muted">Signed in as <span class="email-echo mono" data-user-email>—</span></span>
+        <LeafButton variant="ghost" size="sm" id="signout-btn">Sign out</LeafButton>
+      </div>
+    </header>
+
+    <main class="dash-grid">
+      <LeafCard variant="raised" padding="generous" class="card-section">
+        <h2 class="t-title-md">Account</h2>
+        <dl class="kv">
+          <dt>Name</dt>           <dd data-field="name">—</dd>
+          <dt>Email</dt>          <dd class="mono" data-field="email">—</dd>
+          <dt>Provider</dt>       <dd data-field="provider">—</dd>
+          <dt>Member since</dt>   <dd data-field="memberSince">—</dd>
+          <dt>Plan</dt>           <dd><LeafBadge variant="accent">Solo</LeafBadge></dd>
+        </dl>
+      </LeafCard>
+
+      <LeafCard variant="raised" padding="generous" class="card-section">
+        <h2 class="t-title-md">Download</h2>
+        <p class="t-body muted">macOS 14+ (Sonoma) · Apple Silicon &amp; Intel · ~24 MB · auto-updates via Sparkle</p>
+        <div class="download-row">
+          <LeafButton variant="primary" size="lg" href={DMG_URL} download>Download Leaf.dmg →</LeafButton>
+          <span class="t-body-sm muted">Latest: <span class="mono">v1.0.0-alpha.15</span></span>
+        </div>
+        <details class="checksum">
+          <summary class="t-body-sm">Checksums &amp; signatures</summary>
+          <div class="checksum-body">
+            <p class="mono">SHA-256: <span class="dim">(verify against /Leaf.dmg.sha256)</span></p>
+            <p class="mono">EdDSA sig: <span class="dim">(verified by Sparkle on install)</span></p>
+            <p class="t-body-sm muted">Notarized by Apple · Developer ID signed.</p>
+          </div>
+        </details>
+      </LeafCard>
+
+      <LeafCard variant="raised" padding="generous" class="card-section danger-card">
+        <h2 class="t-title-md">Danger zone</h2>
+        <p class="t-body muted">
+          Delete your account, including all team memberships, share lists, and
+          identity keys held on the relay. <strong>Your local Mac data is not affected</strong> —
+          wipe that from the macOS app's Settings → Danger zone.
+        </p>
+        <LeafButton variant="destructive" size="md" id="delete-btn">Delete account →</LeafButton>
+      </LeafCard>
+    </main>
+  </div>
+</AuthLayout>
+
+<style>
+.dash-wrap {
+  width: 100%;
+  max-width: 760px;
+  padding: var(--space-3xl) var(--space-xl);
+  align-self: flex-start;
+  margin-top: 5vh;
+}
+.dash-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.head-right { display: flex; align-items: center; gap: var(--space-md); flex-wrap: wrap; }
+.muted { color: var(--text-secondary); }
+.dim { color: var(--text-tertiary); }
+
+.dash-grid { display: flex; flex-direction: column; gap: var(--space-lg); }
+.card-section h2 { margin-bottom: var(--space-md); }
+
+.kv {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: var(--space-sm) var(--space-lg);
+  font-size: 14px;
+}
+.kv dt { color: var(--text-tertiary); }
+.kv dd { color: var(--text-primary); margin: 0; }
+
+.download-row { display: flex; align-items: center; gap: var(--space-md); flex-wrap: wrap; margin-top: var(--space-md); }
+.checksum { margin-top: var(--space-md); }
+.checksum summary { color: var(--accent-primary); cursor: pointer; font-size: 13px; }
+.checksum-body { padding-top: var(--space-sm); display: flex; flex-direction: column; gap: var(--space-xs); }
+.checksum-body .mono { font-size: 12px; color: var(--text-secondary); }
+
+.danger-card { border-color: color-mix(in srgb, var(--status-danger) 30%, var(--border-subtle)); }
+.danger-card h2 { color: var(--status-danger); }
+.danger-card .muted { margin-bottom: var(--space-md); }
+
+.email-echo { color: var(--text-primary); font-size: 12px; }
+</style>
+
+<script>
+// Auth-gate + populate is handled in T5 (src/scripts/dashboard.ts).
+// This script just provides safe defaults so the page renders without JS errors
+// during build / when Supabase is missing.
+const signoutBtn = document.getElementById('signout-btn') as HTMLButtonElement | null;
+const deleteBtn = document.getElementById('delete-btn') as HTMLButtonElement | null;
+
+signoutBtn?.addEventListener('click', async () => {
+  const sb = (window as any).supabase;
+  if (!sb) { window.location.href = '/signup'; return; }
+  await sb.auth.signOut();
+  window.location.href = '/';
+});
+
+deleteBtn?.addEventListener('click', async () => {
+  if (!confirm('Delete your account? This removes team memberships and relay-held keys. Your local Mac data is untouched.')) return;
+  // Real deletion calls the Cloudflare Worker delete endpoint (wired in T5).
+  alert('Account deletion will be available after T5 wiring lands.');
+});
+</script>
