@@ -1,0 +1,186 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LeafNav from '../../components/LeafNav.astro';
+import LeafFooter from '../../components/LeafFooter.astro';
+import LeafEyebrow from '../../components/LeafEyebrow.astro';
+import LeafBadge from '../../components/LeafBadge.astro';
+---
+<BaseLayout
+  title="Changelog — Leaf"
+  description="Every release, every fix, every shipped feature."
+>
+  <LeafNav slot="nav" />
+
+  <section class="cl-hero">
+    <div class="wrap">
+      <div class="hero-row">
+        <div>
+          <LeafEyebrow number="C" label="CHANGELOG" />
+          <h1 class="t-display">What we shipped.</h1>
+          <p class="t-body-lg lead">
+            Reverse-chronological. Auto-published from the team Telegram approval flow.
+          </p>
+        </div>
+        <a class="rss-badge mono" href="/changelog/feed.xml" target="_blank" rel="noopener">
+          <span class="rss-dot"></span> RSS
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cl-feed">
+    <div class="wrap-narrow">
+      <div id="cl-state" class="state-empty t-body muted">Loading changelog…</div>
+      <ol id="cl-list" class="entries"></ol>
+      <div id="cl-pager" class="pager" hidden>
+        <button type="button" id="cl-more" class="more-btn">Show older →</button>
+      </div>
+    </div>
+  </section>
+
+  <LeafFooter slot="footer" />
+</BaseLayout>
+
+<style>
+.cl-hero { padding: var(--space-4xl) 0 var(--space-xl); }
+.hero-row { display: flex; align-items: end; justify-content: space-between; gap: var(--space-lg); flex-wrap: wrap; }
+.cl-hero .lead { color: var(--text-secondary); margin-top: var(--space-lg); max-width: 50ch; }
+.rss-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-decoration: none;
+  transition: color var(--dur-snap) var(--ease-standard);
+}
+.rss-badge:hover { color: var(--text-primary); }
+.rss-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-primary); }
+
+.cl-feed { padding: var(--space-xl) 0 var(--space-5xl); }
+.state-empty { padding: var(--space-xl); text-align: center; }
+.entries { display: flex; flex-direction: column; gap: var(--space-lg); list-style: none; }
+.entry { padding: var(--space-lg); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); background: var(--surface-raised); }
+.entry-head { display: flex; align-items: center; gap: var(--space-sm); flex-wrap: wrap; margin-bottom: var(--space-sm); }
+.entry-date { color: var(--text-tertiary); font: 400 12px/1 var(--font-mono); }
+.entry-tag {
+  font: 500 10px/1 var(--font-body);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--accent-primary) 15%, transparent);
+  color: var(--accent-primary);
+}
+.entry h3 { font: 600 17px/1.35 var(--font-body); color: var(--text-primary); margin-bottom: var(--space-sm); }
+.entry p { color: var(--text-secondary); font-size: 14px; line-height: 1.55; }
+.entry .preview { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.entry.expanded .preview { -webkit-line-clamp: unset; overflow: visible; }
+.entry-toggle {
+  margin-top: var(--space-md);
+  background: transparent; border: 0;
+  color: var(--accent-primary); font-size: 13px;
+  cursor: pointer; padding: 0;
+}
+.pager { display: flex; justify-content: center; margin-top: var(--space-xl); }
+.more-btn {
+  padding: var(--space-sm) var(--space-lg);
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  font: 500 13px/1 var(--font-body);
+  cursor: pointer;
+  transition: color var(--dur-snap), border-color var(--dur-snap);
+}
+.more-btn:hover { color: var(--text-primary); border-color: var(--text-primary); }
+</style>
+
+<script>
+type FeedEntry = {
+  id?: string;
+  title: string;
+  date_published: string; // ISO
+  author?: { name?: string };
+  tags?: string[];
+  content_html?: string;
+  content_text?: string;
+};
+
+const FEED_URL = 'https://leaf.gundem.tech/changelog/latest.json';
+const PAGE_SIZE = 10;
+const list = document.getElementById('cl-list') as HTMLOListElement | null;
+const state = document.getElementById('cl-state') as HTMLDivElement | null;
+const pager = document.getElementById('cl-pager') as HTMLDivElement | null;
+const moreBtn = document.getElementById('cl-more') as HTMLButtonElement | null;
+
+let all: FeedEntry[] = [];
+let shown = 0;
+
+function fmtDate(iso: string): string {
+  const d = new Date(iso);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} · ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+function escapeHTML(s: string): string {
+  return s.replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]!));
+}
+
+function render(entries: FeedEntry[]): void {
+  if (!list) return;
+  for (const e of entries) {
+    const li = document.createElement('li');
+    li.className = 'entry';
+    const tag = (e.tags && e.tags[0]) || 'release';
+    const body = e.content_html ?? (e.content_text ? escapeHTML(e.content_text).replace(/\n/g,'<br/>') : '');
+    li.innerHTML = `
+      <header class="entry-head">
+        <span class="entry-date">${escapeHTML(fmtDate(e.date_published))}</span>
+        <span class="entry-tag">${escapeHTML(tag)}</span>
+        ${e.author?.name ? `<span class="entry-date">by ${escapeHTML(e.author.name)}</span>` : ''}
+      </header>
+      <h3>${escapeHTML(e.title)}</h3>
+      <div class="preview">${body}</div>
+      <button type="button" class="entry-toggle">Read more →</button>
+    `;
+    const toggle = li.querySelector<HTMLButtonElement>('.entry-toggle');
+    toggle?.addEventListener('click', () => {
+      const isExpanded = li.classList.toggle('expanded');
+      toggle.textContent = isExpanded ? '← Collapse' : 'Read more →';
+    });
+    list.appendChild(li);
+  }
+}
+
+function renderNextPage(): void {
+  const next = all.slice(shown, shown + PAGE_SIZE);
+  render(next);
+  shown += next.length;
+  if (pager) pager.hidden = shown >= all.length;
+}
+
+(async () => {
+  try {
+    const res = await fetch(FEED_URL, { cache: 'no-cache' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    all = Array.isArray(json.items) ? json.items : [];
+    if (state) state.style.display = 'none';
+    if (all.length === 0) {
+      if (state) {
+        state.textContent = 'No changelog entries yet.';
+        state.style.display = '';
+      }
+      return;
+    }
+    renderNextPage();
+  } catch (err) {
+    if (state) state.textContent = 'Failed to load changelog. Try again later.';
+  }
+})();
+
+moreBtn?.addEventListener('click', renderNextPage);
+</script>
