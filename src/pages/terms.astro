@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LeafNav from '../components/LeafNav.astro';
+import LeafFooter from '../components/LeafFooter.astro';
+import LeafEyebrow from '../components/LeafEyebrow.astro';
+
+const sections = [
+  { id: 'acceptance',  label: '1. Acceptance' },
+  { id: 'service',     label: '2. The service' },
+  { id: 'accounts',    label: '3. Accounts' },
+  { id: 'data',        label: '4. Your data' },
+  { id: 'billing',     label: '5. Billing' },
+  { id: 'liability',   label: '6. Liability' },
+  { id: 'termination', label: '7. Termination' },
+  { id: 'changes',     label: '8. Changes' },
+  { id: 'contact',     label: '9. Contact' },
+];
+---
+<BaseLayout
+  title="Terms of Service — Leaf"
+  description="Terms of service for the Leaf macOS app and team relay."
+>
+  <LeafNav slot="nav" />
+
+  <section class="terms-hero">
+    <div class="wrap-narrow">
+      <LeafEyebrow number="T" label="TERMS OF SERVICE" />
+      <h1 class="t-display">Terms.</h1>
+      <p class="t-body-sm muted">Last updated: 15 May 2026</p>
+    </div>
+  </section>
+
+  <div class="terms-shell">
+    <aside class="toc">
+      <p class="t-label">CONTENTS</p>
+      <ol>
+        {sections.map(s => <li><a href={`#${s.id}`}>{s.label}</a></li>)}
+      </ol>
+    </aside>
+
+    <article class="prose">
+      <section id="acceptance">
+        <h2 class="t-title-md">1. Acceptance</h2>
+        <p>By installing the Leaf macOS application or using the Leaf team relay (operated by Gundem Technologies LLC), you agree to these Terms. If you do not agree, do not install the app and do not create a team.</p>
+      </section>
+
+      <section id="service">
+        <h2 class="t-title-md">2. The service</h2>
+        <p>Leaf is a memory layer that captures metadata about your work on your Mac and, when you choose to do so, shares opt-in subsets of that metadata with your teammates through an end-to-end-encrypted relay. The macOS client is licensed under MIT. The relay is a commercial hosted service operated by Gundem Technologies.</p>
+        <p>The service is provided <em>"as is"</em>. We aim for high availability but make no specific uptime guarantees outside of the Enterprise tier SLA.</p>
+      </section>
+
+      <section id="accounts">
+        <h2 class="t-title-md">3. Accounts</h2>
+        <p>You are responsible for the security of your credentials and for any activity under your account. We use Supabase for authentication and store the minimum necessary identifiers (email, hashed password, OAuth provider ID).</p>
+        <p>You must be at least 16 years old to create an account.</p>
+      </section>
+
+      <section id="data">
+        <h2 class="t-title-md">4. Your data</h2>
+        <p>Metadata captured by the Leaf client stays on your Mac, encrypted with SQLCipher (AES-256). The encryption key never leaves your device.</p>
+        <p>If you share with teammates, only the snapshots you allow via Share Controls are transmitted, and only as opaque AES-GCM-encrypted blobs to the relay. The relay never sees plaintext content.</p>
+        <p>We do not sell, share, or train machine-learning models on your data. See <a href="/privacy">/privacy</a> for the public Won't-list.</p>
+      </section>
+
+      <section id="billing">
+        <h2 class="t-title-md">5. Billing</h2>
+        <p>The Solo tier is free. Paid plans (Team, Enterprise) are billed monthly or annually as selected at signup. Cancellation takes effect at the end of the current paid cycle. We offer a 14-day refund window on the first paid invoice — email us within that window for a refund, no questions asked.</p>
+        <p>All prices exclude applicable taxes, which we collect where required by law.</p>
+      </section>
+
+      <section id="liability">
+        <h2 class="t-title-md">6. Liability</h2>
+        <p>To the maximum extent permitted by law, Gundem Technologies is not liable for indirect, incidental, special, or consequential damages, or for loss of data, profits, or revenue arising from your use of the service. Our aggregate liability is capped at the amounts you paid us in the 12 months prior to the claim.</p>
+      </section>
+
+      <section id="termination">
+        <h2 class="t-title-md">7. Termination</h2>
+        <p>You may stop using Leaf and delete your account at any time from <a href="/dashboard">/dashboard</a>. We may suspend or terminate accounts that abuse the service, violate the law, or attempt to compromise the relay infrastructure.</p>
+      </section>
+
+      <section id="changes">
+        <h2 class="t-title-md">8. Changes to these terms</h2>
+        <p>We may update these terms occasionally. Material changes will be announced on this page and via email at least 30 days before they take effect. The "Last updated" date above reflects the most recent version.</p>
+      </section>
+
+      <section id="contact">
+        <h2 class="t-title-md">9. Contact</h2>
+        <p>Questions about these terms? Email <a href="mailto:hi@gundem.tech">hi@gundem.tech</a>.</p>
+        <p>Gundem Technologies LLC — operating Leaf at <a href="https://leaf.gundem.tech">leaf.gundem.tech</a>.</p>
+      </section>
+    </article>
+  </div>
+
+  <LeafFooter slot="footer" />
+</BaseLayout>
+
+<style>
+.terms-hero { padding: var(--space-4xl) 0 var(--space-xl); }
+.terms-hero .muted { color: var(--text-tertiary); margin-top: var(--space-md); }
+
+.terms-shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: var(--space-3xl);
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-xl) var(--space-5xl);
+}
+@media (max-width: 900px) {
+  .terms-shell { grid-template-columns: 1fr; gap: var(--space-lg); }
+}
+
+.toc {
+  position: sticky; top: 80px; align-self: start;
+  padding: var(--space-md) 0;
+}
+.toc .t-label { color: var(--text-tertiary); margin-bottom: var(--space-md); }
+.toc ol { display: flex; flex-direction: column; gap: var(--space-xs); list-style: none; padding: 0; counter-reset: none; }
+.toc a { color: var(--text-secondary); font-size: 13px; text-decoration: none; transition: color var(--dur-snap); padding: 2px 0; }
+.toc a:hover { color: var(--text-primary); }
+
+.prose { max-width: 68ch; }
+.prose section { padding: var(--space-lg) 0; border-bottom: 1px solid var(--border-subtle); }
+.prose section:last-child { border-bottom: 0; }
+.prose h2 { margin-bottom: var(--space-md); color: var(--text-primary); }
+.prose p { color: var(--text-secondary); font-size: 15px; line-height: 1.65; margin-bottom: var(--space-md); }
+.prose p:last-child { margin-bottom: 0; }
+.prose a { color: var(--accent-primary); text-decoration: underline; text-underline-offset: 2px; }
+</style>
