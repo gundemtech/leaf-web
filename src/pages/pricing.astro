@@ -1,0 +1,207 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LeafNav from '../components/LeafNav.astro';
+import LeafFooter from '../components/LeafFooter.astro';
+import LeafEyebrow from '../components/LeafEyebrow.astro';
+import LeafCard from '../components/LeafCard.astro';
+import LeafButton from '../components/LeafButton.astro';
+import LeafBadge from '../components/LeafBadge.astro';
+import LeafTable from '../components/LeafTable.astro';
+import LeafAccordion from '../components/LeafAccordion.astro';
+
+const plans = [
+  {
+    name: 'Solo',
+    badge: null,
+    price: '$0',
+    suffix: 'forever',
+    blurb: 'Personal memory on your Mac. No team, no cloud.',
+    features: [
+      'Mac capture (Layer A)',
+      'Linear / GitHub / Slack OAuth',
+      'Native macOS app',
+      'MCP server (15 tools)',
+      'SQLCipher local store',
+      '1 seat',
+    ],
+    cta: { label: 'Install for macOS →', href: '/signup', variant: 'secondary' as const },
+  },
+  {
+    name: 'Team',
+    badge: 'Recommended',
+    price: '$10',
+    suffix: 'per seat / month',
+    blurb: 'Shared memory across your team — encrypted end-to-end.',
+    features: [
+      'Everything in Solo',
+      'E2E team presence sharing',
+      'Share Controls per app / event type',
+      'Up to 20 seats',
+      'Cloudflare relay (encrypted)',
+      'Email support',
+    ],
+    cta: { label: 'Get early access →', href: 'https://pay.oxapay.com/15460469', variant: 'primary' as const, external: true },
+  },
+  {
+    name: 'Enterprise',
+    badge: null,
+    price: 'Custom',
+    suffix: 'contact for pricing',
+    blurb: 'Dedicated relay, SSO, audit log, SLA.',
+    features: [
+      'Everything in Team',
+      'Unlimited seats',
+      'SSO (SAML / OIDC)',
+      'Audit log + compliance export',
+      'Dedicated relay instance',
+      'Priority support + SLA',
+    ],
+    cta: { label: 'Contact sales →', href: 'mailto:hi@gundem.tech', variant: 'secondary' as const },
+  },
+];
+
+const compareRows = [
+  { feature: 'Mac capture (Layer A)',         solo: '✓', team: '✓', ent: '✓' },
+  { feature: 'Linear / GitHub / Slack',       solo: '✓', team: '✓', ent: '✓' },
+  { feature: 'MCP server (15 tools, local)',  solo: '✓', team: '✓', ent: '✓' },
+  { feature: 'Native macOS app',              solo: '✓', team: '✓', ent: '✓' },
+  { feature: 'Team presence (E2E)',           solo: '—', team: '✓', ent: '✓' },
+  { feature: 'Share Controls',                solo: '—', team: '✓', ent: '✓' },
+  { feature: 'Slack bot (v1.1)',              solo: '—', team: '✓', ent: '✓' },
+  { feature: 'Seats',                          solo: '1', team: 'up to 20', ent: 'unlimited' },
+  { feature: 'SSO (SAML / OIDC)',             solo: '—', team: '—', ent: '✓' },
+  { feature: 'Audit log',                     solo: '—', team: '—', ent: '✓' },
+  { feature: 'Dedicated relay',               solo: '—', team: '—', ent: '✓' },
+  { feature: 'SLA',                           solo: '—', team: '—', ent: '✓' },
+  { feature: 'Support',                       solo: 'community', team: 'email', ent: 'priority + SLA' },
+];
+
+const faqs = [
+  { q: 'Can I cancel anytime?', a: 'Yes. Cancel mid-cycle and you keep access through the period you already paid for. No further charges.' },
+  { q: 'Do you offer refunds?', a: 'Yes, within the first 14 days. Email us and we will refund the most recent charge — no questions asked.' },
+  { q: 'Can I add or remove seats mid-month?', a: 'Yes. Adding a seat is prorated to the current cycle; removing a seat is credited toward the next invoice.' },
+  { q: 'Is there an annual discount?', a: 'Yes — annual billing gives you two months free (16% off the monthly rate). Toggle on signup or in your dashboard.' },
+];
+---
+<BaseLayout
+  title="Pricing — Leaf"
+  description="Solo / Team / Enterprise. Mac capture is always free. Pay for shared team memory."
+>
+  <LeafNav slot="nav" />
+
+  <section class="pricing-hero">
+    <div class="wrap">
+      <LeafEyebrow number="P" label="PRICING" />
+      <h1 class="t-display">Pricing that scales with your team.</h1>
+      <p class="t-body-lg lead">
+        Mac capture is always free. Pay only when you want shared memory across
+        your team — and only as much as you have teammates.
+      </p>
+    </div>
+  </section>
+
+  <section class="plans">
+    <div class="wrap">
+      <div class="plan-grid">
+        {plans.map(p => (
+          <LeafCard variant={p.badge ? 'glass' : 'raised'} padding="generous" class={`plan${p.badge ? ' featured' : ''}`}>
+            <header class="plan-head">
+              <h2 class="t-title-lg">{p.name}</h2>
+              {p.badge && <LeafBadge variant="accent">{p.badge}</LeafBadge>}
+            </header>
+            <p class="t-body-sm muted blurb">{p.blurb}</p>
+            <div class="price">
+              <span class="amount">{p.price}</span>
+              <span class="suffix t-body-sm">{p.suffix}</span>
+            </div>
+            <ul class="features">
+              {p.features.map(f => <li><span class="check">✓</span>{f}</li>)}
+            </ul>
+            <div class="plan-cta">
+              <LeafButton variant={p.cta.variant} size="md" href={p.cta.href} external={p.cta.external}>{p.cta.label}</LeafButton>
+            </div>
+          </LeafCard>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="compare">
+    <div class="wrap">
+      <LeafEyebrow number="01" label="FULL COMPARISON" />
+      <h2 class="t-title-lg">All features, side by side.</h2>
+      <LeafTable>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Solo</th>
+            <th>Team</th>
+            <th>Enterprise</th>
+          </tr>
+        </thead>
+        <tbody>
+          {compareRows.map(r => (
+            <tr>
+              <td>{r.feature}</td>
+              <td class={r.solo === '✓' ? 'checkmark' : r.solo === '—' ? 'dash' : ''}>{r.solo}</td>
+              <td class={r.team === '✓' ? 'checkmark' : r.team === '—' ? 'dash' : ''}>{r.team}</td>
+              <td class={r.ent === '✓' ? 'checkmark' : r.ent === '—' ? 'dash' : ''}>{r.ent}</td>
+            </tr>
+          ))}
+        </tbody>
+      </LeafTable>
+    </div>
+  </section>
+
+  <section class="faq">
+    <div class="wrap-narrow">
+      <LeafEyebrow number="02" label="BILLING" />
+      <h2 class="t-title-lg">Billing questions.</h2>
+      {faqs.map(f => <LeafAccordion question={f.q}>{f.a}</LeafAccordion>)}
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="wrap">
+      <h2 class="t-title-lg">Want the team plan today?</h2>
+      <p class="t-body muted">Early-access flat $10 — locks in lifetime first-tier rate.</p>
+      <div class="cta-actions">
+        <LeafButton variant="primary" size="lg" href="https://pay.oxapay.com/15460469" external>Early access $10 →</LeafButton>
+        <LeafButton variant="ghost" size="lg" href="/product">See the product →</LeafButton>
+      </div>
+    </div>
+  </section>
+
+  <LeafFooter slot="footer" />
+</BaseLayout>
+
+<style>
+.pricing-hero { padding: var(--space-4xl) 0 var(--space-3xl); }
+.pricing-hero .lead { color: var(--text-secondary); margin-top: var(--space-lg); max-width: 60ch; }
+.muted { color: var(--text-secondary); }
+
+.plans { padding: var(--space-xl) 0 var(--space-4xl); }
+.plan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); align-items: stretch; }
+@media (max-width: 960px) { .plan-grid { grid-template-columns: 1fr; } }
+.plan { display: flex; flex-direction: column; }
+.plan.featured { transform: translateY(-4px); }
+.plan-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm); }
+.blurb { min-height: 3em; margin-bottom: var(--space-md); }
+.price { padding: var(--space-md) 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); margin-bottom: var(--space-lg); }
+.price .amount { font: 600 36px/1 var(--font-body); color: var(--text-primary); letter-spacing: -0.02em; }
+.price .suffix { color: var(--text-tertiary); margin-left: var(--space-sm); }
+.features { display: flex; flex-direction: column; gap: var(--space-sm); flex: 1; margin-bottom: var(--space-lg); }
+.features li { display: flex; gap: var(--space-sm); align-items: baseline; color: var(--text-secondary); font-size: 14px; }
+.features .check { color: var(--accent-primary); flex-shrink: 0; }
+.plan-cta { margin-top: auto; }
+
+.compare { padding: var(--space-4xl) 0; background: color-mix(in srgb, var(--surface-raised) 60%, transparent); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+.compare h2 { margin: var(--space-md) 0 var(--space-xl); }
+
+.faq { padding: var(--space-4xl) 0; }
+.faq h2 { margin: var(--space-md) 0 var(--space-xl); }
+
+.cta { padding: var(--space-4xl) 0; text-align: center; }
+.cta .muted { margin-top: var(--space-sm); }
+.cta-actions { display: inline-flex; gap: var(--space-md); margin-top: var(--space-xl); flex-wrap: wrap; justify-content: center; }
+</style>
