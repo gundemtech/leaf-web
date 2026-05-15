@@ -1,0 +1,268 @@
+---
+import AuthLayout from '../layouts/AuthLayout.astro';
+import LeafLogo from '../components/LeafLogo.astro';
+import LeafButton from '../components/LeafButton.astro';
+import LeafInput from '../components/LeafInput.astro';
+
+const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
+---
+<AuthLayout title="Sign in — Leaf" description="Sign in or create your Leaf account.">
+  <div class="auth-card">
+    <a class="brand" href="/" aria-label="Leaf home"><LeafLogo size={28} withWordmark /></a>
+
+    <nav class="auth-tabs" role="tablist">
+      <button class="auth-tab active" data-panel="signin" role="tab" aria-selected="true">Sign in</button>
+      <button class="auth-tab" data-panel="create" role="tab" aria-selected="false">Create account</button>
+    </nav>
+
+    <!-- ─── Sign in ─── -->
+    <form class="auth-panel active" data-panel="signin" novalidate>
+      <h1 class="t-title-lg">Welcome back.</h1>
+      <p class="t-body-sm muted">Sign in to your Leaf account.</p>
+
+      <div class="oauth-row">
+        <button type="button" class="oauth-btn" data-provider="google">
+          <svg viewBox="0 0 18 18" width="16" height="16"><path fill="#EA4335" d="M9 3.48a4.93 4.93 0 0 1 3.48 1.36l2.6-2.6A8.78 8.78 0 0 0 9 0 9 9 0 0 0 .96 4.96l3.03 2.36A5.36 5.36 0 0 1 9 3.48z"/><path fill="#4285F4" d="M17.64 9.2a10.36 10.36 0 0 0-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.71l2.93 2.27a8.83 8.83 0 0 0 2.67-6.62z"/><path fill="#FBBC05" d="M3.99 10.71A5.36 5.36 0 0 1 3.7 9c0-.6.1-1.17.29-1.71L.96 4.93A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.04l3.03-2.33z"/><path fill="#34A853" d="M9 18a8.69 8.69 0 0 0 6.03-2.2l-2.93-2.27c-.81.55-1.85.87-3.1.87a5.36 5.36 0 0 1-5.01-3.69L.96 13.04A9 9 0 0 0 9 18z"/></svg>
+          Continue with Google
+        </button>
+        <button type="button" class="oauth-btn" data-provider="github">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.34c-2.22.48-2.69-1.07-2.69-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.23 1.88.88 2.34.67.07-.52.28-.88.51-1.08-1.78-.2-3.64-.89-3.64-3.96 0-.87.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.13 0 0 .67-.22 2.2.82a7.65 7.65 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.93.08 2.13.52.56.83 1.28.83 2.15 0 3.08-1.87 3.76-3.65 3.96.29.25.54.74.54 1.49v2.21c0 .21.15.46.55.38A8 8 0 0 0 8 0z"/></svg>
+          Continue with GitHub
+        </button>
+      </div>
+
+      <div class="divider"><span>or</span></div>
+
+      <LeafInput name="email" type="email" label="Email" placeholder="you@email.com" autocomplete="email" />
+      <LeafInput name="password" type="password" label="Password" autocomplete="current-password" />
+
+      <div class="form-foot">
+        <button type="button" class="link-btn" data-goto="forgot">Forgot password?</button>
+      </div>
+
+      <LeafButton type="submit" variant="primary" size="lg" class="full">Sign in</LeafButton>
+      <p class="form-error" data-error="signin" role="alert" hidden></p>
+
+      <p class="swap-prompt t-body-sm">
+        New here? <button type="button" class="link-btn" data-goto="create">Create an account →</button>
+      </p>
+    </form>
+
+    <!-- ─── Create ─── -->
+    <form class="auth-panel" data-panel="create" novalidate>
+      <h1 class="t-title-lg">Create your account.</h1>
+      <p class="t-body-sm muted">Free Solo tier. 14-day refund on any paid plan.</p>
+
+      <LeafInput name="name" type="text" label="Full name" placeholder="Anton" autocomplete="name" />
+      <LeafInput name="email" type="email" label="Email" placeholder="you@email.com" autocomplete="email" />
+      <LeafInput name="password" type="password" label="Password (min 8 chars)" autocomplete="new-password" />
+
+      <LeafButton type="submit" variant="primary" size="lg" class="full">Send verification code →</LeafButton>
+      <p class="form-error" data-error="create" role="alert" hidden></p>
+
+      <p class="swap-prompt t-body-sm">
+        Already have an account? <button type="button" class="link-btn" data-goto="signin">Sign in →</button>
+      </p>
+    </form>
+
+    <!-- ─── Verify OTP ─── -->
+    <form class="auth-panel" data-panel="verify" novalidate>
+      <h1 class="t-title-lg">Check your email.</h1>
+      <p class="t-body-sm muted">We sent a 6-digit code to <span class="email-echo">your inbox</span>.</p>
+
+      <div class="otp-row" role="group" aria-label="One-time code">
+        {[0,1,2,3,4,5].map(i => (
+          <input class="otp-box mono" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete={i === 0 ? 'one-time-code' : 'off'} data-otp={i} />
+        ))}
+      </div>
+
+      <LeafButton type="submit" variant="primary" size="lg" class="full">Verify and continue</LeafButton>
+      <p class="form-error" data-error="verify" role="alert" hidden></p>
+
+      <div class="resend-row">
+        <button type="button" class="link-btn" data-action="resend" disabled>Resend code</button>
+        <span class="resend-timer mono" data-timer>30s</span>
+        <svg class="resend-progress" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" opacity="0.2"/>
+          <circle class="resend-arc" cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="56.55" stroke-dashoffset="0" transform="rotate(-90 12 12)"/>
+        </svg>
+      </div>
+    </form>
+
+    <!-- ─── Forgot password ─── -->
+    <form class="auth-panel" data-panel="forgot" novalidate>
+      <h1 class="t-title-lg">Reset your password.</h1>
+      <p class="t-body-sm muted">Enter your email — we'll send a reset link.</p>
+
+      <LeafInput name="email" type="email" label="Email" placeholder="you@email.com" autocomplete="email" />
+
+      <LeafButton type="submit" variant="primary" size="lg" class="full">Send reset link</LeafButton>
+      <p class="form-error" data-error="forgot" role="alert" hidden></p>
+
+      <p class="swap-prompt t-body-sm">
+        Remembered it? <button type="button" class="link-btn" data-goto="signin">Back to sign in →</button>
+      </p>
+    </form>
+
+    <!-- ─── Reset password ─── -->
+    <form class="auth-panel" data-panel="reset" novalidate>
+      <h1 class="t-title-lg">Set a new password.</h1>
+      <p class="t-body-sm muted">Use 8+ characters with a mix of letters and numbers.</p>
+
+      <LeafInput name="password" type="password" label="New password" autocomplete="new-password" />
+      <LeafInput name="confirm" type="password" label="Confirm new password" autocomplete="new-password" />
+
+      <LeafButton type="submit" variant="primary" size="lg" class="full">Update password</LeafButton>
+      <p class="form-error" data-error="reset" role="alert" hidden></p>
+    </form>
+
+    <p class="legal t-caption">
+      By continuing you agree to our <a href="/terms">Terms</a> and <a href="/privacy">Privacy</a>.
+    </p>
+  </div>
+</AuthLayout>
+
+<style>
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: var(--space-3xl) var(--space-xl);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--elev-modal);
+}
+.brand { display: inline-block; margin-bottom: var(--space-xl); }
+.muted { color: var(--text-secondary); }
+
+.auth-tabs { display: flex; gap: var(--space-lg); border-bottom: 1px solid var(--border-subtle); margin-bottom: var(--space-xl); }
+.auth-tab {
+  padding: var(--space-sm) 0; background: transparent; border: 0;
+  color: var(--text-secondary); font: 500 14px/1 var(--font-body);
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  cursor: pointer;
+  transition: color var(--dur-snap), border-color var(--dur-snap);
+}
+.auth-tab:hover { color: var(--text-primary); }
+.auth-tab.active { color: var(--accent-primary); border-bottom-color: var(--accent-primary); }
+
+.auth-panel { display: none; flex-direction: column; gap: var(--space-md); }
+.auth-panel.active { display: flex; }
+.auth-panel h1 { margin-bottom: 4px; }
+.auth-panel .muted { margin-bottom: var(--space-md); }
+
+.oauth-row { display: flex; flex-direction: column; gap: var(--space-sm); }
+.oauth-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-sm);
+  padding: 10px var(--space-md);
+  background: var(--surface-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font: 500 14px/1 var(--font-body);
+  cursor: pointer;
+  transition: border-color var(--dur-snap), background var(--dur-snap);
+}
+.oauth-btn:hover { border-color: var(--border-strong); background: var(--surface-inset); }
+
+.divider { display: flex; align-items: center; gap: var(--space-md); color: var(--text-quaternary); font-size: 12px; margin: var(--space-sm) 0; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
+
+.form-foot { display: flex; justify-content: flex-end; }
+.link-btn { background: transparent; border: 0; color: var(--accent-primary); font: 500 13px/1 var(--font-body); cursor: pointer; padding: 0; }
+.link-btn:hover { text-decoration: underline; }
+.link-btn:disabled { color: var(--text-quaternary); cursor: not-allowed; }
+.form-error { color: var(--status-danger); font-size: 13px; }
+.swap-prompt { text-align: center; color: var(--text-tertiary); margin-top: var(--space-sm); }
+
+/* OTP */
+.otp-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-sm); }
+.otp-box {
+  width: 100%; aspect-ratio: 1 / 1;
+  text-align: center;
+  font: 500 24px/1 var(--font-mono);
+  background: var(--surface-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  transition: border-color var(--dur-snap);
+}
+.otp-box:focus { outline: none; border-color: var(--accent-primary); }
+.resend-row { display: flex; align-items: center; gap: var(--space-sm); margin-top: var(--space-sm); color: var(--text-tertiary); font-size: 13px; }
+.resend-timer { color: var(--text-tertiary); font-size: 12px; }
+.resend-progress { color: var(--accent-primary); }
+.resend-arc { transition: stroke-dashoffset 1s linear; }
+
+.legal { margin-top: var(--space-xl); text-align: center; color: var(--text-tertiary); }
+.legal a { color: var(--text-secondary); text-decoration: underline; text-underline-offset: 2px; }
+</style>
+
+<script>
+// Panel switching — wired live. Auth/OTP/forgot/reset submission lives in T5 wiring.
+const panels = document.querySelectorAll<HTMLElement>('.auth-panel');
+const tabs = document.querySelectorAll<HTMLButtonElement>('.auth-tab');
+
+function showPanel(name: string): void {
+  panels.forEach(p => p.classList.toggle('active', p.dataset.panel === name));
+  tabs.forEach(t => {
+    const isActive = t.dataset.panel === name;
+    t.classList.toggle('active', isActive);
+    t.setAttribute('aria-selected', String(isActive));
+  });
+  // Tabs are only for signin/create; verify/forgot/reset are tab-less sub-views.
+  document.querySelector<HTMLElement>('.auth-tabs')?.toggleAttribute('hidden', !['signin','create'].includes(name));
+}
+
+tabs.forEach(t => t.addEventListener('click', () => showPanel(t.dataset.panel!)));
+document.querySelectorAll<HTMLButtonElement>('[data-goto]').forEach(btn => {
+  btn.addEventListener('click', () => showPanel(btn.dataset.goto!));
+});
+
+// OTP — auto-advance + paste-paste support, no submit logic yet.
+const otpBoxes = Array.from(document.querySelectorAll<HTMLInputElement>('.otp-box'));
+otpBoxes.forEach((box, i) => {
+  box.addEventListener('input', () => {
+    box.value = box.value.replace(/\D/g, '').slice(0, 1);
+    if (box.value && i < otpBoxes.length - 1) otpBoxes[i + 1].focus();
+  });
+  box.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && !box.value && i > 0) otpBoxes[i - 1].focus();
+  });
+  box.addEventListener('paste', (e) => {
+    const data = e.clipboardData?.getData('text')?.replace(/\D/g, '').slice(0, 6) ?? '';
+    if (data.length === 6) {
+      e.preventDefault();
+      otpBoxes.forEach((b, j) => { b.value = data[j] ?? ''; });
+      otpBoxes[otpBoxes.length - 1].focus();
+    }
+  });
+});
+
+// Resend timer — counts 30s down, then enables button.
+const resendBtn = document.querySelector<HTMLButtonElement>('[data-action="resend"]');
+const resendTimer = document.querySelector<HTMLSpanElement>('[data-timer]');
+const resendArc = document.querySelector<SVGCircleElement>('.resend-arc');
+function startResendCooldown(seconds = 30) {
+  if (!resendBtn || !resendTimer || !resendArc) return;
+  resendBtn.disabled = true;
+  let left = seconds;
+  const total = seconds;
+  const CIRC = 2 * Math.PI * 9; // ≈ 56.55
+  resendArc.style.strokeDashoffset = '0';
+  resendTimer.textContent = `${left}s`;
+  const id = setInterval(() => {
+    left -= 1;
+    resendTimer.textContent = `${Math.max(0, left)}s`;
+    resendArc.style.strokeDashoffset = String(CIRC * (1 - left / total));
+    if (left <= 0) {
+      clearInterval(id);
+      resendBtn.disabled = false;
+      resendTimer.textContent = '';
+      resendArc.style.strokeDashoffset = String(CIRC);
+    }
+  }, 1000);
+}
+// Wire to verify panel arrival — call when create-submit succeeds (in T5 wiring).
+// For now start automatically if verify panel is currently active (e.g., redirected).
+if (document.querySelector('.auth-panel[data-panel="verify"].active')) startResendCooldown(30);
+</script>
