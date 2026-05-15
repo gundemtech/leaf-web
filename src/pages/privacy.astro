@@ -1,0 +1,274 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LeafNav from '../components/LeafNav.astro';
+import LeafFooter from '../components/LeafFooter.astro';
+import LeafAnchorNav from '../components/LeafAnchorNav.astro';
+import LeafEyebrow from '../components/LeafEyebrow.astro';
+import LeafCard from '../components/LeafCard.astro';
+import LeafButton from '../components/LeafButton.astro';
+
+const captured = [
+  'App focus and duration',
+  'Idle / sleep / wake state',
+  'Meeting state (boolean in_meeting only)',
+  'Focus mode (Do-Not-Disturb / Work / Personal)',
+  'Window title + active URL (Accessibility API)',
+  'Files touched in folders you opt in to',
+  'Git commits in watched repos',
+  'AI tool session metadata (file refs, tool names)',
+  'Linear / GitHub / Slack actions you authored',
+];
+
+const notCaptured = [
+  'File contents',
+  'Keystrokes',
+  'Screenshots / screen recording',
+  'Prompt or response bodies (AI)',
+  'Email message bodies',
+  'Slack message text',
+  'Meeting attendee names or content',
+  'OCR of any rendered UI',
+  'Other people\'s work in your name',
+];
+
+const shareControls = [
+  { title: 'Default share list is empty.', desc: 'When you install Leaf, your team sees nothing. You opt in app by app, event type by event type.' },
+  { title: 'Per-app, per-event-type whitelist.', desc: 'Choose Xcode at L4 granularity, Slack at L1, and Notion silent. Toggle git_commit on, focus_mode off. Pick your own.' },
+  { title: 'Admin has no override.', desc: 'No team admin can forcibly enable an app or event type on your behalf. No "team-wide minimum visibility" setting. Symmetric by design.' },
+  { title: 'Invisible mode is one click.', desc: 'Hide everything immediately — non-retroactive (already-shared history stays as audit). Resume on your terms.' },
+];
+
+const wontList = [
+  'Manager dashboards with productivity scores',
+  'Screen recording for "context"',
+  'Keylogging or input capture',
+  'OCR of rendered windows',
+  'Prompt / response content capture from AI tools',
+  'Forced app whitelisting by admin',
+  'Selling, sharing, or training on your data',
+  'Tracking outside your devices and the relay',
+];
+---
+<BaseLayout
+  title="Privacy — Leaf"
+  description="What's captured, what's never captured, how end-to-end encryption works, and the architecture-level Won't-list."
+>
+  <LeafNav slot="nav" />
+
+  <section class="priv-hero">
+    <div class="wrap">
+      <LeafEyebrow number="P" label="PRIVACY" />
+      <h1 class="t-display">Your manager can't peek<br /><span class="muted">— and it's not a policy. It's the architecture.</span></h1>
+      <p class="t-body-lg lead">
+        Below: every signal we capture, every signal we won't, exactly how
+        end-to-end encryption works, and the public Won't-list of features
+        Leaf will never build.
+      </p>
+    </div>
+  </section>
+
+  <LeafAnchorNav items={[
+    { id: 'matrix',  label: 'Captured vs not' },
+    { id: 'local',   label: 'Local storage' },
+    { id: 'e2e',     label: 'E2E encryption' },
+    { id: 'shares',  label: 'Share Controls' },
+    { id: 'wont',    label: 'Won\'t-list' },
+    { id: 'verify',  label: 'Verify it' },
+  ]} />
+
+  <section id="matrix" class="sec">
+    <div class="wrap">
+      <LeafEyebrow number="01" label="THE MATRIX" />
+      <h2 class="t-title-lg">What's captured. What's not.</h2>
+      <div class="matrix">
+        <LeafCard variant="raised" padding="generous" class="col-yes">
+          <p class="t-label accent">CAPTURED (METADATA ONLY)</p>
+          <ul class="matrix-list">
+            {captured.map(c => <li><span class="dot dot-yes">●</span>{c}</li>)}
+          </ul>
+        </LeafCard>
+        <LeafCard variant="raised" padding="generous" class="col-no">
+          <p class="t-label danger">NEVER CAPTURED</p>
+          <ul class="matrix-list">
+            {notCaptured.map(c => <li><span class="dot dot-no">×</span>{c}</li>)}
+          </ul>
+        </LeafCard>
+      </div>
+    </div>
+  </section>
+
+  <section id="local" class="sec sec-alt">
+    <div class="wrap">
+      <LeafEyebrow number="02" label="ON YOUR DEVICE" />
+      <h2 class="t-title-lg">Local-first storage.</h2>
+      <div class="diagram">
+        <div class="dgrm-step">
+          <p class="t-label">Mac drive</p>
+          <p class="mono dim">~/Library/Application Support/Leaf/events.sqlite</p>
+        </div>
+        <div class="dgrm-arrow">→</div>
+        <div class="dgrm-step">
+          <p class="t-label">SQLCipher</p>
+          <p class="mono dim">AES-256 · WAL mode · cipher_plaintext_header_size=32</p>
+        </div>
+        <div class="dgrm-arrow">→</div>
+        <div class="dgrm-step">
+          <p class="t-label">Encryption key</p>
+          <p class="mono dim">macOS Keychain · AccessibleAfterFirstUnlockThisDeviceOnly · Synchronizable=false</p>
+        </div>
+      </div>
+      <ul class="facts">
+        <li>File permission: <code class="mono">0600</code> (owner read/write only)</li>
+        <li>Key never leaves device. Not iCloud-synced.</li>
+        <li>If you lose the key, the data is unrecoverable — by design.</li>
+        <li>You can wipe the entire local store from Settings → Danger zone.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="e2e" class="sec">
+    <div class="wrap">
+      <LeafEyebrow number="03" label="WHEN SHARED WITH TEAM" />
+      <h2 class="t-title-lg">End-to-end encryption.</h2>
+      <div class="diagram three-col">
+        <div class="dgrm-step">
+          <p class="t-label">Your Mac</p>
+          <p class="mono dim">Compose presence snapshot → apply Share Controls → encrypt</p>
+        </div>
+        <div class="dgrm-arrow">→</div>
+        <div class="dgrm-step">
+          <p class="t-label">Relay (Cloudflare DO)</p>
+          <p class="mono dim">Forwards encrypted blob. Never sees plaintext.</p>
+        </div>
+        <div class="dgrm-arrow">→</div>
+        <div class="dgrm-step">
+          <p class="t-label">Teammate's Mac</p>
+          <p class="mono dim">Decrypt with shared team key (Keychain).</p>
+        </div>
+      </div>
+      <ul class="facts">
+        <li>Envelope: <code class="mono">[version:1B | keyID:16B | nonce:12B | AES-GCM-256 ciphertext | tag:16B]</code></li>
+        <li>Key exchange on invite: X25519 ECDH + HKDF-SHA256 + 6-digit OTP out-of-band</li>
+        <li>Member removal triggers team-key rotation: N−1 pairwise rewraps</li>
+        <li>Future: MLS migration (wireapp/core-crypto) when teams grow past 50</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="shares" class="sec sec-alt">
+    <div class="wrap">
+      <LeafEyebrow number="04" label="OPT-IN TRANSPARENCY" />
+      <h2 class="t-title-lg">Share Controls.</h2>
+      <div class="shares">
+        {shareControls.map(s => (
+          <div class="share-card">
+            <p class="t-title-sm">{s.title}</p>
+            <p class="t-body-sm muted">{s.desc}</p>
+          </div>
+        ))}
+      </div>
+      <p class="t-body-sm muted footnote">
+        Filter is applied <strong>before</strong> encryption in the Agent. The relay
+        cannot distinguish "filtered" from "no event at all".
+      </p>
+    </div>
+  </section>
+
+  <section id="wont" class="sec">
+    <div class="wrap">
+      <LeafEyebrow number="05" label="THE WON'T-LIST" />
+      <h2 class="t-title-lg">Features Leaf will never build.</h2>
+      <p class="t-body-lg muted intro">
+        Public commitment, not just a policy line. If we ship any of the
+        below — call us out on it and walk away.
+      </p>
+      <ul class="wont">
+        {wontList.map(w => <li><span class="wont-x">✗</span>{w}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section id="verify" class="sec sec-alt">
+    <div class="wrap">
+      <LeafEyebrow number="06" label="DON'T TRUST — VERIFY" />
+      <h2 class="t-title-lg">Verify it yourself.</h2>
+      <ul class="verify">
+        <li><a href="https://github.com/gundemtech/leaf" target="_blank" rel="noopener"><code class="mono">github.com/gundemtech/leaf</code></a> — full client source, MIT</li>
+        <li><a href="https://leaf-docs.gundem.tech" target="_blank" rel="noopener">leaf-docs.gundem.tech</a> — public architecture whitepaper, crypto primitives, ADR-style decision log</li>
+        <li>Wire-level inspection: relay only ever receives opaque AES-GCM envelopes (open Wireshark, confirm)</li>
+        <li>SQLCipher store inspection: <code class="mono">sqlcipher events.sqlite</code> with your Keychain-extracted key</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sec cta">
+    <div class="wrap">
+      <h2 class="t-title-lg">Privacy is the product — not a settings tab.</h2>
+      <div class="cta-actions">
+        <LeafButton variant="primary" size="lg" href="/signup">Install for macOS →</LeafButton>
+        <LeafButton variant="ghost" size="lg" href="/open-source">See the source ↗</LeafButton>
+      </div>
+    </div>
+  </section>
+
+  <LeafFooter slot="footer" />
+</BaseLayout>
+
+<style>
+.priv-hero { padding: var(--space-4xl) 0 var(--space-3xl); }
+.priv-hero h1 { max-width: 22ch; }
+.priv-hero .muted { color: var(--text-secondary); }
+.priv-hero .lead { color: var(--text-secondary); margin-top: var(--space-lg); max-width: 62ch; }
+
+.sec { padding: var(--space-4xl) 0; }
+.sec-alt { background: color-mix(in srgb, var(--surface-raised) 60%, transparent); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+.sec h2 { margin: var(--space-md) 0 var(--space-xl); max-width: 32ch; }
+.muted { color: var(--text-secondary); }
+.dim { color: var(--text-tertiary); }
+.accent { color: var(--accent-primary); }
+.danger { color: var(--status-danger); }
+
+/* §01 matrix */
+.matrix { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); }
+@media (max-width: 768px) { .matrix { grid-template-columns: 1fr; } }
+.matrix-list { display: flex; flex-direction: column; gap: var(--space-sm); margin-top: var(--space-md); }
+.matrix-list li { display: flex; gap: var(--space-sm); align-items: baseline; color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
+.dot { flex-shrink: 0; width: 14px; }
+.dot-yes { color: var(--accent-primary); }
+.dot-no { color: var(--status-danger); }
+
+/* diagrams (local + e2e) */
+.diagram { display: grid; grid-template-columns: 1fr 24px 1fr 24px 1fr; gap: var(--space-md); align-items: stretch; margin-top: var(--space-md); }
+.diagram.three-col { grid-template-columns: 1fr 24px 1fr 24px 1fr; }
+@media (max-width: 768px) { .diagram { grid-template-columns: 1fr; gap: var(--space-sm); } .dgrm-arrow { display: none; } }
+.dgrm-step { background: var(--surface-raised); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-md); display: flex; flex-direction: column; gap: 6px; }
+.dgrm-step .t-label { color: var(--accent-primary); }
+.dgrm-step .mono { font-size: 11px; line-height: 1.45; }
+.dgrm-arrow { color: var(--accent-primary); align-self: center; font-size: 20px; }
+.facts { display: flex; flex-direction: column; gap: var(--space-sm); margin-top: var(--space-xl); color: var(--text-secondary); font-size: 14px; }
+.facts code { background: var(--surface-raised); padding: 2px 6px; border-radius: 4px; color: var(--text-primary); font-size: 12px; }
+
+/* §04 shares */
+.shares { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); }
+@media (max-width: 768px) { .shares { grid-template-columns: 1fr; } }
+.share-card { padding: var(--space-lg); border-left: 2px solid var(--accent-primary); background: color-mix(in srgb, var(--accent-primary) 4%, transparent); border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+.share-card .t-title-sm { margin-bottom: var(--space-xs); }
+.footnote { margin-top: var(--space-xl); }
+
+/* §05 won't */
+.intro { margin-bottom: var(--space-xl); max-width: 56ch; }
+.wont { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm) var(--space-xl); }
+@media (max-width: 640px) { .wont { grid-template-columns: 1fr; } }
+.wont li { display: flex; gap: var(--space-sm); align-items: baseline; color: var(--text-secondary); font-size: 14px; }
+.wont-x { color: var(--status-danger); flex-shrink: 0; }
+
+/* §06 verify */
+.verify { display: flex; flex-direction: column; gap: var(--space-md); }
+.verify li { color: var(--text-secondary); font-size: 14px; line-height: 1.55; }
+.verify a { color: var(--accent-primary); text-decoration: underline; text-underline-offset: 3px; }
+.verify code { background: var(--surface-raised); padding: 2px 6px; border-radius: 4px; color: var(--text-primary); font-size: 12px; }
+
+/* CTA */
+.cta { text-align: center; }
+.cta-actions { display: inline-flex; gap: var(--space-md); margin-top: var(--space-lg); flex-wrap: wrap; justify-content: center; }
+</style>
