@@ -169,8 +169,8 @@ import LeafButton from '../LeafButton.astro';
 .morph-word {
   display: inline-block;
   color: var(--text-primary);
-  transition: color 480ms cubic-bezier(.45, .05, .15, 1),
-              text-shadow 480ms cubic-bezier(.45, .05, .15, 1);
+  transition: color 850ms cubic-bezier(.4, 0, .2, 1),
+              text-shadow 850ms cubic-bezier(.4, 0, .2, 1);
   transform-origin: center 60%;
   will-change: transform, color;
   white-space: nowrap;
@@ -178,8 +178,8 @@ import LeafButton from '../LeafButton.astro';
 .morph-word.is-leaf {
   color: var(--accent-primary);
   text-shadow:
-    0 0 38px color-mix(in srgb, var(--accent-primary) 38%, transparent),
-    0 0 90px color-mix(in srgb, var(--accent-primary) 18%, transparent);
+    0 0 26px color-mix(in srgb, var(--accent-primary) 20%, transparent),
+    0 0 70px color-mix(in srgb, var(--accent-primary) 10%, transparent);
 }
 @media (prefers-reduced-motion: reduce) {
   .morph-word { transition: none; text-shadow: none; }
@@ -311,8 +311,8 @@ const SCRAMBLE_CHARS = 'abcdefghijklmnopqrstuvwxyz';
 
 function scrambleMorph(el: HTMLElement, from: string, to: string): void {
   const len = Math.max(from.length, to.length);
-  const STAGGER = 55;
-  const SCRAMBLE_DUR = 280;
+  const STAGGER = 110;
+  const SCRAMBLE_DUR = 460;
   const start = performance.now();
 
   const slots = Array.from({ length: len }, (_, i) => ({
@@ -356,14 +356,13 @@ if (morphEl && !reduceMotion) {
     scrambleMorph(morphEl, from, to);
     morphEl.animate(
       [
-        { transform: 'scale(1) rotate(0deg)',          offset: 0 },
-        { transform: 'scale(0.92) rotate(-2deg)',      offset: 0.22 },
-        { transform: 'scale(1.08) rotate(1.6deg)',     offset: 0.55 },
-        { transform: 'scale(0.99) rotate(-0.4deg)',    offset: 0.80 },
-        { transform: 'scale(1) rotate(0deg)',          offset: 1 },
+        { transform: 'scale(1) rotate(0deg)',         offset: 0 },
+        { transform: 'scale(0.98) rotate(-0.5deg)',   offset: 0.30 },
+        { transform: 'scale(1.025) rotate(0.4deg)',   offset: 0.65 },
+        { transform: 'scale(1) rotate(0deg)',         offset: 1 },
       ],
-      { duration: 680, easing: 'cubic-bezier(.34, 1.56, .64, 1)' },
+      { duration: 1100, easing: 'cubic-bezier(.4, 0, .2, 1)' },
     );
-  }, 1500);
+  }, 2800);
 }
 </script>
