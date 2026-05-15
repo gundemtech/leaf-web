@@ -3,6 +3,7 @@ html, body {
   color: var(--text-primary);
   font-family: var(--font-body);
   font-size: 16px;
+  overflow-x: clip;
 }
 
 /* Ambient page glow — two very faint accent halos that anchor the page without
@@ -66,3 +67,26 @@ main, header, footer, section { position: relative; z-index: 1; }
 /* Layout containers */
 .wrap { width: 100%; max-width: var(--content-max); margin: 0 auto; padding: 0 var(--space-xl); }
 .wrap-narrow { width: 100%; max-width: var(--content-narrow); margin: 0 auto; padding: 0 var(--space-xl); }
+
+/* ─────────── Global fisheye reveal ───────────
+   Any element marked with [data-reveal] starts tucked below the page surface
+   with a perspective tilt + scale-down, then snaps to identity when the
+   IntersectionObserver in BaseLayout adds the .is-in class.
+   One-shot (observer.unobserve on first hit). */
+[data-reveal] {
+  opacity: 0;
+  transform: perspective(1100px) rotateX(-18deg) translateY(36px) scale(0.94);
+  transform-origin: 50% 100%;
+  transition:
+    opacity 720ms var(--ease-standard),
+    transform 760ms cubic-bezier(.16, .85, .35, 1);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+}
+[data-reveal].is-in {
+  opacity: 1;
+  transform: perspective(1100px) rotateX(0) translateY(0) scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+}

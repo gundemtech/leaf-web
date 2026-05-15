@@ -3,28 +3,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import LeafNav from '../components/LeafNav.astro';
 import LeafFooter from '../components/LeafFooter.astro';
 import HeroLanding from '../components/sections/HeroLanding.astro';
-import LayerACapture from '../components/sections/LayerACapture.astro';
-import LayerBIntegrations from '../components/sections/LayerBIntegrations.astro';
-import ThreeSurfaces from '../components/sections/ThreeSurfaces.astro';
+import Problem from '../components/sections/Problem.astro';
 import UseCases from '../components/sections/UseCases.astro';
-import PrivacyTeaser from '../components/sections/PrivacyTeaser.astro';
-import PricingTeaser from '../components/sections/PricingTeaser.astro';
-import FAQ from '../components/sections/FAQ.astro';
+import ReadDontRead from '../components/sections/ReadDontRead.astro';
 import WaitlistCTA from '../components/sections/WaitlistCTA.astro';
 ---
 <BaseLayout
-  title="Leaf — Memory for AI dev teams"
-  description="Your team's working memory, captured automatically across your tools. Queryable from Claude Code, Cursor, and Slack. Private by architecture — managers can't peek without your consent."
+  title="Leaf: the shared brain for engineering orgs"
+  description="The layer that remembers what your team actually did. Captured automatically from the tools you already use, surfaced back on each person's terms. No standups, no manager dashboards, no screen recording."
 >
   <LeafNav slot="nav" />
   <HeroLanding />
-  <LayerACapture />
-  <LayerBIntegrations />
-  <ThreeSurfaces />
+  <Problem />
   <UseCases />
-  <PrivacyTeaser />
-  <PricingTeaser />
-  <FAQ />
+  <ReadDontRead />
   <WaitlistCTA />
   <LeafFooter slot="footer" />
 </BaseLayout>

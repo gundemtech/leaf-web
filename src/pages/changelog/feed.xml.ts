@@ -1,4 +1,4 @@
-// RSS 2.0 generator — fetches the canonical JSON feed at build time and
+// RSS 2.0 generator: fetches the canonical JSON feed at build time and
 // re-emits as RSS 2.0 preserving the existing format from the legacy site.
 // The JSON feed lives at the same origin and is updated by the
 // Cloudflare Worker / Telegram approval flow (unchanged by this redesign).
@@ -18,7 +18,7 @@ type FeedEntry = {
 
 const JSON_FEED_URL = 'https://leaf.gundem.tech/changelog/latest.json';
 const SITE = 'https://leaf.gundem.tech';
-const TITLE = 'Leaf — Changelog';
+const TITLE = 'Leaf: Changelog';
 const DESCRIPTION = 'Releases, fixes, and shipped features for Leaf.';
 
 function escapeXML(s: string): string {

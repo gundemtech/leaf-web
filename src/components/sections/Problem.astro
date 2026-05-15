@@ -1,0 +1,330 @@
+---
+import LeafEyebrow from '../LeafEyebrow.astro';
+---
+<section id="problem" class="problem">
+  <div class="wrap">
+    <div class="grid">
+      <!-- ─────────── LEFT: THE PROBLEM ─────────── -->
+      <div class="col col-problem">
+        <div data-reveal><LeafEyebrow label="THE PROBLEM" /></div>
+
+        <h2 class="big" data-reveal>
+          <span class="line">Your team ships work every day.</span>
+          <span class="line dim">Most of it disappears by Friday.</span>
+        </h2>
+
+        <p class="intro" data-reveal>Three things lose meaning every sprint.</p>
+
+        <ul class="bullets bullets-problem">
+          <li>The chat thread where the architecture flipped.</li>
+          <li>The commit message that explained the migration.</li>
+          <li>The ticket that flagged a real blocker before it became an outage.</li>
+        </ul>
+
+        <p class="closer dim" data-reveal>
+          By next sprint all three are buried under noise.
+          Nobody remembers them when it matters.
+        </p>
+      </div>
+
+      <!-- ─────────── RIGHT: THE SOLUTION ─────────── -->
+      <div class="col col-fix">
+        <div class="eyebrow-row" data-reveal>
+          <span class="sub-eyebrow mono">THE SOLUTION</span>
+        </div>
+
+        <h2 class="big" data-reveal>
+          <span class="line">Captured underneath.</span>
+          <span class="line accent">Surfaced on your terms.</span>
+        </h2>
+
+        <p class="intro" data-reveal>Three things become permanent.</p>
+
+        <ul class="bullets bullets-fix">
+          <li>The architecture decision is queryable months later.</li>
+          <li>The migration rationale surfaces when someone asks.</li>
+          <li>The blocker pattern catches you before it repeats.</li>
+        </ul>
+
+        <p class="closer" data-reveal>
+          Same week, six months later. The thread is right there.
+          Yours alone, by default.
+        </p>
+      </div>
+    </div>
+
+    <!-- ─────────── CONNECTORS — logo grid below the diptych ─────────── -->
+    <div class="connectors">
+      <ul class="logo-grid">
+        <li class="logo-cell"><img src="/logos/linear.png" alt="Linear" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell logo-dark"><img src="/logos/github.png" alt="GitHub" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/slack.png" alt="Slack" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/cursor.png" alt="Cursor" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/claude-code.png" alt="Claude Code" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/chatgpt.png" alt="ChatGPT" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/continue.png" alt="Continue" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell logo-dark"><img src="/logos/windsurf.png" alt="Windsurf" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/xcode.png" alt="Xcode" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/vscode.png" alt="VS Code" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/jetbrains.png" alt="JetBrains" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/jira.png" alt="Jira" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/gitlab.png" alt="GitLab" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/notion.png" alt="Notion" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/discord.png" alt="Discord" loading="lazy" decoding="async" /></li>
+        <li class="logo-break" aria-hidden="true"></li>
+        <li class="logo-cell"><img src="/logos/figma.png" alt="Figma" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/google-calendar.png" alt="Google Calendar" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/gmail.png" alt="Gmail" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/zoom.png" alt="Zoom" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/chrome.png" alt="Chrome" loading="lazy" decoding="async" /></li>
+        <li class="logo-cell"><img src="/logos/safari.png" alt="Safari" loading="lazy" decoding="async" /></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+.problem {
+  padding: var(--space-5xl) 0;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4xl);
+  align-items: start;
+}
+
+.col { min-width: 0; }
+.col-fix {
+  padding-left: var(--space-xl);
+  border-left: 1px solid var(--border-subtle);
+}
+
+/* Sub-eyebrow on right (no number — sibling to left's "№01 · THE PROBLEM") */
+.eyebrow-row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  height: 16px; /* match LeafEyebrow visual height for vertical alignment */
+}
+.sub-eyebrow {
+  color: var(--accent-primary);
+  font: 500 11px/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.big {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(26px, 2.8vw, 40px);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin: var(--space-lg) 0 var(--space-3xl);
+}
+.big .line { display: block; }
+.big .line.dim { color: var(--text-tertiary); }
+.big .line.accent { color: var(--accent-primary); }
+
+.intro {
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0 0 var(--space-lg);
+}
+
+/* Bullets — shared structure */
+.bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.bullets li {
+  position: relative;
+  padding-left: 24px;
+  font: 400 15px/1.55 var(--font-body);
+  color: var(--text-primary);
+  opacity: 0;
+  transform: perspective(900px) rotateX(-22deg) translateY(36px) scale(0.92);
+  transform-origin: 50% 100%;
+  transition:
+    opacity 700ms var(--ease-standard),
+    transform 700ms cubic-bezier(.16, .85, .35, 1),
+    color 220ms var(--ease-standard);
+  cursor: default;
+}
+.problem.is-in .bullets li:hover {
+  transform: translateX(4px);
+}
+.bullets-problem li:hover { color: var(--text-primary); }
+.bullets-fix li:hover     { color: var(--text-primary); }
+.bullets li::before {
+  transition: transform 260ms var(--ease-standard), box-shadow 260ms var(--ease-standard);
+}
+.bullets li:hover::before {
+  transform: scale(1.4);
+}
+.bullets-problem li:hover::before {
+  background: var(--text-secondary);
+}
+.bullets-fix li:hover::before {
+  box-shadow: 0 0 16px color-mix(in srgb, var(--accent-primary) 80%, transparent);
+}
+.problem.is-in .bullets li { opacity: 1; transform: perspective(900px) rotateX(0) translateY(0) scale(1); }
+.problem.is-in .bullets-problem li:nth-child(1) { transition-delay: 150ms; }
+.problem.is-in .bullets-problem li:nth-child(2) { transition-delay: 280ms; }
+.problem.is-in .bullets-problem li:nth-child(3) { transition-delay: 410ms; }
+.problem.is-in .bullets-fix li:nth-child(1) { transition-delay: 700ms; }
+.problem.is-in .bullets-fix li:nth-child(2) { transition-delay: 830ms; }
+.problem.is-in .bullets-fix li:nth-child(3) { transition-delay: 960ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bullets li { opacity: 1; transform: none; transition: none; }
+}
+.bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+/* Problem bullets: muted dot — these are the "dying" things */
+.bullets-problem li::before {
+  background: var(--text-tertiary);
+}
+.bullets-problem li {
+  color: var(--text-secondary);
+}
+/* Fix bullets: green dot with halo — these are "saved" things */
+.bullets-fix li::before {
+  background: var(--accent-primary);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent-primary) 50%, transparent);
+}
+
+.closer {
+  font: 400 14px/1.55 var(--font-body);
+  color: var(--text-primary);
+  margin: 0;
+}
+.closer.dim { color: var(--text-tertiary); }
+
+/* ─────────── CONNECTORS GRID ─────────── */
+.connectors {
+  margin-top: var(--space-4xl);
+}
+.connectors-label {
+  font: 500 11px/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin: 0 0 var(--space-lg);
+}
+.logo-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-md);
+}
+.logo-cell {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: perspective(900px) rotateX(-26deg) translateY(40px) scale(0.88);
+  transform-origin: 50% 100%;
+  transition:
+    opacity 620ms var(--ease-standard),
+    transform 620ms cubic-bezier(.16, .85, .35, 1);
+}
+.connectors.is-in .logo-cell { opacity: 1; transform: perspective(900px) rotateX(0) translateY(0) scale(1); }
+.connectors.is-in .logo-cell:nth-child(n+1)  { transition-delay: 0ms; }
+.connectors.is-in .logo-cell:nth-child(n+2)  { transition-delay: 50ms; }
+.connectors.is-in .logo-cell:nth-child(n+3)  { transition-delay: 100ms; }
+.connectors.is-in .logo-cell:nth-child(n+4)  { transition-delay: 150ms; }
+.connectors.is-in .logo-cell:nth-child(n+5)  { transition-delay: 200ms; }
+.connectors.is-in .logo-cell:nth-child(n+6)  { transition-delay: 250ms; }
+.connectors.is-in .logo-cell:nth-child(n+7)  { transition-delay: 300ms; }
+.connectors.is-in .logo-cell:nth-child(n+8)  { transition-delay: 350ms; }
+.connectors.is-in .logo-cell:nth-child(n+9)  { transition-delay: 400ms; }
+.connectors.is-in .logo-cell:nth-child(n+10) { transition-delay: 450ms; }
+.connectors.is-in .logo-cell:nth-child(n+11) { transition-delay: 500ms; }
+.connectors.is-in .logo-cell:nth-child(n+12) { transition-delay: 550ms; }
+.connectors.is-in .logo-cell:nth-child(n+13) { transition-delay: 600ms; }
+.connectors.is-in .logo-cell:nth-child(n+14) { transition-delay: 650ms; }
+.connectors.is-in .logo-cell:nth-child(n+15) { transition-delay: 700ms; }
+.connectors.is-in .logo-cell:nth-child(n+16) { transition-delay: 750ms; }
+.connectors.is-in .logo-cell:nth-child(n+17) { transition-delay: 800ms; }
+.connectors.is-in .logo-cell:nth-child(n+18) { transition-delay: 850ms; }
+.connectors.is-in .logo-cell:nth-child(n+19) { transition-delay: 900ms; }
+.connectors.is-in .logo-cell:nth-child(n+20) { transition-delay: 950ms; }
+.connectors.is-in .logo-cell:nth-child(n+21) { transition-delay: 1000ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-cell { opacity: 1; transform: none; transition: none; }
+}
+
+.logo-break {
+  flex-basis: 100%;
+  width: 100%;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.logo-cell img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+.logo-dark img {
+  /* faint white outline for icons that are pure-black and disappear on the
+     dark page background (GitHub, Windsurf). 10% white at native icon radius. */
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.10);
+  border-radius: 18px; /* match macOS app-icon corner radius */
+}
+
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; gap: var(--space-3xl); }
+  .col-fix {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: var(--space-3xl);
+  }
+  .logo-grid { gap: var(--space-sm); }
+  .logo-cell { width: 64px; height: 64px; }
+}
+</style>
+
+<script>
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const targets = document.querySelectorAll<HTMLElement>('.problem, .connectors');
+
+if (reduceMotion) {
+  targets.forEach(t => t.classList.add('is-in'));
+} else {
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) e.target.classList.add('is-in');
+      else                  e.target.classList.remove('is-in');
+    }
+  }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+  targets.forEach(t => io.observe(t));
+}
+</script>

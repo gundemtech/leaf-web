@@ -2,51 +2,65 @@
 import LeafButton from '../LeafButton.astro';
 ---
 <section class="hero">
-  <div class="top-strip">
+  <div class="wrap hero-body">
+    <div class="hero-text" data-reveal>
+      <div class="ticker mono" aria-hidden="true">
+        <div class="ticker-stage" id="tickerStage">
+          <div class="t-row">
+            <span class="t-time">10:42</span>
+            <span class="t-app">Xcode</span>
+            <span class="t-sep">→</span>
+            <span class="t-text">SessionAggregator.swift</span>
+          </div>
+        </div>
+      </div>
+
+      <h1 class="big">
+        <span class="line one">One shared <span class="morph-word" id="morphWord" aria-label="brain, leaf, memory, mind, thread"><span class="m-slot is-in" data-word="brain">brain.</span><span class="m-slot is-waiting" data-word="leaf">leaf.</span><span class="m-slot is-waiting" data-word="memory">memory.</span><span class="m-slot is-waiting" data-word="mind">mind.</span><span class="m-slot is-waiting" data-word="thread">thread.</span></span></span>
+        <span class="line two">For your whole team.</span>
+      </h1>
+
+      <p class="lead">
+        Captured automatically from the tools your team already uses: trackers,
+        code, chat, calendar, the Mac. Encrypted locally, surfaced only on each
+        person's terms. No standups, no manager-side surveillance, no screen
+        recording.
+      </p>
+
+      <div class="actions">
+        <LeafButton variant="primary" size="lg" href="/signup">Install for macOS →</LeafButton>
+        <a class="textlink mono" href="https://leaf-docs.gundem.tech" target="_blank" rel="noopener">read the whitepaper ↗</a>
+      </div>
+    </div>
+
+    <figure class="hero-art" aria-hidden="true" data-reveal>
+      <img
+        class="hero-art-main"
+        src="/images/hero-app.png"
+        alt=""
+        loading="eager"
+        decoding="async"
+        width="2000"
+        height="1250"
+      />
+      <img
+        class="hero-art-popover"
+        src="/images/hero-popover.png"
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+  </div>
+
+  <div class="bottom-strip">
     <div class="wrap strip-inner">
       <span class="mono">leaf</span>
       <span class="sep">·</span>
       <span class="mono">the shared brain for engineering orgs</span>
       <span class="sep">·</span>
       <span class="mono dim">v1.0.0-alpha.15</span>
-      <span class="rec"><span class="rec-dot"></span><span class="mono dim">capturing</span></span>
-    </div>
-  </div>
-
-  <div class="wrap hero-body">
-    <div class="ticker mono" aria-hidden="true">
-      <div class="ticker-stage" id="tickerStage">
-        <div class="t-row">
-          <span class="t-time">10:42</span>
-          <span class="t-app">Xcode</span>
-          <span class="t-sep">→</span>
-          <span class="t-text">SessionAggregator.swift</span>
-        </div>
-      </div>
-    </div>
-
-    <h1 class="big">
-      <span class="line one">One shared <span class="morph-word" id="morphWord" aria-label="brain — also leaf"><span class="m-slot is-in" data-word="brain">brain.</span><span class="m-slot is-waiting" data-word="leaf">leaf.</span></span></span>
-      <span class="line two">For your whole team.</span>
-    </h1>
-
-    <p class="lead">
-      Captured automatically across Linear, GitHub, Slack, and the Mac.
-      Encrypted locally, surfaced only on each person's terms — no standups,
-      no manager-side surveillance, no screen recording.
-    </p>
-
-    <div class="actions">
-      <LeafButton variant="primary" size="lg" href="/signup">Install for macOS →</LeafButton>
-      <a class="textlink mono" href="https://leaf-docs.gundem.tech" target="_blank" rel="noopener">read the whitepaper ↗</a>
-    </div>
-  </div>
-
-  <div class="bottom-strip">
-    <div class="wrap strip-inner">
-      <span class="proof"><span class="mark"></span><span class="mono">default share — nothing</span></span>
-      <span class="proof"><span class="mark"></span><span class="mono">never leaves your Mac unencrypted</span></span>
-      <span class="proof"><span class="mark"></span><span class="mono">admin has no override</span></span>
+      <span class="rec"><span class="rec-dot"></span></span>
       <span class="proof tail"><span class="mono dim">open source · MIT</span></span>
     </div>
   </div>
@@ -60,11 +74,7 @@ import LeafButton from '../LeafButton.astro';
   min-height: calc(100vh - 56px); /* full viewport minus nav */
 }
 
-/* TOP / BOTTOM hairline strips ──────────────────────── */
-.top-strip {
-  border-bottom: 1px solid var(--border-subtle);
-  background: color-mix(in srgb, var(--surface-canvas) 70%, transparent);
-}
+/* BOTTOM hairline strip — meta + capturing + license ──── */
 .bottom-strip {
   border-top: 1px solid var(--border-subtle);
   margin-top: auto;
@@ -103,12 +113,75 @@ import LeafButton from '../LeafButton.astro';
 
 /* HERO BODY ────────────────────────────────────────── */
 .hero-body {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr);
+  gap: var(--space-3xl);
+  align-items: center;
   flex: 1;
-  justify-content: center;
   padding-top: var(--space-5xl);
   padding-bottom: var(--space-5xl);
+}
+.hero-text {
+  display: flex;
+  flex-direction: column;
+}
+.hero-art {
+  margin: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-art-main {
+  width: 100%;
+  height: auto;
+  max-width: 880px;
+  display: block;
+  animation: heroFloat 6.5s ease-in-out infinite;
+  will-change: transform;
+}
+.hero-art-popover {
+  position: absolute;
+  top: 6%;
+  right: -4%;
+  width: 32%;
+  max-width: 300px;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.6));
+  animation: heroFloatPop 7.5s ease-in-out infinite;
+  animation-delay: -2.2s; /* offset phase from main */
+  will-change: transform;
+  z-index: 1;
+}
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+@keyframes heroFloatPop {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-9px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-art-main, .hero-art-popover { animation: none; }
+}
+@media (max-width: 1000px) {
+  .hero-art-popover { right: 0; width: 28%; }
+}
+@media (max-width: 640px) {
+  .hero-art-popover { display: none; }
+}
+
+@media (max-width: 1000px) {
+  .hero-body {
+    grid-template-columns: 1fr;
+    gap: var(--space-3xl);
+  }
+  .hero-art { order: -1; }
+  .hero-art img { max-width: 520px; }
+}
+@media (max-width: 640px) {
+  .hero-art { display: none; }
 }
 
 /* TICKER — vertical conveyor with soft gradient mask top/bottom */
@@ -152,7 +225,7 @@ import LeafButton from '../LeafButton.astro';
 .big {
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: clamp(44px, 7.5vw, 104px);
+  font-size: clamp(34px, 4.7vw, 72px);
   line-height: 1.02;
   letter-spacing: -0.035em;
   color: var(--text-primary);
@@ -179,7 +252,7 @@ import LeafButton from '../LeafButton.astro';
 }
 /* Outgoing: fades out immediately, fully gone by 500ms.
    Incoming: delays 450ms so it only starts appearing after outgoing is ~95% gone.
-   Result: ~50ms overlap window where both are near-invisible — no double-vision. */
+   Result: ~50ms overlap window where both are near-invisible, no double-vision. */
 .m-slot.is-in {
   opacity: 1;
   transform: translateY(0);
@@ -200,13 +273,12 @@ import LeafButton from '../LeafButton.astro';
   transition: none;
   pointer-events: none;
 }
-.m-slot[data-word="leaf"] {
+.m-slot {
   color: var(--accent-primary);
   text-shadow: 0 0 28px color-mix(in srgb, var(--accent-primary) 14%, transparent);
 }
 @media (prefers-reduced-motion: reduce) {
-  .m-slot { transition: none; }
-  .m-slot[data-word="leaf"] { text-shadow: none; }
+  .m-slot { transition: none; text-shadow: none; }
 }
 
 /* LEAD — single dense sentence below headline */
@@ -330,7 +402,7 @@ if (stage && templateRow && !reduceMotion) {
 // and out; next slot drifts in from below into place. No scramble, no bounce.
 const morphEl = document.getElementById('morphWord');
 const slots = morphEl ? Array.from(morphEl.querySelectorAll<HTMLElement>('.m-slot')) : [];
-if (morphEl && slots.length === 2 && !reduceMotion) {
+if (morphEl && slots.length >= 2 && !reduceMotion) {
   let activeIdx = 0;
   const CYCLE = 3000;
   // Outgoing finishes by ~600ms, incoming finishes by ~950ms.

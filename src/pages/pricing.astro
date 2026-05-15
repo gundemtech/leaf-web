@@ -31,7 +31,7 @@ const plans = [
     badge: 'Recommended',
     price: '$10',
     suffix: 'per seat / month',
-    blurb: 'Shared memory across your team — encrypted end-to-end.',
+    blurb: 'Shared memory across your team: encrypted end-to-end.',
     features: [
       'Everything in Solo',
       'E2E team presence sharing',
@@ -65,37 +65,37 @@ const compareRows = [
   { feature: 'Linear / GitHub / Slack',       solo: '✓', team: '✓', ent: '✓' },
   { feature: 'MCP server (15 tools, local)',  solo: '✓', team: '✓', ent: '✓' },
   { feature: 'Native macOS app',              solo: '✓', team: '✓', ent: '✓' },
-  { feature: 'Team presence (E2E)',           solo: '—', team: '✓', ent: '✓' },
-  { feature: 'Share Controls',                solo: '—', team: '✓', ent: '✓' },
-  { feature: 'Slack bot (v1.1)',              solo: '—', team: '✓', ent: '✓' },
+  { feature: 'Team presence (E2E)',           solo: '-', team: '✓', ent: '✓' },
+  { feature: 'Share Controls',                solo: '-', team: '✓', ent: '✓' },
+  { feature: 'Slack bot (v1.1)',              solo: '-', team: '✓', ent: '✓' },
   { feature: 'Seats',                          solo: '1', team: 'up to 20', ent: 'unlimited' },
-  { feature: 'SSO (SAML / OIDC)',             solo: '—', team: '—', ent: '✓' },
-  { feature: 'Audit log',                     solo: '—', team: '—', ent: '✓' },
-  { feature: 'Dedicated relay',               solo: '—', team: '—', ent: '✓' },
-  { feature: 'SLA',                           solo: '—', team: '—', ent: '✓' },
+  { feature: 'SSO (SAML / OIDC)',             solo: '-', team: '-', ent: '✓' },
+  { feature: 'Audit log',                     solo: '-', team: '-', ent: '✓' },
+  { feature: 'Dedicated relay',               solo: '-', team: '-', ent: '✓' },
+  { feature: 'SLA',                           solo: '-', team: '-', ent: '✓' },
   { feature: 'Support',                       solo: 'community', team: 'email', ent: 'priority + SLA' },
 ];
 
 const faqs = [
   { q: 'Can I cancel anytime?', a: 'Yes. Cancel mid-cycle and you keep access through the period you already paid for. No further charges.' },
-  { q: 'Do you offer refunds?', a: 'Yes, within the first 14 days. Email us and we will refund the most recent charge — no questions asked.' },
+  { q: 'Do you offer refunds?', a: 'Yes, within the first 14 days. Email us and we will refund the most recent charge: no questions asked.' },
   { q: 'Can I add or remove seats mid-month?', a: 'Yes. Adding a seat is prorated to the current cycle; removing a seat is credited toward the next invoice.' },
-  { q: 'Is there an annual discount?', a: 'Yes — annual billing gives you two months free (16% off the monthly rate). Toggle on signup or in your dashboard.' },
+  { q: 'Is there an annual discount?', a: 'Yes: annual billing gives you two months free (16% off the monthly rate). Toggle on signup or in your dashboard.' },
 ];
 ---
 <BaseLayout
-  title="Pricing — Leaf"
+  title="Pricing: Leaf"
   description="Solo / Team / Enterprise. Mac capture is always free. Pay for shared team memory."
 >
   <LeafNav slot="nav" />
 
   <section class="pricing-hero">
     <div class="wrap">
-      <LeafEyebrow number="P" label="PRICING" />
+      <LeafEyebrow label="PRICING" />
       <h1 class="t-display">Pricing that scales with your team.</h1>
       <p class="t-body-lg lead">
         Mac capture is always free. Pay only when you want shared memory across
-        your team — and only as much as you have teammates.
+        your team: and only as much as you have teammates.
       </p>
     </div>
   </section>
@@ -128,7 +128,7 @@ const faqs = [
 
   <section class="compare">
     <div class="wrap">
-      <LeafEyebrow number="01" label="FULL COMPARISON" />
+      <LeafEyebrow label="FULL COMPARISON" />
       <h2 class="t-title-lg">All features, side by side.</h2>
       <LeafTable>
         <thead>
@@ -143,9 +143,9 @@ const faqs = [
           {compareRows.map(r => (
             <tr>
               <td>{r.feature}</td>
-              <td class={r.solo === '✓' ? 'checkmark' : r.solo === '—' ? 'dash' : ''}>{r.solo}</td>
-              <td class={r.team === '✓' ? 'checkmark' : r.team === '—' ? 'dash' : ''}>{r.team}</td>
-              <td class={r.ent === '✓' ? 'checkmark' : r.ent === '—' ? 'dash' : ''}>{r.ent}</td>
+              <td class={r.solo === '✓' ? 'checkmark' : r.solo === '-' ? 'dash' : ''}>{r.solo}</td>
+              <td class={r.team === '✓' ? 'checkmark' : r.team === '-' ? 'dash' : ''}>{r.team}</td>
+              <td class={r.ent === '✓' ? 'checkmark' : r.ent === '-' ? 'dash' : ''}>{r.ent}</td>
             </tr>
           ))}
         </tbody>
@@ -155,7 +155,7 @@ const faqs = [
 
   <section class="faq">
     <div class="wrap-narrow">
-      <LeafEyebrow number="02" label="BILLING" />
+      <LeafEyebrow label="BILLING" />
       <h2 class="t-title-lg">Billing questions.</h2>
       {faqs.map(f => <LeafAccordion question={f.q}>{f.a}</LeafAccordion>)}
     </div>
@@ -164,7 +164,7 @@ const faqs = [
   <section class="cta">
     <div class="wrap">
       <h2 class="t-title-lg">Want the team plan today?</h2>
-      <p class="t-body muted">Early-access flat $10 — locks in lifetime first-tier rate.</p>
+      <p class="t-body muted">Early-access flat $10: locks in lifetime first-tier rate.</p>
       <div class="cta-actions">
         <LeafButton variant="primary" size="lg" href="https://pay.oxapay.com/15460469" external>Early access $10 →</LeafButton>
         <LeafButton variant="ghost" size="lg" href="/product">See the product →</LeafButton>

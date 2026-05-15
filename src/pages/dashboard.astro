@@ -7,12 +7,12 @@ import LeafBadge from '../components/LeafBadge.astro';
 
 const DMG_URL = 'https://updates.gundem.tech/Leaf.dmg';
 ---
-<AuthLayout title="Dashboard — Leaf" description="Your Leaf account.">
+<AuthLayout title="Dashboard: Leaf" description="Your Leaf account.">
   <div class="dash-wrap">
     <header class="dash-head">
       <a href="/" aria-label="Leaf home"><LeafLogo size={28} withWordmark /></a>
       <div class="head-right">
-        <span class="t-body-sm muted">Signed in as <span class="email-echo mono" data-user-email>—</span></span>
+        <span class="t-body-sm muted">Signed in as <span class="email-echo mono" data-user-email>-</span></span>
         <LeafButton variant="ghost" size="sm" id="signout-btn">Sign out</LeafButton>
       </div>
     </header>
@@ -21,10 +21,10 @@ const DMG_URL = 'https://updates.gundem.tech/Leaf.dmg';
       <LeafCard variant="raised" padding="generous" class="card-section">
         <h2 class="t-title-md">Account</h2>
         <dl class="kv">
-          <dt>Name</dt>           <dd data-field="name">—</dd>
-          <dt>Email</dt>          <dd class="mono" data-field="email">—</dd>
-          <dt>Provider</dt>       <dd data-field="provider">—</dd>
-          <dt>Member since</dt>   <dd data-field="memberSince">—</dd>
+          <dt>Name</dt>           <dd data-field="name">-</dd>
+          <dt>Email</dt>          <dd class="mono" data-field="email">-</dd>
+          <dt>Provider</dt>       <dd data-field="provider">-</dd>
+          <dt>Member since</dt>   <dd data-field="memberSince">-</dd>
           <dt>Plan</dt>           <dd><LeafBadge variant="accent">Solo</LeafBadge></dd>
         </dl>
       </LeafCard>
@@ -50,8 +50,8 @@ const DMG_URL = 'https://updates.gundem.tech/Leaf.dmg';
         <h2 class="t-title-md">Danger zone</h2>
         <p class="t-body muted">
           Delete your account, including all team memberships, share lists, and
-          identity keys held on the relay. <strong>Your local Mac data is not affected</strong> —
-          wipe that from the macOS app's Settings → Danger zone.
+          identity keys held on the relay. <strong>Your local Mac data is not affected.</strong>
+          Wipe that from the macOS app's Settings → Danger zone.
         </p>
         <LeafButton variant="destructive" size="md" id="delete-btn">Delete account →</LeafButton>
       </LeafCard>

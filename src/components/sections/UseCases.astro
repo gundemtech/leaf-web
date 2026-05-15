@@ -1,38 +1,880 @@
 ---
-import LeafCard from '../LeafCard.astro';
 import LeafEyebrow from '../LeafEyebrow.astro';
-const cases = [
-  { title: 'Async handoff between teammates', q: 'Where did Anton stop on the auth refactor?', a: 'Leaf shows last commit, last Slack decision, open PR.' },
-  { title: 'Prod-bug archaeology', q: 'When did we last touch this file? Who? Why?', a: 'Leaf maps commits ↔ Linear issues ↔ Slack threads.' },
-  { title: 'Decision archaeology', q: 'Why did we pick GRDB over CoreData?', a: 'Leaf surfaces the Slack thread + PR description.' },
-  { title: 'AI coaching with real context', q: 'Suggest a sprint plan based on my actual work.', a: 'Claude Code reads your week + team velocity.' },
-];
 ---
 <section id="use-cases" class="use-cases">
   <div class="wrap">
-    <LeafEyebrow number="04" label="IN PRACTICE" />
-    <h2 class="t-display">What Leaf actually solves.</h2>
+    <div data-reveal><LeafEyebrow label="WHAT IT FEELS LIKE" /></div>
+    <h2 class="big" data-reveal>Six moments the week changes.</h2>
 
-    <ul class="list">
-      {cases.map(c => (
-        <li>
-          <LeafCard variant="raised" padding="generous">
-            <h3 class="t-title-md">{c.title}</h3>
-            <p class="q t-body-lg mono">"{c.q}"</p>
-            <p class="a t-body"><span class="arrow">→</span> {c.a}</p>
-          </LeafCard>
-        </li>
-      ))}
-    </ul>
+    <ol class="list">
+      {/* ─────────── I. Monday brief ─────────── */}
+      <li class="case" data-reveal>
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="q">What did the team ship while I was out?</span>
+          <span class="chevron" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 5 6 8 9 5"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-grid">
+              <div class="content">
+                <p class="case-title">Stop scrolling chats on Monday.</p>
+                <p class="a">
+                  Every PR merged, every status change, every decision threaded out,
+                  collapsed into one brief, 30 seconds. Nobody asks "so, what did I
+                  miss." They just know.
+                </p>
+              </div>
+              <div class="mock-wrap">
+                <div class="mock" data-anim="brief">
+                  <header class="window-chrome">
+                    <span class="tl tl-r"></span><span class="tl tl-y"></span><span class="tl tl-g"></span>
+                    <span class="window-title mono">leaf · brief</span>
+                    <span class="status-pill mono ml-auto">● live</span>
+                  </header>
+                  <div class="mock-body">
+                    <div class="scan-bar" data-scan></div>
+                    <header class="mock-h">
+                      <span class="dot pulse"></span>
+                      <span class="mono">Monday brief</span>
+                      <span class="mono dim ml-auto">last 5 days</span>
+                    </header>
+                    <ul class="mock-rows" data-stagger>
+                      <li><span class="num-cell mono" data-count="12">0</span><span>PRs merged across 4 repos</span></li>
+                      <li><span class="num-cell mono" data-count="8">0</span><span>tickets moved to <em>done</em></span></li>
+                      <li><span class="num-cell mono" data-count="3">0</span><span>architectural decisions surfaced</span></li>
+                      <li><span class="num-cell mono" data-count="1">0</span><span>blocker resolved by Tuesday</span></li>
+                    </ul>
+                    <footer class="mock-f">
+                      <span class="cta-link mono">read full brief →</span>
+                    </footer>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      {/* ─────────── II. AI with real context ─────────── */}
+      <li class="case" data-reveal>
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="q">Why did we pick this database last month?</span>
+          <span class="chevron" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 5 6 8 9 5"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-grid">
+              <div class="content">
+                <p class="case-title">Stop explaining your codebase to your AI every morning.</p>
+                <p class="a">
+                  Claude Code, Cursor, Claude Desktop. They all read the same memory
+                  through MCP. Your team's actual decisions, commits, threads. No
+                  more "as an AI, I don't have context about your project."
+                </p>
+              </div>
+              <div class="mock-wrap">
+                <div class="mock mock-chat" data-anim="chat">
+                  <header class="window-chrome">
+                    <span class="tl tl-r"></span><span class="tl tl-y"></span><span class="tl tl-g"></span>
+                    <span class="window-title mono">claude code · MCP</span>
+                  </header>
+                  <div class="mock-body">
+                    <div class="chat-prompt">
+                      <span class="chat-tag mono">@leaf</span>
+                      <span>why did we pick this database last month?</span>
+                    </div>
+                    <div class="thinking" data-thinking aria-hidden="true">
+                      <span></span><span></span><span></span>
+                    </div>
+                    <div class="tool-call mono" data-toolcall aria-hidden="true">
+                      <span class="tc-arrow">⤿</span> <span class="tc-text">tool · leaf.search("database decision")</span>
+                    </div>
+                    <div class="chat-reply" data-typewriter>
+                      <p>Picked <span class="hi">Apr 12</span> in <span class="mono hi">#arch</span>:</p>
+                      <p class="quote">"WAL is non-negotiable for our migration story. SQLite would lock during the cutover."</p>
+                      <p class="meta mono">
+                        <span>47 msgs</span><span class="sep">·</span>
+                        <span>3 contributors</span><span class="sep">·</span>
+                        <span>commit <span class="hi">a3f2</span></span>
+                      </p>
+                    </div>
+                    <div class="chat-cursor"><span class="caret"></span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      {/* ─────────── III. Decision archaeology ─────────── */}
+      <li class="case" data-reveal>
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="q">Why is there a queue here instead of a direct call?</span>
+          <span class="chevron" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 5 6 8 9 5"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-grid">
+              <div class="content">
+                <p class="case-title">Find the thread that explains why.</p>
+                <p class="a">
+                  Someone made that call months ago. The reasoning lived in a chat
+                  thread now buried under 4,000 messages. Leaf surfaces it in seconds:
+                  the people, the commit it tied to, the moment the architecture
+                  changed.
+                </p>
+              </div>
+              <div class="mock-wrap">
+                <div class="mock" data-anim="decision">
+                  <header class="window-chrome">
+                    <span class="tl tl-r"></span><span class="tl tl-y"></span><span class="tl tl-g"></span>
+                    <span class="window-title mono">leaf · search</span>
+                  </header>
+                  <div class="mock-body">
+                    <div class="search-bar">
+                      <span class="search-icon mono">⌕</span>
+                      <span class="search-text">queue here</span>
+                      <span class="search-meta mono dim ml-auto" data-search-meta>0 results</span>
+                    </div>
+                    <div class="scan-bar" data-scan></div>
+                    <header class="mock-h">
+                      <span class="dot pulse"></span>
+                      <span class="mono">decision · 2 weeks ago</span>
+                      <span class="badge ml-auto">match</span>
+                    </header>
+                    <dl class="mock-dl" data-stagger>
+                      <dt class="mono">author</dt>      <dd>3 engineers, primary contributor authored the diff</dd>
+                      <dt class="mono">channel</dt>     <dd class="mono">#ios-architecture · 47 msgs</dd>
+                      <dt class="mono">commit</dt>      <dd class="mono"><span class="hi">a3f2</span> — move to async dispatch queue</dd>
+                      <dt class="mono">outcome</dt>     <dd>approved · shipped in v1.4</dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      {/* ─────────── IV. Handoff ─────────── */}
+      <li class="case" data-reveal>
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="q">Where did the last person leave the refactor?</span>
+          <span class="chevron" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 5 6 8 9 5"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-grid">
+              <div class="content">
+                <p class="case-title">Hand off work without writing a doc.</p>
+                <p class="a">
+                  Last commit, open review, last status change, last related thread,
+                  surfaced as one handoff card. The next person picks it up cold
+                  without a sync meeting.
+                </p>
+              </div>
+              <div class="mock-wrap">
+                <div class="mock" data-anim="handoff">
+                  <header class="window-chrome">
+                    <span class="tl tl-r"></span><span class="tl tl-y"></span><span class="tl tl-g"></span>
+                    <span class="window-title mono">leaf · handoff</span>
+                    <span class="status-pill mono ml-auto" data-status>assembling…</span>
+                  </header>
+                  <div class="mock-body">
+                    <header class="mock-h">
+                      <span class="dot pulse"></span>
+                      <span class="mono">handoff · auth refactor</span>
+                      <span class="badge ml-auto">picking up</span>
+                    </header>
+                    <ul class="handoff-rows" data-stagger>
+                      <li>
+                        <span class="check" data-check>○</span>
+                        <span class="ho-label mono">last commit</span>
+                        <span class="ho-value"><span class="hi">feat:</span> token rotation · 2h ago</span>
+                      </li>
+                      <li>
+                        <span class="check" data-check>○</span>
+                        <span class="ho-label mono">open review</span>
+                        <span class="ho-value mono">#142 · 3 comments</span>
+                      </li>
+                      <li>
+                        <span class="check" data-check>○</span>
+                        <span class="ho-label mono">status</span>
+                        <span class="ho-value">In Progress · sprint 14</span>
+                      </li>
+                      <li>
+                        <span class="check" data-check>○</span>
+                        <span class="ho-label mono">last thread</span>
+                        <span class="ho-value mono">#engineering · 8 msgs</span>
+                      </li>
+                    </ul>
+                    <footer class="mock-f">
+                      <span class="cta-link mono">open full handoff →</span>
+                    </footer>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      {/* ─────────── V. Onboarding ─────────── */}
+      <li class="case" data-reveal>
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="q">How does our payment service actually work?</span>
+          <span class="chevron" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 5 6 8 9 5"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-grid">
+              <div class="content">
+                <p class="case-title">New hires get the past without the meeting.</p>
+                <p class="a">
+                  The new engineer asks their AI through MCP. Gets actual answers:
+                  past commits, past threads, past decisions, the moment each piece
+                  was built. Months of tribal knowledge served as a brief instead of
+                  a chain of "could you explain..."
+                </p>
+              </div>
+              <div class="mock-wrap">
+                <div class="mock mock-chat" data-anim="chat">
+                  <header class="window-chrome">
+                    <span class="tl tl-r"></span><span class="tl tl-y"></span><span class="tl tl-g"></span>
+                    <span class="window-title mono">cursor · MCP</span>
+                  </header>
+                  <div class="mock-body">
+                    <div class="chat-prompt">
+                      <span class="chat-tag mono">@leaf</span>
+                      <span>how does our payment service work?</span>
+                    </div>
+                    <div class="thinking" data-thinking aria-hidden="true">
+                      <span></span><span></span><span></span>
+                    </div>
+                    <div class="tool-call mono" data-toolcall aria-hidden="true">
+                      <span class="tc-arrow">⤿</span> <span class="tc-text">tool · leaf.search("payment service")</span>
+                    </div>
+                    <div class="chat-reply" data-typewriter>
+                      <p>Built in Q3. Three parts:</p>
+                      <ul class="numbered">
+                        <li><span class="mono hi">/webhooks</span> — receives provider callbacks</li>
+                        <li><span class="mono hi">/reconcile</span> — runs nightly, idempotent</li>
+                        <li><span class="mono hi">/payouts</span> — manual approval queue</li>
+                      </ul>
+                      <p class="meta mono">
+                        <span>core decision Aug 4 · #fin · commit <span class="hi">b7e1</span></span>
+                      </p>
+                    </div>
+                    <div class="chat-cursor"><span class="caret"></span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      {/* ─────────── VI. Personal blockers ─────────── */}
+      <li class="case" data-reveal>
+        <button class="case-toggle" type="button" aria-expanded="false">
+          <span class="q">Am I quietly stuck without realizing it?</span>
+          <span class="chevron" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 5 6 8 9 5"/></svg></span>
+        </button>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="case-grid">
+              <div class="content">
+                <p class="case-title">See your own blockers before anyone else does.</p>
+                <p class="a">
+                  Stalled PR for 3 days. Two context-switches an hour. Same ticket
+                  open since Tuesday. Visible only to you, in your own UI. No manager
+                  dashboard. Your call to escalate, or not.
+                </p>
+              </div>
+              <div class="mock-wrap">
+                <div class="mock mock-alert mock-menubar" data-anim="menubar">
+                  <header class="window-chrome chrome-menubar">
+                    <span class="leaf-icon">●</span>
+                    <span class="window-title mono">menu bar · you</span>
+                    <span class="mono dim ml-auto">⌥⌘L</span>
+                  </header>
+                  <div class="mock-body">
+                    <header class="mock-h">
+                      <span class="dot pulse"></span>
+                      <span class="mono">you · last 24h</span>
+                      <span class="badge warn-badge ml-auto" data-nudge-counter><span data-nudge-num>0</span> nudges</span>
+                    </header>
+                    <ul class="alert-rows" data-stagger>
+                      <li><span class="warn">!</span><span>stalled PR for 3 days <span class="mono dim">#142</span></span></li>
+                      <li><span class="warn">!</span><span>two context-switches per hour</span></li>
+                      <li><span class="warn">!</span><span>same ticket open since Tuesday <span class="mono dim">LEA-431</span></span></li>
+                    </ul>
+                    <footer class="mock-f">
+                      <span class="mono dim">visible only to you · no manager dashboard</span>
+                    </footer>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ol>
   </div>
 </section>
 
 <style>
-.use-cases { padding: var(--space-5xl) 0; }
-.use-cases h2 { margin: var(--space-md) 0 var(--space-3xl); }
-.list { display: flex; flex-direction: column; gap: var(--space-md); }
-.list h3 { margin-bottom: var(--space-sm); }
-.q { color: var(--text-primary); margin-bottom: var(--space-sm); font-style: italic; }
-.a { color: var(--text-secondary); }
-.arrow { color: var(--accent-primary); }
+.use-cases {
+  padding: var(--space-5xl) 0;
+  border-top: 1px solid var(--border-subtle);
+}
+.big {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(28px, 4.2vw, 56px);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin: var(--space-lg) 0 var(--space-4xl);
+  max-width: 22ch;
+}
+.list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+
+/* ─────────── COLLAPSIBLE CASE ─────────── */
+.case {
+  border-top: 1px solid var(--border-subtle);
+}
+.case:last-child { border-bottom: 1px solid var(--border-subtle); }
+
+.case-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  background: none;
+  border: 0;
+  padding: var(--space-xl) 0;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  transition: padding 200ms var(--ease-standard);
+}
+.case-toggle .q {
+  font: 500 26px/1.3 var(--font-body);
+  letter-spacing: -0.018em;
+  color: var(--text-primary);
+  margin: 0;
+  transition: color 220ms var(--ease-standard);
+}
+.case-toggle:hover .q,
+.case-toggle:focus-visible .q { color: var(--accent-primary); }
+.case-toggle:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent-primary) 50%, transparent); outline-offset: 4px; border-radius: 4px; }
+
+.chevron {
+  flex-shrink: 0;
+  width: 30px; height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: 400 16px/1 var(--font-body);
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  transition:
+    transform 360ms var(--ease-emphasized),
+    color 220ms var(--ease-standard),
+    border-color 220ms var(--ease-standard),
+    background-color 220ms var(--ease-standard);
+}
+.chevron svg { display: block; transition: transform 360ms var(--ease-emphasized); }
+.case-toggle:hover .chevron {
+  color: var(--accent-primary);
+  border-color: color-mix(in srgb, var(--accent-primary) 40%, transparent);
+}
+.case.is-open .chevron {
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  background: color-mix(in srgb, var(--accent-primary) 14%, transparent);
+}
+.case.is-open .chevron svg { transform: rotate(180deg); }
+
+/* Smooth height collapse via grid-template-rows trick */
+.case-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 460ms var(--ease-emphasized);
+}
+.case-body-inner {
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 320ms var(--ease-standard);
+}
+.case.is-open .case-body { grid-template-rows: 1fr; }
+.case.is-open .case-body-inner { opacity: 1; transition-delay: 120ms; }
+
+.case-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: var(--space-4xl);
+  padding-bottom: var(--space-4xl);
+  align-items: start;
+}
+
+.content { max-width: 60ch; padding-top: var(--space-sm); }
+.case-title {
+  font: 500 14px/1.45 var(--font-body);
+  letter-spacing: 0;
+  color: var(--accent-primary);
+  margin: 0 0 var(--space-md);
+}
+.a { color: var(--text-secondary); font: 400 16px/1.6 var(--font-body); margin: 0; }
+
+@media (max-width: 900px) {
+  .case-grid { grid-template-columns: 1fr; gap: var(--space-xl); padding-bottom: var(--space-3xl); }
+  .case-toggle .q { font-size: 20px; }
+}
+
+/* ─────────── MOCK CARD ─────────── */
+.mock-wrap { perspective: 1200px; }
+.mock {
+  margin: 0;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--accent-primary) 5%, transparent) 0%,
+      transparent 50%),
+    color-mix(in srgb, #ffffff 4%, transparent);
+  border: 1px solid color-mix(in srgb, #ffffff 14%, transparent);
+  border-radius: 14px;
+  overflow: hidden;
+  font: 400 13px/1.5 var(--font-body);
+  color: var(--text-secondary);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, #ffffff 8%, transparent) inset,
+    0 18px 40px color-mix(in srgb, #000 40%, transparent);
+}
+
+.window-chrome {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 10px 14px;
+  background: color-mix(in srgb, #000 30%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, #ffffff 8%, transparent);
+}
+.tl { width: 11px; height: 11px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.tl-r { background: #FF5F57; }
+.tl-y { background: #FEBC2E; }
+.tl-g { background: #28C840; }
+.window-title { font-size: 11px; color: var(--text-tertiary); margin-left: var(--space-md); }
+
+.chrome-menubar { padding: 8px 12px; }
+.chrome-menubar .leaf-icon {
+  color: var(--accent-primary);
+  font-size: 10px;
+  text-shadow: 0 0 8px color-mix(in srgb, var(--accent-primary) 70%, transparent);
+}
+
+.status-pill {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--accent-primary);
+  background: color-mix(in srgb, var(--accent-primary) 14%, transparent);
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 26%, transparent);
+}
+
+.mock-body { padding: var(--space-lg); position: relative; }
+
+.scan-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent-primary) 90%, transparent), transparent);
+  opacity: 0;
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+.scan-bar.is-scanning { animation: scan 1300ms cubic-bezier(.5,0,.5,1) forwards; }
+@keyframes scan {
+  0%   { opacity: 0; transform: translateX(-100%); }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(100%); }
+}
+
+.mock-h {
+  display: flex; align-items: center; gap: var(--space-sm);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid color-mix(in srgb, #ffffff 8%, transparent);
+  margin-bottom: var(--space-md);
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+}
+.mock-h .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent-primary);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent-primary) 60%, transparent);
+}
+.dot.pulse { animation: pulse 2.4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
+
+.badge {
+  font: 500 10px/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  background: color-mix(in srgb, var(--accent-primary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 30%, transparent);
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+.badge.bump { animation: badgeBump 320ms var(--ease-standard); }
+@keyframes badgeBump { 0% { transform: scale(1); } 50% { transform: scale(1.18); } 100% { transform: scale(1); } }
+.badge.warn-badge {
+  color: var(--status-warning, #D97706);
+  background: color-mix(in srgb, #D97706 14%, transparent);
+  border-color: color-mix(in srgb, #D97706 30%, transparent);
+}
+
+.ml-auto { margin-left: auto; }
+.dim { color: var(--text-quaternary); }
+.hi { color: var(--accent-primary); }
+
+.mock-rows { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.mock-rows li {
+  display: grid; grid-template-columns: 36px 1fr; gap: var(--space-md);
+  align-items: baseline; color: var(--text-secondary);
+  padding: 6px 8px; margin: 0 -8px; border-radius: 6px;
+  transition: background-color 160ms var(--ease-standard);
+}
+.mock-rows li:hover { background: color-mix(in srgb, var(--accent-primary) 8%, transparent); }
+.mock-rows .num-cell {
+  text-align: right; color: var(--text-primary);
+  font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.mock-rows em { font-style: normal; color: var(--accent-primary); font-weight: 500; }
+
+.mock-dl { display: grid; grid-template-columns: 110px 1fr; gap: var(--space-sm) var(--space-md); margin: 0; }
+.mock-dl dt { color: var(--text-quaternary); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; }
+.mock-dl dd { margin: 0; color: var(--text-secondary); font-size: 13px; }
+
+.cta-link { color: var(--text-tertiary); transition: color 200ms var(--ease-standard); }
+.cta-link.glow { color: var(--accent-primary); text-shadow: 0 0 12px color-mix(in srgb, var(--accent-primary) 60%, transparent); }
+.mock-f {
+  margin-top: var(--space-md); padding-top: var(--space-md);
+  border-top: 1px solid color-mix(in srgb, #ffffff 8%, transparent);
+  text-align: right;
+}
+.mock-f:hover .cta-link { color: var(--accent-primary); }
+
+.mock-chat .chat-prompt {
+  display: flex; gap: var(--space-md);
+  padding-bottom: var(--space-md); margin-bottom: var(--space-md);
+  border-bottom: 1px solid color-mix(in srgb, #ffffff 8%, transparent);
+  color: var(--text-primary); font-size: 14px;
+}
+.mock-chat .chat-tag { color: var(--accent-primary); font-size: 13px; flex-shrink: 0; font-weight: 500; }
+
+.thinking { display: none; gap: 5px; align-items: center; height: 18px; margin-bottom: var(--space-md); }
+.thinking.show { display: inline-flex; }
+.thinking span {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--text-tertiary);
+  animation: think 1.2s ease-in-out infinite;
+}
+.thinking span:nth-child(2) { animation-delay: 0.16s; }
+.thinking span:nth-child(3) { animation-delay: 0.32s; }
+@keyframes think { 0%, 60%, 100% { opacity: 0.25; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+
+.tool-call {
+  display: none;
+  font-size: 11.5px;
+  color: var(--accent-primary);
+  background: color-mix(in srgb, var(--accent-primary) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 22%, transparent);
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-bottom: var(--space-md);
+  align-items: center; gap: var(--space-sm);
+  opacity: 0; transform: translateY(-4px);
+  transition: opacity 240ms var(--ease-standard), transform 240ms var(--ease-standard);
+}
+.tool-call.show { display: inline-flex; }
+.tool-call.in { opacity: 1; transform: translateY(0); }
+.tc-arrow { color: var(--accent-primary); }
+
+.mock-chat .chat-reply { opacity: 0; transition: opacity 220ms var(--ease-standard); }
+.mock-chat .chat-reply.show { opacity: 1; }
+.mock-chat .chat-reply p { margin: 0 0 var(--space-sm); }
+.mock-chat .chat-reply p:last-child { margin-bottom: 0; }
+.mock-chat .quote {
+  border-left: 2px solid var(--accent-primary);
+  padding: 4px var(--space-md);
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--accent-primary) 6%, transparent);
+  border-radius: 0 6px 6px 0;
+}
+.mock-chat .meta { font-size: 11px; color: var(--text-tertiary); display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-md) !important; }
+.mock-chat .meta .sep { color: var(--text-quaternary); }
+.numbered { list-style: none; padding: 0; margin: var(--space-sm) 0; display: flex; flex-direction: column; gap: 4px; color: var(--text-secondary); font-size: 13px; }
+
+.chat-cursor { margin-top: var(--space-sm); display: none; }
+.chat-cursor.show { display: block; }
+.caret { display: inline-block; width: 7px; height: 14px; background: var(--accent-primary); vertical-align: middle; animation: blink 1s steps(2) infinite; }
+@keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+.search-bar {
+  display: flex; align-items: center; gap: var(--space-sm);
+  background: color-mix(in srgb, #000 25%, transparent);
+  border: 1px solid color-mix(in srgb, #ffffff 8%, transparent);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: var(--space-md);
+  font-size: 13px;
+  color: var(--text-primary);
+}
+.search-icon { color: var(--text-tertiary); }
+.search-meta { font-size: 11px; }
+.search-text { color: var(--text-primary); }
+.search-text::after {
+  content: ''; display: inline-block;
+  width: 1px; height: 12px;
+  background: var(--accent-primary);
+  margin-left: 2px; vertical-align: middle;
+  animation: blink 1s steps(2) infinite;
+}
+
+.handoff-rows { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.handoff-rows li {
+  display: grid; grid-template-columns: 22px 110px 1fr;
+  gap: var(--space-sm) var(--space-md);
+  align-items: baseline; color: var(--text-secondary);
+  padding: 6px 8px; margin: 0 -8px; border-radius: 6px;
+  transition: background-color 160ms var(--ease-standard);
+}
+.handoff-rows li:hover { background: color-mix(in srgb, var(--accent-primary) 8%, transparent); }
+.handoff-rows .check {
+  color: var(--text-quaternary); font-size: 14px; text-align: center;
+  transition: color 240ms var(--ease-standard), transform 240ms var(--ease-standard);
+}
+.handoff-rows .check.done {
+  color: var(--accent-primary);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--accent-primary) 60%, transparent);
+  transform: scale(1.15);
+}
+.handoff-rows .ho-label { color: var(--text-quaternary); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; }
+.handoff-rows .ho-value { color: var(--text-secondary); font-size: 13px; }
+
+.alert-rows { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.alert-rows li {
+  display: grid; grid-template-columns: 18px 1fr;
+  gap: var(--space-sm); align-items: baseline;
+  color: var(--text-secondary); font-size: 13px;
+  padding: 6px 8px; margin: 0 -8px; border-radius: 6px;
+  transition: background-color 160ms var(--ease-standard);
+}
+.alert-rows li:hover { background: color-mix(in srgb, var(--status-warning, #D97706) 10%, transparent); }
+.alert-rows .warn {
+  color: var(--status-warning, #D97706);
+  font-weight: 700; font-family: var(--font-mono);
+  text-align: center;
+  animation: warn-pulse 2.6s ease-in-out infinite;
+}
+@keyframes warn-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ─────────── stagger reveal triggered by .case.is-open ─────────── */
+[data-stagger] > * {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 500ms var(--ease-standard),
+    transform 500ms var(--ease-standard);
+}
+.case.is-open [data-stagger] > * { opacity: 1; transform: translateY(0); }
+.case.is-open [data-stagger] > *:nth-child(1) { transition-delay: 280ms; }
+.case.is-open [data-stagger] > *:nth-child(2) { transition-delay: 410ms; }
+.case.is-open [data-stagger] > *:nth-child(3) { transition-delay: 540ms; }
+.case.is-open [data-stagger] > *:nth-child(4) { transition-delay: 670ms; }
+.case.is-open [data-stagger] > *:nth-child(5) { transition-delay: 800ms; }
+.case.is-open [data-stagger] > *:nth-child(6) { transition-delay: 930ms; }
+.case.is-open [data-stagger] > *:nth-child(7) { transition-delay: 1060ms; }
+.case.is-open [data-stagger] > *:nth-child(8) { transition-delay: 1190ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-stagger] > * { opacity: 1; transform: none; transition: none; }
+  .dot.pulse, .alert-rows .warn, .caret, .scan-bar, .thinking span, .search-text::after {
+    animation: none;
+  }
+  .case-body, .case-body-inner { transition: none; }
+  .chevron { transition: none; }
+}
 </style>
+
+<script>
+const cases = document.querySelectorAll<HTMLElement>('.use-cases .case');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+cases.forEach(c => {
+  const toggle = c.querySelector<HTMLButtonElement>('.case-toggle');
+  if (!toggle) return;
+  toggle.addEventListener('click', () => {
+    const wasOpen = c.classList.contains('is-open');
+    c.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', String(!wasOpen));
+    if (!wasOpen && !c.dataset.animPlayed) {
+      c.dataset.animPlayed = '1';
+      // wait for the body to start expanding, then play mock animation
+      setTimeout(() => runMockAnimation(c), reduceMotion ? 0 : 220);
+    }
+  });
+});
+
+function runMockAnimation(caseEl: HTMLElement) {
+  const mock = caseEl.querySelector<HTMLElement>('.mock');
+  if (!mock) return;
+
+  const scan = mock.querySelector<HTMLElement>('[data-scan]');
+  if (scan) {
+    scan.classList.remove('is-scanning');
+    void scan.offsetWidth;
+    requestAnimationFrame(() => scan.classList.add('is-scanning'));
+  }
+
+  switch (mock.dataset.anim) {
+    case 'brief':    return runBrief(mock);
+    case 'chat':     return runChat(mock);
+    case 'decision': return runDecision(mock);
+    case 'handoff':  return runHandoff(mock);
+    case 'menubar':  return runMenubar(mock);
+  }
+}
+
+function runBrief(mock: HTMLElement) {
+  if (reduceMotion) {
+    mock.querySelectorAll<HTMLElement>('.num-cell[data-count]').forEach(c => c.textContent = c.dataset.count ?? c.textContent);
+    return;
+  }
+  mock.querySelectorAll<HTMLElement>('.num-cell[data-count]').forEach((cell, i) => {
+    const final = parseInt(cell.dataset.count ?? '0', 10);
+    animateCount(cell, final, 1100, 280 + i * 180);
+  });
+  const cta = mock.querySelector<HTMLElement>('.cta-link');
+  setTimeout(() => cta?.classList.add('glow'), 280 + 4 * 180 + 1100);
+}
+
+function runChat(mock: HTMLElement) {
+  const thinking = mock.querySelector<HTMLElement>('[data-thinking]');
+  const tool = mock.querySelector<HTMLElement>('[data-toolcall]');
+  const reply = mock.querySelector<HTMLElement>('.chat-reply');
+  const cursor = mock.querySelector<HTMLElement>('.chat-cursor');
+  if (!thinking || !tool || !reply || !cursor) return;
+
+  if (reduceMotion) {
+    reply.classList.add('show');
+    cursor.classList.add('show');
+    return;
+  }
+
+  setTimeout(() => thinking.classList.add('show'), 100);
+  setTimeout(() => {
+    thinking.classList.remove('show');
+    tool.classList.add('show');
+    requestAnimationFrame(() => tool.classList.add('in'));
+  }, 1000);
+  setTimeout(() => {
+    reply.classList.add('show');
+    typewriter(reply, 16, 28);
+    cursor.classList.add('show');
+  }, 1800);
+}
+
+function runDecision(mock: HTMLElement) {
+  const meta = mock.querySelector<HTMLElement>('[data-search-meta]');
+  if (reduceMotion) {
+    if (meta) meta.textContent = '1 result';
+    return;
+  }
+  if (meta) {
+    meta.textContent = 'searching…';
+    setTimeout(() => meta.textContent = '1 result', 900);
+  }
+  const badge = mock.querySelector<HTMLElement>('.badge');
+  setTimeout(() => {
+    badge?.classList.remove('bump');
+    void badge?.offsetWidth;
+    badge?.classList.add('bump');
+  }, 1100);
+}
+
+function runHandoff(mock: HTMLElement) {
+  const status = mock.querySelector<HTMLElement>('[data-status]');
+  const checks = mock.querySelectorAll<HTMLElement>('[data-check]');
+  if (reduceMotion) {
+    if (status) status.textContent = 'ready';
+    checks.forEach(c => { c.classList.add('done'); c.textContent = '●'; });
+    return;
+  }
+  if (status) status.textContent = 'assembling…';
+  checks.forEach((c, i) => {
+    setTimeout(() => { c.classList.add('done'); c.textContent = '●'; }, 400 + i * 320);
+  });
+  setTimeout(() => { if (status) status.textContent = 'ready'; }, 400 + checks.length * 320 + 200);
+}
+
+function runMenubar(mock: HTMLElement) {
+  const numEl = mock.querySelector<HTMLElement>('[data-nudge-num]');
+  const badge = mock.querySelector<HTMLElement>('[data-nudge-counter]');
+  if (!numEl || !badge) return;
+  if (reduceMotion) { numEl.textContent = '3'; return; }
+  [280, 410, 540].forEach((delay, i) => {
+    setTimeout(() => {
+      numEl.textContent = String(i + 1);
+      badge.classList.remove('bump');
+      void badge.offsetWidth;
+      badge.classList.add('bump');
+    }, delay);
+  });
+}
+
+function animateCount(el: HTMLElement, target: number, durationMs: number, delayMs: number) {
+  const start = performance.now() + delayMs;
+  const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+  const step = (now: number) => {
+    if (now < start) { requestAnimationFrame(step); return; }
+    const t = Math.min(1, (now - start) / durationMs);
+    el.textContent = String(Math.round(target * ease(t)));
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = String(target);
+  };
+  requestAnimationFrame(step);
+}
+
+function typewriter(root: HTMLElement, charsPerTick: number, tickMs: number) {
+  type Job = { node: Text; full: string };
+  const jobs: Job[] = [];
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) {
+    const tn = walker.currentNode as Text;
+    if (tn.nodeValue && tn.nodeValue.trim().length > 0) {
+      jobs.push({ node: tn, full: tn.nodeValue });
+      tn.nodeValue = '';
+    }
+  }
+  let jobIdx = 0;
+  let charIdx = 0;
+  const tick = () => {
+    if (jobIdx >= jobs.length) return;
+    const job = jobs[jobIdx];
+    const next = Math.min(job.full.length, charIdx + charsPerTick);
+    job.node.nodeValue = job.full.slice(0, next);
+    charIdx = next;
+    if (charIdx >= job.full.length) { jobIdx++; charIdx = 0; }
+    setTimeout(tick, tickMs);
+  };
+  setTimeout(tick, 60);
+}
+</script>

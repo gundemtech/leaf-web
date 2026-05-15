@@ -23,16 +23,16 @@ function setField(field: string, value: string): void {
   }
   const user = session.user;
   const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
-  const fullName = String(meta.full_name ?? meta.name ?? meta.user_name ?? '—');
+  const fullName = String(meta.full_name ?? meta.name ?? meta.user_name ?? '-');
   const provider = String(user.app_metadata?.provider ?? 'email');
 
   setField('name', fullName);
-  setField('email', user.email ?? '—');
+  setField('email', user.email ?? '-');
   setField('provider', provider);
-  setField('memberSince', user.created_at ? fmtDate(user.created_at) : '—');
+  setField('memberSince', user.created_at ? fmtDate(user.created_at) : '-');
 
   const echo = document.querySelector<HTMLElement>('[data-user-email]');
-  if (echo) echo.textContent = user.email ?? '—';
+  if (echo) echo.textContent = user.email ?? '-';
 })();
 
 // Sign out (button handler already wired inline in dashboard.astro,

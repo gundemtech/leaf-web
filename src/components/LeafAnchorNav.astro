@@ -6,8 +6,12 @@ const { items } = Astro.props;
 ---
 <nav class="anchornav" aria-label="Section navigation">
   <ul>
-    {items.map(item => (
-      <li><a href={`#${item.id}`} data-anchor={item.id}>{item.label}</a></li>
+    {items.map((item, i) => (
+      <li>
+        <button type="button" class:list={["tab-btn", { active: i === 0 }]} data-anchor={item.id}>
+          {item.label}
+        </button>
+      </li>
     ))}
   </ul>
 </nav>
@@ -21,28 +25,78 @@ const { items } = Astro.props;
   border-bottom: 1px solid var(--border-subtle);
   padding: var(--space-sm) 0;
 }
-.anchornav ul { display: flex; gap: var(--space-xl); max-width: var(--content-max); margin: 0 auto; padding: 0 var(--space-xl); overflow-x: auto; }
-.anchornav a {
-  color: var(--text-secondary); font: 500 14px/1 var(--font-body);
+.anchornav ul {
+  display: flex;
+  gap: var(--space-xl);
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 var(--space-xl);
+  overflow-x: auto;
+  list-style: none;
+}
+.tab-btn {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font: 500 14px/1 var(--font-body);
   padding: var(--space-xs) 0;
   border-bottom: 2px solid transparent;
   white-space: nowrap;
-  transition: color var(--dur-snap) var(--ease-standard), border-color var(--dur-snap) var(--ease-standard);
+  transition:
+    color var(--dur-snap) var(--ease-standard),
+    border-color var(--dur-snap) var(--ease-standard);
 }
-.anchornav a:hover { color: var(--text-primary); }
-.anchornav a.active { color: var(--accent-primary); border-bottom-color: var(--accent-primary); }
+.tab-btn:hover { color: var(--text-primary); }
+.tab-btn.active { color: var(--accent-primary); border-bottom-color: var(--accent-primary); }
+
+/* Sections wired into this nav are hidden by default; only the .is-active
+   one renders. Authors mark them with data-anchor-section. Wrapped in :global
+   because the sections live in other components. */
+:global([data-anchor-section]) { display: none; }
+:global([data-anchor-section].is-active) {
+  display: block;
+  animation: anchorSwap 240ms var(--ease-standard);
+}
+@keyframes anchorSwap {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :global([data-anchor-section].is-active) { animation: none; }
+}
 </style>
 
 <script>
-const links = document.querySelectorAll<HTMLAnchorElement>('.anchornav a');
-const sections = Array.from(links).map(a => document.getElementById(a.dataset.anchor!)).filter(Boolean) as HTMLElement[];
-const obs = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      const id = e.target.id;
-      links.forEach(l => l.classList.toggle('active', l.dataset.anchor === id));
-    }
+// Tab behaviour: clicking a button shows only the matching section.
+// First button is active by default. No scrolling — content swaps in place.
+const buttons = document.querySelectorAll<HTMLButtonElement>('.anchornav .tab-btn');
+const sections = new Map<string, HTMLElement>();
+
+buttons.forEach(btn => {
+  const id = btn.dataset.anchor;
+  if (!id) return;
+  const sec = document.getElementById(id);
+  if (sec) {
+    sec.setAttribute('data-anchor-section', '');
+    sections.set(id, sec);
+  }
+});
+
+// Activate first by default.
+const ids = Array.from(sections.keys());
+if (ids[0]) {
+  sections.get(ids[0])!.classList.add('is-active');
+}
+
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.anchor;
+    if (!id) return;
+    buttons.forEach(b => b.classList.toggle('active', b === btn));
+    sections.forEach((sec, key) => {
+      sec.classList.toggle('is-active', key === id);
+    });
   });
-}, { rootMargin: '-30% 0px -60% 0px' });
-sections.forEach(s => obs.observe(s));
+});
 </script>

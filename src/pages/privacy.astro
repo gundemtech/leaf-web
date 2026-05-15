@@ -35,7 +35,7 @@ const shareControls = [
   { title: 'Default share list is empty.', desc: 'When you install Leaf, your team sees nothing. You opt in app by app, event type by event type.' },
   { title: 'Per-app, per-event-type whitelist.', desc: 'Choose Xcode at L4 granularity, Slack at L1, and Notion silent. Toggle git_commit on, focus_mode off. Pick your own.' },
   { title: 'Admin has no override.', desc: 'No team admin can forcibly enable an app or event type on your behalf. No "team-wide minimum visibility" setting. Symmetric by design.' },
-  { title: 'Invisible mode is one click.', desc: 'Hide everything immediately — non-retroactive (already-shared history stays as audit). Resume on your terms.' },
+  { title: 'Invisible mode is one click.', desc: 'Hide everything immediately: non-retroactive (already-shared history stays as audit). Resume on your terms.' },
 ];
 
 const wontList = [
@@ -50,19 +50,19 @@ const wontList = [
 ];
 ---
 <BaseLayout
-  title="Privacy — Leaf"
+  title="Privacy: Leaf"
   description="What's captured, what's never captured, how end-to-end encryption works, and the architecture-level Won't-list."
 >
   <LeafNav slot="nav" />
 
   <section class="priv-hero">
     <div class="wrap">
-      <LeafEyebrow number="P" label="PRIVACY" />
-      <h1 class="t-display">Your manager can't peek<br /><span class="muted">— and it's not a policy. It's the architecture.</span></h1>
-      <p class="t-body-lg lead">
-        Below: every signal we capture, every signal we won't, exactly how
-        end-to-end encryption works, and the public Won't-list of features
-        Leaf will never build.
+      <div data-reveal><LeafEyebrow label="PRIVACY" /></div>
+      <h1 class="t-display" data-reveal>Your manager can't peek,<br /><span class="muted">and it's not a policy. It's the architecture.</span></h1>
+      <p class="t-body-lg lead" data-reveal>
+        Every signal we read. Every signal we refuse. Exactly how end-to-end
+        encryption works. And the public Won't-list of features we will
+        never ship.
       </p>
     </div>
   </section>
@@ -78,8 +78,8 @@ const wontList = [
 
   <section id="matrix" class="sec">
     <div class="wrap">
-      <LeafEyebrow number="01" label="THE MATRIX" />
-      <h2 class="t-title-lg">What's captured. What's not.</h2>
+      <div data-reveal><LeafEyebrow label="THE MATRIX" /></div>
+      <h2 class="t-title-lg" data-reveal>What's captured. What's not.</h2>
       <div class="matrix">
         <LeafCard variant="raised" padding="generous" class="col-yes">
           <p class="t-label accent">CAPTURED (METADATA ONLY)</p>
@@ -99,8 +99,8 @@ const wontList = [
 
   <section id="local" class="sec sec-alt">
     <div class="wrap">
-      <LeafEyebrow number="02" label="ON YOUR DEVICE" />
-      <h2 class="t-title-lg">Local-first storage.</h2>
+      <div data-reveal><LeafEyebrow label="ON YOUR DEVICE" /></div>
+      <h2 class="t-title-lg" data-reveal>Local-first storage.</h2>
       <div class="diagram">
         <div class="dgrm-step">
           <p class="t-label">Mac drive</p>
@@ -120,7 +120,7 @@ const wontList = [
       <ul class="facts">
         <li>File permission: <code class="mono">0600</code> (owner read/write only)</li>
         <li>Key never leaves device. Not iCloud-synced.</li>
-        <li>If you lose the key, the data is unrecoverable — by design.</li>
+        <li>If you lose the key, the data is unrecoverable: by design.</li>
         <li>You can wipe the entire local store from Settings → Danger zone.</li>
       </ul>
     </div>
@@ -128,8 +128,8 @@ const wontList = [
 
   <section id="e2e" class="sec">
     <div class="wrap">
-      <LeafEyebrow number="03" label="WHEN SHARED WITH TEAM" />
-      <h2 class="t-title-lg">End-to-end encryption.</h2>
+      <div data-reveal><LeafEyebrow label="WHEN SHARED WITH TEAM" /></div>
+      <h2 class="t-title-lg" data-reveal>End-to-end encryption.</h2>
       <div class="diagram three-col">
         <div class="dgrm-step">
           <p class="t-label">Your Mac</p>
@@ -157,8 +157,8 @@ const wontList = [
 
   <section id="shares" class="sec sec-alt">
     <div class="wrap">
-      <LeafEyebrow number="04" label="OPT-IN TRANSPARENCY" />
-      <h2 class="t-title-lg">Share Controls.</h2>
+      <div data-reveal><LeafEyebrow label="OPT-IN BY DEFAULT" /></div>
+      <h2 class="t-title-lg" data-reveal>You pick what your team sees.</h2>
       <div class="shares">
         {shareControls.map(s => (
           <div class="share-card">
@@ -176,11 +176,11 @@ const wontList = [
 
   <section id="wont" class="sec">
     <div class="wrap">
-      <LeafEyebrow number="05" label="THE WON'T-LIST" />
-      <h2 class="t-title-lg">Features Leaf will never build.</h2>
+      <div data-reveal><LeafEyebrow label="THE WON'T-LIST" /></div>
+      <h2 class="t-title-lg" data-reveal>Features we will never ship.</h2>
       <p class="t-body-lg muted intro">
-        Public commitment, not just a policy line. If we ship any of the
-        below — call us out on it and walk away.
+        Architectural commitment, not a policy line. If you ever see Leaf
+        do one of these, call us out and walk away.
       </p>
       <ul class="wont">
         {wontList.map(w => <li><span class="wont-x">✗</span>{w}</li>)}
@@ -190,11 +190,11 @@ const wontList = [
 
   <section id="verify" class="sec sec-alt">
     <div class="wrap">
-      <LeafEyebrow number="06" label="DON'T TRUST — VERIFY" />
-      <h2 class="t-title-lg">Verify it yourself.</h2>
+      <div data-reveal><LeafEyebrow label="DON'T TRUST: VERIFY" /></div>
+      <h2 class="t-title-lg" data-reveal>Verify it yourself.</h2>
       <ul class="verify">
-        <li><a href="https://github.com/gundemtech/leaf" target="_blank" rel="noopener"><code class="mono">github.com/gundemtech/leaf</code></a> — full client source, MIT</li>
-        <li><a href="https://leaf-docs.gundem.tech" target="_blank" rel="noopener">leaf-docs.gundem.tech</a> — public architecture whitepaper, crypto primitives, ADR-style decision log</li>
+        <li><a href="https://github.com/gundemtech/leaf" target="_blank" rel="noopener"><code class="mono">github.com/gundemtech/leaf</code></a>: full client source, MIT</li>
+        <li><a href="https://leaf-docs.gundem.tech" target="_blank" rel="noopener">leaf-docs.gundem.tech</a>: public architecture whitepaper, crypto primitives, ADR-style decision log</li>
         <li>Wire-level inspection: relay only ever receives opaque AES-GCM envelopes (open Wireshark, confirm)</li>
         <li>SQLCipher store inspection: <code class="mono">sqlcipher events.sqlite</code> with your Keychain-extracted key</li>
       </ul>
@@ -203,7 +203,7 @@ const wontList = [
 
   <section class="sec cta">
     <div class="wrap">
-      <h2 class="t-title-lg">Privacy is the product — not a settings tab.</h2>
+      <h2 class="t-title-lg" data-reveal>Privacy is the product: not a settings tab.</h2>
       <div class="cta-actions">
         <LeafButton variant="primary" size="lg" href="/signup">Install for macOS →</LeafButton>
         <LeafButton variant="ghost" size="lg" href="/open-source">See the source ↗</LeafButton>

@@ -9,14 +9,14 @@ import LeafButton from '../components/LeafButton.astro';
 import LeafBadge from '../components/LeafBadge.astro';
 
 const captured = [
-  { title: 'App focus & duration',     desc: 'NSWorkspace.frontmostApplication — what you are working in, for how long.' },
-  { title: 'Idle / sleep / wake',      desc: 'CGEventSource + DistributedNotificationCenter — when you stepped away.' },
-  { title: 'Meeting state',            desc: 'EventKit — boolean in_meeting + start/end. Never attendee names or content.' },
-  { title: 'Focus mode',               desc: 'INFocusStatusCenter — Do-Not-Disturb / Work / Personal Focus blocks.' },
-  { title: 'Window title & URL',       desc: 'Accessibility API — activity verb (file path, repo, doc title, page URL).' },
-  { title: 'File touches in opt-in folders', desc: 'FSEvents with security-scoped bookmarks — only folders you whitelist.' },
-  { title: 'Git activity',             desc: 'git log polling in watched folders — commits, branches, authorship.' },
-  { title: 'AI tool sessions',         desc: 'Claude Code / Cursor / Windsurf hooks — file attribution, tool calls. Never prompt/response content.' },
+  { title: 'App focus & duration',     desc: 'NSWorkspace.frontmostApplication: what you are working in, for how long.' },
+  { title: 'Idle / sleep / wake',      desc: 'CGEventSource + DistributedNotificationCenter: when you stepped away.' },
+  { title: 'Meeting state',            desc: 'EventKit: boolean in_meeting + start/end. Never attendee names or content.' },
+  { title: 'Focus mode',               desc: 'INFocusStatusCenter: Do-Not-Disturb / Work / Personal Focus blocks.' },
+  { title: 'Window title & URL',       desc: 'Accessibility API: activity verb (file path, repo, doc title, page URL).' },
+  { title: 'File touches in opt-in folders', desc: 'FSEvents with security-scoped bookmarks: only folders you whitelist.' },
+  { title: 'Git activity',             desc: 'git log polling in watched folders: commits, branches, authorship.' },
+  { title: 'AI tool sessions',         desc: 'Claude Code / Cursor / Windsurf hooks: file attribution, tool calls. Never prompt/response content.' },
 ];
 
 const neverCaptured = [
@@ -57,18 +57,18 @@ const providers = [
 const mcpTools = [
   { name: 'get_timeline',           desc: 'Chronological activity feed for a period.' },
   { name: 'find_last_activity',     desc: 'Where you stopped last in a given context (file / repo / issue).' },
-  { name: 'get_current_session',    desc: 'Current focus session — app, duration, files touched.' },
-  { name: 'get_ai_activity',        desc: 'AI tool sessions — Claude Code / Cursor / Windsurf attributions.' },
+  { name: 'get_current_session',    desc: 'Current focus session: app, duration, files touched.' },
+  { name: 'get_ai_activity',        desc: 'AI tool sessions: Claude Code / Cursor / Windsurf attributions.' },
   { name: 'get_linear_activity',    desc: 'Your Linear actions across a period.' },
-  { name: 'get_github_activity',    desc: 'Your GitHub events — pushes, PRs, reviews, comments.' },
-  { name: 'get_slack_activity',     desc: 'Your Slack participation — channels, reactions, threads.' },
+  { name: 'get_github_activity',    desc: 'Your GitHub events: pushes, PRs, reviews, comments.' },
+  { name: 'get_slack_activity',     desc: 'Your Slack participation: channels, reactions, threads.' },
   { name: 'get_uninterrupted_window', desc: 'Longest deep-work block in a period.' },
   { name: 'get_current_presence',   desc: 'Composite presence state across providers right now.' },
-  { name: 'get_workload_pulse',     desc: 'Open work assigned to you — issues, PRs, reviews.' },
+  { name: 'get_workload_pulse',     desc: 'Open work assigned to you: issues, PRs, reviews.' },
   { name: 'get_review_activity',    desc: 'Review queue + latency stats.' },
   { name: 'get_cross_provider_thread', desc: 'Threaded view across Linear ↔ GitHub ↔ Slack for a topic.' },
   { name: 'leaf_query_activity',    desc: 'Structured FTS query over event bodies + entities.' },
-  { name: 'leaf_get_decision',      desc: 'Decision archaeology — when and why was X chosen.' },
+  { name: 'leaf_get_decision',      desc: 'Decision archaeology: when and why was X chosen.' },
   { name: 'leaf_current_work',      desc: 'High-level summary of what you are actively in.' },
 ];
 
@@ -84,19 +84,20 @@ const archSteps = [
 ];
 ---
 <BaseLayout
-  title="Product — Leaf"
+  title="Product: Leaf"
   description="What Leaf captures, how it integrates, and the three surfaces your team queries it through."
 >
   <LeafNav slot="nav" />
 
   <section class="product-hero">
     <div class="wrap">
-      <LeafEyebrow number="P" label="PRODUCT" />
-      <h1 class="t-display">Everything Leaf does, in one page.</h1>
-      <p class="t-body-lg lead">
-        Mac-native capture, three connected integrations, a private SQLCipher
-        store on your device, and three surfaces — a native app, an MCP server,
-        and a Slack bot. Below: every signal, every provider, every tool.
+      <div data-reveal><LeafEyebrow label="PRODUCT" /></div>
+      <h1 class="t-display" data-reveal>Captured once. Queryable everywhere you work.</h1>
+      <p class="t-body-lg lead" data-reveal>
+        One Mac-native capture layer, first-party connectors for the tools
+        your team uses, an encrypted local store. Then three surfaces: native
+        macOS app, MCP for your AI, Slack bot for the team. Same memory,
+        different lenses.
       </p>
     </div>
   </section>
@@ -110,8 +111,8 @@ const archSteps = [
 
   <section id="capture" class="sec">
     <div class="wrap">
-      <LeafEyebrow number="01" label="ON YOUR MAC" />
-      <h2 class="t-title-lg">What Leaf captures locally.</h2>
+      <div data-reveal><LeafEyebrow label="ON YOUR MAC" /></div>
+      <h2 class="t-title-lg" data-reveal>What Leaf captures locally.</h2>
 
       <div class="grid-2">
         <ul class="list">
@@ -134,8 +135,8 @@ const archSteps = [
 
   <section id="integrations" class="sec sec-alt">
     <div class="wrap">
-      <LeafEyebrow number="02" label="LAYER B" />
-      <h2 class="t-title-lg">Three integrations. Per-event metadata only.</h2>
+      <div data-reveal><LeafEyebrow label="INTEGRATIONS" /></div>
+      <h2 class="t-title-lg" data-reveal>Workflow signals only. Never content.</h2>
 
       <div class="provider-grid">
         {providers.map(p => (
@@ -166,8 +167,8 @@ const archSteps = [
 
   <section id="surfaces" class="sec">
     <div class="wrap">
-      <LeafEyebrow number="03" label="HOW YOU QUERY IT" />
-      <h2 class="t-title-lg">Three surfaces. One memory layer.</h2>
+      <div data-reveal><LeafEyebrow label="HOW YOU QUERY IT" /></div>
+      <h2 class="t-title-lg" data-reveal>Three surfaces. One memory layer.</h2>
 
       <div class="surfaces">
         <LeafCard variant="raised" padding="generous" class="surface">
@@ -175,7 +176,7 @@ const archSteps = [
           <h3 class="t-title-md">Native macOS app</h3>
           <p class="t-body-sm muted">
             Home / Activity / Team / Connections / Organization / Settings.
-            Powered by the Derived Insights Engine — no LLM. Works offline.
+            Powered by the Derived Insights Engine: no LLM. Works offline.
           </p>
         </LeafCard>
 
@@ -184,7 +185,7 @@ const archSteps = [
           <h3 class="t-title-md">MCP server</h3>
           <p class="t-body-sm muted">
             Plug into Claude Code, Cursor, Claude Desktop, or any MCP-aware
-            client. 15 tools, structured JSON. Local stdio — never sends data
+            client. 15 tools, structured JSON. Local stdio: never sends data
             out of your machine.
           </p>
           <details class="tools">
@@ -201,7 +202,7 @@ const archSteps = [
           <LeafBadge variant="muted">v1.1</LeafBadge>
           <h3 class="t-title-md">Slack bot</h3>
           <p class="t-body-sm muted">
-            <code>/leaf where did Anton stop</code> — same memory layer,
+            <code>/leaf where did Anton stop</code>: same memory layer,
             queried from your team's workspace. Roadmap.
           </p>
         </LeafCard>
@@ -211,8 +212,8 @@ const archSteps = [
 
   <section id="architecture" class="sec sec-alt">
     <div class="wrap">
-      <LeafEyebrow number="04" label="HOW DATA FLOWS" />
-      <h2 class="t-title-lg">From OS signal to encrypted query, in one diagram.</h2>
+      <div data-reveal><LeafEyebrow label="HOW DATA FLOWS" /></div>
+      <h2 class="t-title-lg" data-reveal>From signal to query, on your machine.</h2>
 
       <ol class="arch">
         {archSteps.map(s => (
@@ -227,14 +228,14 @@ const archSteps = [
 
       <p class="t-body-sm muted arch-foot">
         Everything between Agent and the surfaces lives on your Mac. The team
-        relay only ever sees AES-GCM envelopes — see <a href="/privacy">/privacy</a> for crypto details.
+        relay only ever sees AES-GCM envelopes: see <a href="/privacy">/privacy</a> for crypto details.
       </p>
     </div>
   </section>
 
   <section class="sec cta">
     <div class="wrap">
-      <h2 class="t-title-lg">Want to see all of this in your terminal?</h2>
+      <h2 class="t-title-lg" data-reveal>Run Leaf on your Mac. Two minutes.</h2>
       <div class="cta-actions">
         <LeafButton variant="primary" size="lg" href="/signup">Install for macOS →</LeafButton>
         <LeafButton variant="ghost" size="lg" href="https://leaf-docs.gundem.tech" external>Read the whitepaper ↗</LeafButton>

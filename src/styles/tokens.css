@@ -72,7 +72,7 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "Menlo", monospace;
 
   /* Layout */
-  --content-max: 1200px;
+  --content-max: 1360px;
   --content-narrow: 720px;
 
   color-scheme: light dark;

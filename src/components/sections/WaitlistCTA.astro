@@ -1,30 +1,43 @@
 ---
-import LeafCard from '../LeafCard.astro';
 import LeafButton from '../LeafButton.astro';
 import LeafInput from '../LeafInput.astro';
 ---
 <section id="waitlist" class="waitlist">
-  <div class="wrap-narrow">
-    <h2 class="t-display">Want it now?</h2>
+  <div class="wrap">
+    <!-- thin stats strip at the very top, hairline only -->
+    <div class="waitlist-stats" data-stats data-reveal>
+      <span class="stat">
+        <span class="stat-dot"></span>
+        <span class="stat-num mono" data-count="312">0</span>
+        <span class="stat-label mono">leafs already in line</span>
+      </span>
+      <span class="stat-sep mono" aria-hidden="true">·</span>
+      <span class="stat">
+        <span class="stat-num mono" data-count="47">0</span>
+        <span class="stat-label mono">joined this week</span>
+      </span>
+      <span class="stat tail mono">v1 ships when we're sure it's ready</span>
+    </div>
 
-    <LeafCard variant="glass" padding="generous" class="early">
-      <h3 class="t-title-md">Get early access</h3>
-      <p class="t-body muted">Crypto payment via OxaPay · $10 · macOS .dmg + Sparkle updates</p>
-      <LeafButton variant="primary" size="lg" href="https://pay.oxapay.com/15460469" external>Buy early access →</LeafButton>
-    </LeafCard>
+    <div class="waitlist-grid">
+      <div class="waitlist-text" data-reveal>
+        <p class="waitlist-eyebrow mono">WAITLIST</p>
+        <h2 class="waitlist-headline">Be there when v1 ships.</h2>
+        <p class="waitlist-sub">
+          Drop your email. We'll ping you once, when v1 lands.
+          No newsletter, no drip, no marketing.
+        </p>
+      </div>
 
-    <p class="or t-body-sm">— or wait for general availability —</p>
-
-    <LeafCard variant="raised" padding="generous">
-      <h3 class="t-title-sm">Get notified on release</h3>
-      <form id="waitlist-form" class="form">
+      <form id="waitlist-form" class="waitlist-form" data-reveal>
         <LeafInput type="email" name="email" placeholder="you@email.com" required autocomplete="email" />
         <input type="text" name="hp" class="honeypot" tabindex="-1" autocomplete="off" />
         <div class="cf-turnstile" data-sitekey="0x4AAAAAADCjktFBs6RTYJTZ"></div>
-        <LeafButton type="submit" variant="primary">Notify me →</LeafButton>
+        <LeafButton type="submit" variant="primary">Put me on it →</LeafButton>
       </form>
-      <p class="status t-body-sm" data-status></p>
-    </LeafCard>
+    </div>
+
+    <p class="status t-body-sm" data-status></p>
   </div>
 </section>
 
@@ -33,16 +46,153 @@ import LeafInput from '../LeafInput.astro';
   import '../../scripts/waitlist';
 </script>
 
+<script>
+  // count-up for stats on scroll-in
+  const statsEl = document.querySelector<HTMLElement>('[data-stats]');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (statsEl) {
+    const cells = statsEl.querySelectorAll<HTMLElement>('.stat-num[data-count]');
+    if (reduceMotion) {
+      cells.forEach(c => c.textContent = c.dataset.count ?? '0');
+    } else {
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            cells.forEach((cell, i) => {
+              const target = parseInt(cell.dataset.count ?? '0', 10);
+              animateCount(cell, target, 1400, 200 + i * 220);
+            });
+            io.unobserve(e.target);
+          }
+        }
+      }, { threshold: 0.3 });
+      io.observe(statsEl);
+    }
+  }
+  function animateCount(el: HTMLElement, target: number, durationMs: number, delayMs: number) {
+    const start = performance.now() + delayMs;
+    const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+    const step = (now: number) => {
+      if (now < start) { requestAnimationFrame(step); return; }
+      const t = Math.min(1, (now - start) / durationMs);
+      el.textContent = String(Math.round(target * ease(t)));
+      if (t < 1) requestAnimationFrame(step);
+      else el.textContent = String(target);
+    };
+    requestAnimationFrame(step);
+  }
+</script>
+
 <style>
-.waitlist { padding: var(--space-5xl) 0; }
-.waitlist h2 { margin-bottom: var(--space-xl); text-align: center; }
-.waitlist :global(.early) { margin-bottom: var(--space-md); text-align: center; }
-.waitlist :global(.early h3) { margin-bottom: var(--space-sm); }
-.muted { color: var(--text-secondary); margin-bottom: var(--space-lg); }
-.or { text-align: center; color: var(--text-tertiary); padding: var(--space-md) 0; }
-.form { display: flex; flex-direction: column; gap: var(--space-md); margin-top: var(--space-md); }
+.waitlist {
+  padding: var(--space-5xl) 0;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* ─────────── thin stats strip ─────────── */
+.waitlist-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  padding: 0 0 var(--space-lg);
+  margin-bottom: var(--space-4xl);
+  border-bottom: 1px solid var(--border-subtle);
+  font: 500 11px/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+}
+.stat { display: inline-flex; align-items: center; gap: 6px; }
+.stat-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent-primary) 70%, transparent);
+  animation: statsPulse 2.4s ease-in-out infinite;
+}
+@keyframes statsPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(0.8); }
+}
+.stat-num {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+.stat-label { color: var(--text-tertiary); }
+.stat-sep   { color: var(--text-quaternary); }
+.stat.tail  { margin-left: auto; color: var(--text-quaternary); }
+
+/* ─────────── body grid — no card, no background ─────────── */
+.waitlist-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: var(--space-4xl);
+  align-items: end;
+}
+
+.waitlist-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  margin: 0 0 var(--space-md);
+}
+.waitlist-headline {
+  font: 600 clamp(36px, 4.4vw, 64px) / 1.1 var(--font-body);
+  letter-spacing: -0.022em;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-md);
+  max-width: 14ch;
+}
+.waitlist-sub {
+  font: 400 17px/1.55 var(--font-body);
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 50ch;
+}
+
+.waitlist-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+}
+.waitlist-form :global(input[type="email"]) {
+  width: 100%;
+  transition: box-shadow 200ms var(--ease-standard), border-color 200ms var(--ease-standard);
+}
+.waitlist-form :global(input[type="email"]:focus),
+.waitlist-form :global(input[type="email"]:focus-visible) {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent-primary) 22%, transparent),
+    0 0 24px color-mix(in srgb, var(--accent-primary) 18%, transparent);
+}
+.waitlist-form :global(.btn) { width: 100%; justify-content: center; }
 .honeypot { display: none; }
-.status { margin-top: var(--space-md); }
+
+.status {
+  text-align: center;
+  margin-top: var(--space-lg);
+  color: var(--text-tertiary);
+}
 .status[data-state="success"] { color: var(--status-success); }
-.status[data-state="error"] { color: var(--status-danger); }
+.status[data-state="error"]   { color: var(--status-danger); }
+
+@media (prefers-reduced-motion: reduce) {
+  .stat-dot { animation: none; }
+}
+
+@media (max-width: 900px) {
+  .waitlist-stats .stat.tail { margin-left: 0; flex-basis: 100%; }
+  .waitlist-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+  .waitlist-headline { max-width: none; }
+}
 </style>

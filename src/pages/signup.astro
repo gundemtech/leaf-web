@@ -6,7 +6,7 @@ import LeafInput from '../components/LeafInput.astro';
 
 const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
 ---
-<AuthLayout title="Sign in — Leaf" description="Sign in or create your Leaf account.">
+<AuthLayout title="Sign in: Leaf" description="Sign in or create your Leaf account.">
   <div class="auth-card">
     <a class="brand" href="/" aria-label="Leaf home"><LeafLogo size={28} withWordmark /></a>
 
@@ -92,7 +92,7 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
     <!-- ─── Forgot password ─── -->
     <form class="auth-panel" data-panel="forgot" novalidate>
       <h1 class="t-title-lg">Reset your password.</h1>
-      <p class="t-body-sm muted">Enter your email — we'll send a reset link.</p>
+      <p class="t-body-sm muted">Enter your email: we'll send a reset link.</p>
 
       <LeafInput name="email" type="email" label="Email" placeholder="you@email.com" autocomplete="email" />
 
@@ -202,7 +202,7 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
 </script>
 
 <script>
-// Panel switching — wired live. Auth/OTP/forgot/reset submission lives in T5 wiring.
+// Panel switching: wired live. Auth/OTP/forgot/reset submission lives in T5 wiring.
 const panels = document.querySelectorAll<HTMLElement>('.auth-panel');
 const tabs = document.querySelectorAll<HTMLButtonElement>('.auth-tab');
 
@@ -222,7 +222,7 @@ document.querySelectorAll<HTMLButtonElement>('[data-goto]').forEach(btn => {
   btn.addEventListener('click', () => showPanel(btn.dataset.goto!));
 });
 
-// OTP — auto-advance + paste-paste support, no submit logic yet.
+// OTP: auto-advance + paste-paste support, no submit logic yet.
 const otpBoxes = Array.from(document.querySelectorAll<HTMLInputElement>('.otp-box'));
 otpBoxes.forEach((box, i) => {
   box.addEventListener('input', () => {
@@ -242,7 +242,7 @@ otpBoxes.forEach((box, i) => {
   });
 });
 
-// Resend timer — counts 30s down, then enables button.
+// Resend timer: counts 30s down, then enables button.
 const resendBtn = document.querySelector<HTMLButtonElement>('[data-action="resend"]');
 const resendTimer = document.querySelector<HTMLSpanElement>('[data-timer]');
 const resendArc = document.querySelector<SVGCircleElement>('.resend-arc');
@@ -266,7 +266,7 @@ function startResendCooldown(seconds = 30) {
     }
   }, 1000);
 }
-// Wire to verify panel arrival — call when create-submit succeeds (in T5 wiring).
+// Wire to verify panel arrival: call when create-submit succeeds (in T5 wiring).
 // For now start automatically if verify panel is currently active (e.g., redirected).
 if (document.querySelector('.auth-panel[data-panel="verify"].active')) startResendCooldown(30);
 </script>

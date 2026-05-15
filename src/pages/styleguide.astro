@@ -17,7 +17,7 @@ import LeafAnchorNav from '../components/LeafAnchorNav.astro';
 <BaseLayout title="Styleguide" description="Component reference" noIndex>
   <LeafNav slot="nav" />
   <div class="wrap" style="padding: var(--space-3xl) var(--space-xl)">
-    <LeafEyebrow number="00" label="DESIGN SYSTEM" />
+    <LeafEyebrow label="DESIGN SYSTEM" />
     <h1 class="t-display-lg" style="margin-top: var(--space-sm);">All <span class="accent">13 atoms</span>,<br />in one place.</h1>
     <p class="t-body-lg" style="color: var(--text-secondary); margin-top: var(--space-md); max-width: 56ch;">Toggle macOS Light/Dark to verify both themes. Hover the interactive cards. Click accordions. Everything that animates respects <span class="mono" style="color: var(--text-primary);">prefers-reduced-motion</span>.</p>
 
@@ -33,7 +33,7 @@ import LeafAnchorNav from '../components/LeafAnchorNav.astro';
     <section style="margin-top: var(--space-3xl)">
       <h2 class="t-title-lg">Eyebrow</h2>
       <div style="display: flex; gap: 24px; flex-direction: column; margin-top: 16px;">
-        <LeafEyebrow number="01" label="ON YOUR MAC" />
+        <LeafEyebrow label="ON YOUR MAC" />
         <LeafEyebrow label="JUST LABEL" />
       </div>
     </section>
@@ -75,9 +75,9 @@ import LeafAnchorNav from '../components/LeafAnchorNav.astro';
     <section style="margin-top: var(--space-3xl)">
       <h2 class="t-title-lg">Cards</h2>
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px;">
-        <LeafCard variant="rest" interactive><p class="t-body">Rest card — hairline border, transparent. <span class="mono" style="color: var(--text-tertiary);">hover →</span></p></LeafCard>
-        <LeafCard variant="raised" interactive><p class="t-body">Raised card — surface + shadow. <span class="mono" style="color: var(--text-tertiary);">hover →</span></p></LeafCard>
-        <LeafCard variant="glass" interactive><p class="t-body">Glass — backdrop-blur + accent corner halo. <span class="mono" style="color: var(--text-tertiary);">hover →</span></p></LeafCard>
+        <LeafCard variant="rest" interactive><p class="t-body">Rest card: hairline border, transparent. <span class="mono" style="color: var(--text-tertiary);">hover →</span></p></LeafCard>
+        <LeafCard variant="raised" interactive><p class="t-body">Raised card: surface + shadow. <span class="mono" style="color: var(--text-tertiary);">hover →</span></p></LeafCard>
+        <LeafCard variant="glass" interactive><p class="t-body">Glass: backdrop-blur + accent corner halo. <span class="mono" style="color: var(--text-tertiary);">hover →</span></p></LeafCard>
       </div>
     </section>
 
@@ -91,7 +91,7 @@ import LeafAnchorNav from '../components/LeafAnchorNav.astro';
     <section style="margin-top: var(--space-3xl)">
       <h2 class="t-title-lg">Accordion</h2>
       <div style="margin-top: 16px;">
-        <LeafAccordion question="Is my code captured?">No. Only metadata — file paths, commit hashes, event timestamps. Never file contents.</LeafAccordion>
+        <LeafAccordion question="Is my code captured?">No. Only metadata: file paths, commit hashes, event timestamps. Never file contents.</LeafAccordion>
         <LeafAccordion question="Can my manager peek?">Not without your consent. Default share list = nothing. Admin has no override.</LeafAccordion>
         <LeafAccordion question="Does it work offline?">Yes. All capture and queries are local.</LeafAccordion>
       </div>
@@ -120,7 +120,7 @@ import LeafAnchorNav from '../components/LeafAnchorNav.astro';
           </thead>
           <tbody>
             <tr><td>Mac capture</td><td class="checkmark">✓</td><td class="checkmark">✓</td></tr>
-            <tr><td>E2E sharing</td><td class="dash">—</td><td class="checkmark">✓</td></tr>
+            <tr><td>E2E sharing</td><td class="dash">-</td><td class="checkmark">✓</td></tr>
             <tr><td>Seats</td><td>1</td><td>20</td></tr>
           </tbody>
         </LeafTable>
