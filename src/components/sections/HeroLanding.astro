@@ -26,7 +26,7 @@ import LeafButton from '../LeafButton.astro';
     </div>
 
     <h1 class="big">
-      <span class="line one">One shared brain.</span>
+      <span class="line one">One shared <span class="morph-word" id="morphWord" aria-label="brain — also leaf">brain</span>.</span>
       <span class="line two">For your whole team.</span>
     </h1>
 
@@ -165,6 +165,27 @@ import LeafButton from '../LeafButton.astro';
   color: var(--text-tertiary);
 }
 
+/* Word that cycles between "brain" and "leaf" — letter scramble + color morph */
+.morph-word {
+  display: inline-block;
+  color: var(--text-primary);
+  transition: color 480ms cubic-bezier(.45, .05, .15, 1),
+              text-shadow 480ms cubic-bezier(.45, .05, .15, 1);
+  transform-origin: center 60%;
+  will-change: transform, color;
+  white-space: nowrap;
+}
+.morph-word.is-leaf {
+  color: var(--accent-primary);
+  text-shadow:
+    0 0 38px color-mix(in srgb, var(--accent-primary) 38%, transparent),
+    0 0 90px color-mix(in srgb, var(--accent-primary) 18%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .morph-word { transition: none; text-shadow: none; }
+  .morph-word.is-leaf { text-shadow: none; }
+}
+
 /* LEAD — single dense sentence below headline */
 .lead {
   font: 400 18px/1.55 var(--font-body);
@@ -279,5 +300,70 @@ if (stage && templateRow && !reduceMotion) {
   };
 
   setInterval(cycle, INTERVAL);
+}
+
+// ─── Headline word morph: "brain" ⇄ "leaf" every 1.5s ─────────────
+// Letter-by-letter scramble through random chars, staggered per position,
+// plus color crossfade to accent-green and a snappy squish-stretch pulse.
+const morphEl = document.getElementById('morphWord');
+const morphWords = ['brain', 'leaf'];
+const SCRAMBLE_CHARS = 'abcdefghijklmnopqrstuvwxyz';
+
+function scrambleMorph(el: HTMLElement, from: string, to: string): void {
+  const len = Math.max(from.length, to.length);
+  const STAGGER = 55;
+  const SCRAMBLE_DUR = 280;
+  const start = performance.now();
+
+  const slots = Array.from({ length: len }, (_, i) => ({
+    from: from[i] ?? '',
+    to: to[i] ?? '',
+    lockAt: i * STAGGER + SCRAMBLE_DUR,
+  }));
+
+  const tick = (now: number) => {
+    const t = now - start;
+    let out = '';
+    let allDone = true;
+    for (const s of slots) {
+      if (t >= s.lockAt) {
+        out += s.to;
+      } else if (t >= s.lockAt - SCRAMBLE_DUR) {
+        allDone = false;
+        out += SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+      } else {
+        allDone = false;
+        out += s.from;
+      }
+    }
+    el.textContent = out;
+    if (!allDone) {
+      requestAnimationFrame(tick);
+    } else {
+      el.textContent = to;
+    }
+  };
+  requestAnimationFrame(tick);
+}
+
+if (morphEl && !reduceMotion) {
+  let mi = 0;
+  setInterval(() => {
+    const from = morphWords[mi];
+    mi = (mi + 1) % morphWords.length;
+    const to = morphWords[mi];
+    morphEl.classList.toggle('is-leaf');
+    scrambleMorph(morphEl, from, to);
+    morphEl.animate(
+      [
+        { transform: 'scale(1) rotate(0deg)',          offset: 0 },
+        { transform: 'scale(0.92) rotate(-2deg)',      offset: 0.22 },
+        { transform: 'scale(1.08) rotate(1.6deg)',     offset: 0.55 },
+        { transform: 'scale(0.99) rotate(-0.4deg)',    offset: 0.80 },
+        { transform: 'scale(1) rotate(0deg)',          offset: 1 },
+      ],
+      { duration: 680, easing: 'cubic-bezier(.34, 1.56, .64, 1)' },
+    );
+  }, 1500);
 }
 </script>
