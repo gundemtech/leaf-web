@@ -26,7 +26,7 @@ import LeafButton from '../LeafButton.astro';
     </div>
 
     <h1 class="big">
-      <span class="line one">One shared <span class="morph-word" id="morphWord" aria-label="brain — also leaf">brain</span>.</span>
+      <span class="line one">One shared <span class="morph-word" id="morphWord" aria-label="brain — also leaf"><span class="m-slot is-in" data-word="brain">brain</span><span class="m-slot is-waiting" data-word="leaf">leaf</span></span>.</span>
       <span class="line two">For your whole team.</span>
     </h1>
 
@@ -165,25 +165,41 @@ import LeafButton from '../LeafButton.astro';
   color: var(--text-tertiary);
 }
 
-/* Word that cycles between "brain" and "leaf" — letter scramble + color morph */
+/* Word that cycles between "brain" and "leaf" — calm crossfade with drift.
+   Two slots live in the same grid cell so the wrapper sizes to the wider
+   word and surrounding text (the period) never shifts. */
 .morph-word {
-  display: inline-block;
-  color: var(--text-primary);
-  transition: color 850ms cubic-bezier(.4, 0, .2, 1),
-              text-shadow 850ms cubic-bezier(.4, 0, .2, 1);
-  transform-origin: center 60%;
-  will-change: transform, color;
-  white-space: nowrap;
+  display: inline-grid;
+  vertical-align: baseline;
 }
-.morph-word.is-leaf {
+.m-slot {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  transition:
+    opacity 1100ms cubic-bezier(.4, 0, .2, 1),
+    transform 1100ms cubic-bezier(.4, 0, .2, 1);
+  will-change: opacity, transform;
+}
+.m-slot.is-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+.m-slot.is-out {
+  opacity: 0;
+  transform: translateY(-0.16em);
+}
+.m-slot.is-waiting {
+  opacity: 0;
+  transform: translateY(0.16em);
+  pointer-events: none;
+}
+.m-slot[data-word="leaf"] {
   color: var(--accent-primary);
-  text-shadow:
-    0 0 26px color-mix(in srgb, var(--accent-primary) 20%, transparent),
-    0 0 70px color-mix(in srgb, var(--accent-primary) 10%, transparent);
+  text-shadow: 0 0 28px color-mix(in srgb, var(--accent-primary) 14%, transparent);
 }
 @media (prefers-reduced-motion: reduce) {
-  .morph-word { transition: none; text-shadow: none; }
-  .morph-word.is-leaf { text-shadow: none; }
+  .m-slot { transition: none; }
+  .m-slot[data-word="leaf"] { text-shadow: none; }
 }
 
 /* LEAD — single dense sentence below headline */
@@ -302,67 +318,28 @@ if (stage && templateRow && !reduceMotion) {
   setInterval(cycle, INTERVAL);
 }
 
-// ─── Headline word morph: "brain" ⇄ "leaf" every 1.5s ─────────────
-// Letter-by-letter scramble through random chars, staggered per position,
-// plus color crossfade to accent-green and a snappy squish-stretch pulse.
+// ─── Headline word morph: "brain" ⇄ "leaf" — calm crossfade ─────────────
+// Two slots live in the same grid cell. On each tick: current slot fades up
+// and out; next slot drifts in from below into place. No scramble, no bounce.
 const morphEl = document.getElementById('morphWord');
-const morphWords = ['brain', 'leaf'];
-const SCRAMBLE_CHARS = 'abcdefghijklmnopqrstuvwxyz';
-
-function scrambleMorph(el: HTMLElement, from: string, to: string): void {
-  const len = Math.max(from.length, to.length);
-  const STAGGER = 110;
-  const SCRAMBLE_DUR = 460;
-  const start = performance.now();
-
-  const slots = Array.from({ length: len }, (_, i) => ({
-    from: from[i] ?? '',
-    to: to[i] ?? '',
-    lockAt: i * STAGGER + SCRAMBLE_DUR,
-  }));
-
-  const tick = (now: number) => {
-    const t = now - start;
-    let out = '';
-    let allDone = true;
-    for (const s of slots) {
-      if (t >= s.lockAt) {
-        out += s.to;
-      } else if (t >= s.lockAt - SCRAMBLE_DUR) {
-        allDone = false;
-        out += SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
-      } else {
-        allDone = false;
-        out += s.from;
-      }
-    }
-    el.textContent = out;
-    if (!allDone) {
-      requestAnimationFrame(tick);
-    } else {
-      el.textContent = to;
-    }
-  };
-  requestAnimationFrame(tick);
-}
-
-if (morphEl && !reduceMotion) {
-  let mi = 0;
+const slots = morphEl ? Array.from(morphEl.querySelectorAll<HTMLElement>('.m-slot')) : [];
+if (morphEl && slots.length === 2 && !reduceMotion) {
+  let activeIdx = 0;
+  const CYCLE = 3200;
+  const TRANSITION = 1100;
   setInterval(() => {
-    const from = morphWords[mi];
-    mi = (mi + 1) % morphWords.length;
-    const to = morphWords[mi];
-    morphEl.classList.toggle('is-leaf');
-    scrambleMorph(morphEl, from, to);
-    morphEl.animate(
-      [
-        { transform: 'scale(1) rotate(0deg)',         offset: 0 },
-        { transform: 'scale(0.98) rotate(-0.5deg)',   offset: 0.30 },
-        { transform: 'scale(1.025) rotate(0.4deg)',   offset: 0.65 },
-        { transform: 'scale(1) rotate(0deg)',         offset: 1 },
-      ],
-      { duration: 1100, easing: 'cubic-bezier(.4, 0, .2, 1)' },
-    );
-  }, 2800);
+    const outgoing = slots[activeIdx];
+    activeIdx = (activeIdx + 1) % slots.length;
+    const incoming = slots[activeIdx];
+
+    outgoing.classList.replace('is-in', 'is-out');
+    incoming.classList.replace('is-waiting', 'is-in');
+
+    // After fade-out completes, reset outgoing to the waiting position
+    // (below baseline) so the next cycle can drift it back up cleanly.
+    setTimeout(() => {
+      outgoing.classList.replace('is-out', 'is-waiting');
+    }, TRANSITION + 50);
+  }, CYCLE);
 }
 </script>
