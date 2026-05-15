@@ -175,22 +175,29 @@ import LeafButton from '../LeafButton.astro';
 .m-slot {
   grid-area: 1 / 1;
   white-space: nowrap;
-  transition:
-    opacity 1100ms cubic-bezier(.4, 0, .2, 1),
-    transform 1100ms cubic-bezier(.4, 0, .2, 1);
   will-change: opacity, transform;
 }
+/* Outgoing: fades out immediately, fully gone by 500ms.
+   Incoming: delays 450ms so it only starts appearing after outgoing is ~95% gone.
+   Result: ~50ms overlap window where both are near-invisible — no double-vision. */
 .m-slot.is-in {
   opacity: 1;
   transform: translateY(0);
+  transition:
+    opacity 500ms cubic-bezier(.4, 0, .2, 1) 450ms,
+    transform 600ms cubic-bezier(.4, 0, .2, 1) 400ms;
 }
 .m-slot.is-out {
   opacity: 0;
-  transform: translateY(-0.16em);
+  transform: translateY(-0.18em);
+  transition:
+    opacity 500ms cubic-bezier(.4, 0, .2, 1),
+    transform 600ms cubic-bezier(.4, 0, .2, 1);
 }
 .m-slot.is-waiting {
   opacity: 0;
-  transform: translateY(0.16em);
+  transform: translateY(0.18em);
+  transition: none;
   pointer-events: none;
 }
 .m-slot[data-word="leaf"] {
@@ -325,8 +332,10 @@ const morphEl = document.getElementById('morphWord');
 const slots = morphEl ? Array.from(morphEl.querySelectorAll<HTMLElement>('.m-slot')) : [];
 if (morphEl && slots.length === 2 && !reduceMotion) {
   let activeIdx = 0;
-  const CYCLE = 3200;
-  const TRANSITION = 1100;
+  const CYCLE = 3000;
+  // Outgoing finishes by ~600ms, incoming finishes by ~950ms.
+  // Reset outgoing to waiting only after incoming has fully landed.
+  const SETTLE = 1050;
   setInterval(() => {
     const outgoing = slots[activeIdx];
     activeIdx = (activeIdx + 1) % slots.length;
@@ -335,11 +344,9 @@ if (morphEl && slots.length === 2 && !reduceMotion) {
     outgoing.classList.replace('is-in', 'is-out');
     incoming.classList.replace('is-waiting', 'is-in');
 
-    // After fade-out completes, reset outgoing to the waiting position
-    // (below baseline) so the next cycle can drift it back up cleanly.
     setTimeout(() => {
       outgoing.classList.replace('is-out', 'is-waiting');
-    }, TRANSITION + 50);
+    }, SETTLE);
   }, CYCLE);
 }
 </script>
