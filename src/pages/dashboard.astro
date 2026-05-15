@@ -105,9 +105,12 @@ const DMG_URL = 'https://updates.gundem.tech/Leaf.dmg';
 </style>
 
 <script>
-// Auth-gate + populate is handled in T5 (src/scripts/dashboard.ts).
-// This script just provides safe defaults so the page renders without JS errors
-// during build / when Supabase is missing.
+  import '../scripts/dashboard';
+</script>
+
+<script>
+// Inline fallback handlers (run before module bundle resolves).
+// Real auth-gate + Supabase flow lives in src/scripts/dashboard.ts.
 const signoutBtn = document.getElementById('signout-btn') as HTMLButtonElement | null;
 const deleteBtn = document.getElementById('delete-btn') as HTMLButtonElement | null;
 

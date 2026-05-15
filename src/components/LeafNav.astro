@@ -52,22 +52,24 @@ const navItems = [
 </style>
 
 <script>
-// Session-aware nav: shows Sign in by default, swaps to Dashboard if Supabase session detected.
-// supabase-client.ts (T5.2) populates window.supabase.
+import { getSupabase } from '../scripts/supabase-client';
+
 const showAuth = (state: 'anon' | 'user') => {
   document.querySelectorAll<HTMLElement>('.nav-cta').forEach(el => {
     el.hidden = el.dataset.auth !== state;
   });
 };
+
 (async () => {
-  // Wait up to 6s for Supabase to load
-  for (let i = 0; i < 30; i++) {
-    if ((window as any).supabase) break;
-    await new Promise(r => setTimeout(r, 200));
+  try {
+    const sb = getSupabase();
+    const { data } = await sb.auth.getSession();
+    showAuth(data?.session ? 'user' : 'anon');
+    sb.auth.onAuthStateChange((_event, session) => {
+      showAuth(session ? 'user' : 'anon');
+    });
+  } catch {
+    showAuth('anon');
   }
-  const sb = (window as any).supabase;
-  if (!sb) { showAuth('anon'); return; }
-  const { data } = await sb.auth.getSession();
-  showAuth(data?.session ? 'user' : 'anon');
 })();
 </script>
