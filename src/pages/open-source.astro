@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LeafNav from '../components/LeafNav.astro';
+import LeafFooter from '../components/LeafFooter.astro';
+import LeafEyebrow from '../components/LeafEyebrow.astro';
+import LeafCard from '../components/LeafCard.astro';
+import LeafButton from '../components/LeafButton.astro';
+import LeafBadge from '../components/LeafBadge.astro';
+import LeafTable from '../components/LeafTable.astro';
+
+const matrix = [
+  { feature: 'Client source (full, MIT)',                     leaf: '✓',                  closed: '—' },
+  { feature: 'Whitepaper public',                              leaf: '✓',                  closed: 'partial' },
+  { feature: 'Architecture decisions log',                     leaf: '✓',                  closed: '—' },
+  { feature: 'Crypto module auditable',                        leaf: '✓',                  closed: '—' },
+  { feature: 'Relay code (presence relay)',                    leaf: 'private repo',       closed: '—' },
+  { feature: 'Self-host the relay',                            leaf: 'Enterprise tier',    closed: '—' },
+  { feature: 'Local-only mode (no cloud at all)',              leaf: 'Solo tier — default',closed: '—' },
+  { feature: 'Wire-level inspection (Wireshark on relay)',    leaf: 'opaque AES-GCM',     closed: 'plaintext often' },
+  { feature: 'Verify what\'s captured by reading the source', leaf: '✓',                  closed: '—' },
+];
+---
+<BaseLayout
+  title="Open Source — Leaf"
+  description="Open core. Full client source on GitHub. MIT licensed. Verifiable privacy."
+>
+  <LeafNav slot="nav" />
+
+  <section class="oss-hero">
+    <div class="wrap">
+      <LeafEyebrow number="O" label="OPEN SOURCE" />
+      <h1 class="t-display">Open core. Verifiable privacy.</h1>
+      <p class="t-body-lg lead">
+        The Leaf client is open source under MIT. The whitepaper is public.
+        The relay code is private — but the wire is encrypted, so you don't
+        have to trust it.
+      </p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <LeafEyebrow number="01" label="WHY IT MATTERS" />
+      <h2 class="t-title-lg">You don't need to trust us about what we capture.</h2>
+      <p class="t-body-lg muted intro">
+        Memory tooling that touches everything you do is exactly the kind of
+        software that <em>must</em> be inspectable. Read the code. Check the
+        SQL queries. Confirm the crypto. Walk away if anything smells wrong.
+      </p>
+    </div>
+  </section>
+
+  <section class="sec sec-alt">
+    <div class="wrap">
+      <LeafEyebrow number="02" label="VS THE ALTERNATIVE" />
+      <h2 class="t-title-lg">Leaf vs typical closed-source "team intelligence" tools.</h2>
+      <LeafTable>
+        <thead>
+          <tr><th>Feature</th><th>Leaf</th><th>Closed-source competitor</th></tr>
+        </thead>
+        <tbody>
+          {matrix.map(r => (
+            <tr>
+              <td>{r.feature}</td>
+              <td class={r.leaf === '✓' ? 'checkmark' : r.leaf === '—' ? 'dash' : ''}>{r.leaf}</td>
+              <td class={r.closed === '✓' ? 'checkmark' : r.closed === '—' ? 'dash' : ''}>{r.closed}</td>
+            </tr>
+          ))}
+        </tbody>
+      </LeafTable>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <LeafEyebrow number="03" label="LICENSE" />
+      <h2 class="t-title-lg">MIT for the client.</h2>
+      <LeafCard variant="raised" padding="generous">
+        <p class="t-body muted">
+          The Leaf macOS client is licensed under the MIT License — use it,
+          fork it, modify it, redistribute it. The hosted relay is operated
+          by Gundem Technologies under a commercial license; if you want to
+          run your own relay, that's available on the Enterprise tier.
+        </p>
+        <p class="t-body-sm muted" style="margin-top: var(--space-md);">
+          Full license: <a href="https://github.com/gundemtech/leaf/blob/main/LICENSE" target="_blank" rel="noopener">LICENSE</a>
+        </p>
+      </LeafCard>
+    </div>
+  </section>
+
+  <section class="sec sec-alt">
+    <div class="wrap">
+      <LeafEyebrow number="04" label="THE REPO" />
+      <h2 class="t-title-lg">github.com/gundemtech/leaf</h2>
+      <LeafCard variant="glass" padding="generous" class="repo-card">
+        <div class="repo-head">
+          <div>
+            <p class="t-title-sm"><span class="mono">gundemtech/leaf</span></p>
+            <p class="t-body-sm muted">Swift 6 · GRDB 7 · SQLCipher · CryptoKit · Sparkle 2</p>
+          </div>
+          <LeafBadge variant="accent">v1.0.0-alpha.15</LeafBadge>
+        </div>
+        <p class="t-body" style="margin-top: var(--space-md);">
+          Full macOS client. Mac-native capture (Layer A), three connected
+          integrations (Layer B), Derived Insights Engine, Native macOS UI,
+          MCP server. Read the README for build instructions.
+        </p>
+        <div class="repo-cta">
+          <LeafButton variant="primary" size="md" href="https://github.com/gundemtech/leaf" external>Open on GitHub →</LeafButton>
+          <LeafButton variant="ghost" size="md" href="https://leaf-docs.gundem.tech" external>Read the whitepaper ↗</LeafButton>
+        </div>
+      </LeafCard>
+    </div>
+  </section>
+
+  <section class="sec cta">
+    <div class="wrap">
+      <h2 class="t-title-lg">Star it. Audit it. Build on it.</h2>
+      <div class="cta-actions">
+        <LeafButton variant="primary" size="lg" href="https://github.com/gundemtech/leaf" external>github.com/gundemtech/leaf ↗</LeafButton>
+        <LeafButton variant="ghost" size="lg" href="/privacy">Privacy details →</LeafButton>
+      </div>
+    </div>
+  </section>
+
+  <LeafFooter slot="footer" />
+</BaseLayout>
+
+<style>
+.oss-hero { padding: var(--space-4xl) 0 var(--space-3xl); }
+.oss-hero .lead { color: var(--text-secondary); margin-top: var(--space-lg); max-width: 60ch; }
+
+.sec { padding: var(--space-4xl) 0; }
+.sec-alt { background: color-mix(in srgb, var(--surface-raised) 60%, transparent); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+.sec h2 { margin: var(--space-md) 0 var(--space-xl); max-width: 32ch; }
+.muted { color: var(--text-secondary); }
+.intro { max-width: 60ch; }
+
+.repo-head { display: flex; justify-content: space-between; align-items: center; }
+.repo-cta { display: flex; gap: var(--space-md); margin-top: var(--space-lg); flex-wrap: wrap; }
+
+.cta { text-align: center; }
+.cta-actions { display: inline-flex; gap: var(--space-md); margin-top: var(--space-lg); flex-wrap: wrap; justify-content: center; }
+</style>
