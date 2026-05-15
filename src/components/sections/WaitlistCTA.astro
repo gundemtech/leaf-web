@@ -47,6 +47,39 @@ import LeafInput from '../LeafInput.astro';
 </script>
 
 <script>
+  // CTAs marked with [data-cta-waitlist] (or any link to #waitlist) auto-focus
+  // the email input after the smooth-scroll finishes, so the user can type immediately.
+  // Also briefly highlight the card so it's clear they landed there.
+  const waitlistCtas = document.querySelectorAll<HTMLAnchorElement>('a[href="#waitlist"], a[href="/#waitlist"], [data-cta-waitlist]');
+  waitlistCtas.forEach(a => {
+    a.addEventListener('click', (e) => {
+      const card = document.getElementById('waitlist');
+      const input = card?.querySelector<HTMLInputElement>('input[type="email"]');
+      if (!card) return;
+      // Only intercept same-page anchor; cross-page link (/#waitlist) lets browser navigate.
+      const href = a.getAttribute('href');
+      if (href === '#waitlist') {
+        e.preventDefault();
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        card.classList.remove('cta-flash');
+        // force reflow then re-add for re-trigger
+        void card.offsetWidth;
+        card.classList.add('cta-flash');
+        setTimeout(() => input?.focus({ preventScroll: true }), 700);
+      }
+    });
+  });
+  // If we arrive with #waitlist in the URL (cross-page nav), also focus the input.
+  if (location.hash === '#waitlist') {
+    setTimeout(() => {
+      const input = document.querySelector<HTMLInputElement>('#waitlist input[type="email"]');
+      input?.focus({ preventScroll: true });
+      document.getElementById('waitlist')?.classList.add('cta-flash');
+    }, 500);
+  }
+</script>
+
+<script>
   // count-up for stats on scroll-in
   const statsEl = document.querySelector<HTMLElement>('[data-stats]');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -87,6 +120,17 @@ import LeafInput from '../LeafInput.astro';
 .waitlist {
   padding: var(--space-5xl) 0;
   border-top: 1px solid var(--border-subtle);
+}
+.waitlist.cta-flash .waitlist-form :global(input[type="email"]) {
+  animation: waitlistFlash 1600ms ease-out 1;
+}
+@keyframes waitlistFlash {
+  0%   { box-shadow: 0 0 0 0   color-mix(in srgb, var(--accent-primary) 0%,  transparent); }
+  20%  { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-primary) 40%, transparent), 0 0 40px color-mix(in srgb, var(--accent-primary) 35%, transparent); }
+  100% { box-shadow: 0 0 0 0   color-mix(in srgb, var(--accent-primary) 0%,  transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .waitlist.cta-flash .waitlist-form :global(input[type="email"]) { animation: none; }
 }
 
 /* ─────────── thin stats strip ─────────── */

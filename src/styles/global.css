@@ -1,9 +1,16 @@
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px; /* clear sticky nav when anchoring */
+}
 html, body {
   background: var(--surface-canvas);
   color: var(--text-primary);
   font-family: var(--font-body);
   font-size: 16px;
   overflow-x: clip;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
 
 /* Ambient page glow — two very faint accent halos that anchor the page without
