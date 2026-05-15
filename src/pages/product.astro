@@ -1,0 +1,309 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LeafNav from '../components/LeafNav.astro';
+import LeafFooter from '../components/LeafFooter.astro';
+import LeafAnchorNav from '../components/LeafAnchorNav.astro';
+import LeafEyebrow from '../components/LeafEyebrow.astro';
+import LeafCard from '../components/LeafCard.astro';
+import LeafButton from '../components/LeafButton.astro';
+import LeafBadge from '../components/LeafBadge.astro';
+
+const captured = [
+  { title: 'App focus & duration',     desc: 'NSWorkspace.frontmostApplication — what you are working in, for how long.' },
+  { title: 'Idle / sleep / wake',      desc: 'CGEventSource + DistributedNotificationCenter — when you stepped away.' },
+  { title: 'Meeting state',            desc: 'EventKit — boolean in_meeting + start/end. Never attendee names or content.' },
+  { title: 'Focus mode',               desc: 'INFocusStatusCenter — Do-Not-Disturb / Work / Personal Focus blocks.' },
+  { title: 'Window title & URL',       desc: 'Accessibility API — activity verb (file path, repo, doc title, page URL).' },
+  { title: 'File touches in opt-in folders', desc: 'FSEvents with security-scoped bookmarks — only folders you whitelist.' },
+  { title: 'Git activity',             desc: 'git log polling in watched folders — commits, branches, authorship.' },
+  { title: 'AI tool sessions',         desc: 'Claude Code / Cursor / Windsurf hooks — file attribution, tool calls. Never prompt/response content.' },
+];
+
+const neverCaptured = [
+  'File contents',
+  'Keystrokes',
+  'Screenshots / Screen recording',
+  'Prompt or response bodies (AI tools)',
+  'Email message bodies',
+  'Slack message text',
+  'Page content (URLs only, not page bodies)',
+  'OCR of any rendered UI',
+];
+
+const providers = [
+  {
+    name: 'Linear',
+    auth: 'OAuth 2.0 PKCE',
+    poll: '5 min',
+    captures: ['Issue state transitions', 'Assignee / priority / label / cycle changes', 'Comments authored by you', 'Project updates by you', 'Estimate changes'],
+    nope: ['Tickets you did not author or interact with', 'Comment bodies (counts only)', 'Workspace-wide activity'],
+  },
+  {
+    name: 'GitHub',
+    auth: 'OAuth Device Flow',
+    poll: '5 min',
+    captures: ['Pushes (per-branch, commit counts + SHAs)', 'PR opened / reviewed / merged', 'PR review comments authored', 'Issue comments authored', 'Releases / branches / tags / discussions', 'Notifications, awaiting-review queue, action runs'],
+    nope: ['Repos you do not have access to', 'Code diffs / file contents', 'Other contributors\' work in your name'],
+  },
+  {
+    name: 'Slack',
+    auth: 'OAuth 2.0 PKCE (HTTPS relay)',
+    poll: '5 min',
+    captures: ['Status / DND / huddle state', 'Messages you authored (channel bucket, no body)', 'Reactions, mentions received', 'Files uploaded by you (mime-type bucket)', 'Canvases / pinned messages / bookmarks'],
+    nope: ['DM channel names (anonymized to "DM" bucket)', 'Message text', 'File previews / contents', 'Other people\'s presence outside your shared channels'],
+  },
+];
+
+const mcpTools = [
+  { name: 'get_timeline',           desc: 'Chronological activity feed for a period.' },
+  { name: 'find_last_activity',     desc: 'Where you stopped last in a given context (file / repo / issue).' },
+  { name: 'get_current_session',    desc: 'Current focus session — app, duration, files touched.' },
+  { name: 'get_ai_activity',        desc: 'AI tool sessions — Claude Code / Cursor / Windsurf attributions.' },
+  { name: 'get_linear_activity',    desc: 'Your Linear actions across a period.' },
+  { name: 'get_github_activity',    desc: 'Your GitHub events — pushes, PRs, reviews, comments.' },
+  { name: 'get_slack_activity',     desc: 'Your Slack participation — channels, reactions, threads.' },
+  { name: 'get_uninterrupted_window', desc: 'Longest deep-work block in a period.' },
+  { name: 'get_current_presence',   desc: 'Composite presence state across providers right now.' },
+  { name: 'get_workload_pulse',     desc: 'Open work assigned to you — issues, PRs, reviews.' },
+  { name: 'get_review_activity',    desc: 'Review queue + latency stats.' },
+  { name: 'get_cross_provider_thread', desc: 'Threaded view across Linear ↔ GitHub ↔ Slack for a topic.' },
+  { name: 'leaf_query_activity',    desc: 'Structured FTS query over event bodies + entities.' },
+  { name: 'leaf_get_decision',      desc: 'Decision archaeology — when and why was X chosen.' },
+  { name: 'leaf_current_work',      desc: 'High-level summary of what you are actively in.' },
+];
+
+const archSteps = [
+  { from: 'macOS Layer A', to: 'Agent (LaunchAgent)',  via: 'NSWorkspace / AX / EventKit / FSEvents / hooks' },
+  { from: 'Linear / GitHub / Slack', to: 'Agent (LaunchAgent)', via: 'OAuth polling every 5 min' },
+  { from: 'Agent',         to: 'SQLCipher DB',         via: 'AES-256, key in Keychain, WAL mode' },
+  { from: 'SQLCipher DB',  to: 'Derived Insights Engine', via: 'on-device queries, no LLM' },
+  { from: 'Derived Insights', to: 'Native macOS app',  via: 'Swift / SwiftUI Charts' },
+  { from: 'Derived Insights', to: 'MCP server',        via: 'stdio, structured JSON' },
+  { from: 'MCP server',    to: 'Claude Code / Cursor / Slack bot', via: '15 tools, on-demand' },
+  { from: 'Presence snapshots', to: 'Team relay (Cloudflare DO)', via: 'AES-GCM envelope, never plaintext on relay' },
+];
+---
+<BaseLayout
+  title="Product — Leaf"
+  description="What Leaf captures, how it integrates, and the three surfaces your team queries it through."
+>
+  <LeafNav slot="nav" />
+
+  <section class="product-hero">
+    <div class="wrap">
+      <LeafEyebrow number="P" label="PRODUCT" />
+      <h1 class="t-display">Everything Leaf does, in one page.</h1>
+      <p class="t-body-lg lead">
+        Mac-native capture, three connected integrations, a private SQLCipher
+        store on your device, and three surfaces — a native app, an MCP server,
+        and a Slack bot. Below: every signal, every provider, every tool.
+      </p>
+    </div>
+  </section>
+
+  <LeafAnchorNav items={[
+    { id: 'capture',      label: 'What\'s captured' },
+    { id: 'integrations', label: 'Integrations' },
+    { id: 'surfaces',     label: 'Surfaces' },
+    { id: 'architecture', label: 'Architecture' },
+  ]} />
+
+  <section id="capture" class="sec">
+    <div class="wrap">
+      <LeafEyebrow number="01" label="ON YOUR MAC" />
+      <h2 class="t-title-lg">What Leaf captures locally.</h2>
+
+      <div class="grid-2">
+        <ul class="list">
+          {captured.map(c => (
+            <li>
+              <p class="t-title-sm">{c.title}</p>
+              <p class="t-body-sm muted">{c.desc}</p>
+            </li>
+          ))}
+        </ul>
+        <LeafCard variant="raised" padding="generous" class="never">
+          <p class="t-label">NEVER CAPTURED</p>
+          <ul class="never-list">
+            {neverCaptured.map(n => <li><span class="x">×</span>{n}</li>)}
+          </ul>
+        </LeafCard>
+      </div>
+    </div>
+  </section>
+
+  <section id="integrations" class="sec sec-alt">
+    <div class="wrap">
+      <LeafEyebrow number="02" label="LAYER B" />
+      <h2 class="t-title-lg">Three integrations. Per-event metadata only.</h2>
+
+      <div class="provider-grid">
+        {providers.map(p => (
+          <LeafCard variant="raised" padding="generous" class="provider">
+            <header class="provider-head">
+              <h3 class="t-title-md">{p.name}</h3>
+              <span class="mono meta">{p.auth} · poll {p.poll}</span>
+            </header>
+            <div class="provider-cols">
+              <div>
+                <p class="t-label">CAPTURES</p>
+                <ul class="dotted">
+                  {p.captures.map(c => <li>{c}</li>)}
+                </ul>
+              </div>
+              <div>
+                <p class="t-label">DOES NOT</p>
+                <ul class="dotted dotted-x">
+                  {p.nope.map(c => <li>{c}</li>)}
+                </ul>
+              </div>
+            </div>
+          </LeafCard>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="surfaces" class="sec">
+    <div class="wrap">
+      <LeafEyebrow number="03" label="HOW YOU QUERY IT" />
+      <h2 class="t-title-lg">Three surfaces. One memory layer.</h2>
+
+      <div class="surfaces">
+        <LeafCard variant="raised" padding="generous" class="surface">
+          <LeafBadge variant="accent">Primary</LeafBadge>
+          <h3 class="t-title-md">Native macOS app</h3>
+          <p class="t-body-sm muted">
+            Home / Activity / Team / Connections / Organization / Settings.
+            Powered by the Derived Insights Engine — no LLM. Works offline.
+          </p>
+        </LeafCard>
+
+        <LeafCard variant="raised" padding="generous" class="surface">
+          <LeafBadge variant="muted">Bonus channel</LeafBadge>
+          <h3 class="t-title-md">MCP server</h3>
+          <p class="t-body-sm muted">
+            Plug into Claude Code, Cursor, Claude Desktop, or any MCP-aware
+            client. 15 tools, structured JSON. Local stdio — never sends data
+            out of your machine.
+          </p>
+          <details class="tools">
+            <summary class="t-body-sm">15 tools →</summary>
+            <ul>
+              {mcpTools.map(t => (
+                <li><code class="mono">{t.name}</code><span>{t.desc}</span></li>
+              ))}
+            </ul>
+          </details>
+        </LeafCard>
+
+        <LeafCard variant="raised" padding="generous" class="surface">
+          <LeafBadge variant="muted">v1.1</LeafBadge>
+          <h3 class="t-title-md">Slack bot</h3>
+          <p class="t-body-sm muted">
+            <code>/leaf where did Anton stop</code> — same memory layer,
+            queried from your team's workspace. Roadmap.
+          </p>
+        </LeafCard>
+      </div>
+    </div>
+  </section>
+
+  <section id="architecture" class="sec sec-alt">
+    <div class="wrap">
+      <LeafEyebrow number="04" label="HOW DATA FLOWS" />
+      <h2 class="t-title-lg">From OS signal to encrypted query, in one diagram.</h2>
+
+      <ol class="arch">
+        {archSteps.map(s => (
+          <li class="arch-step">
+            <span class="arch-from mono">{s.from}</span>
+            <span class="arch-arrow">→</span>
+            <span class="arch-to mono">{s.to}</span>
+            <span class="arch-via t-body-sm muted">{s.via}</span>
+          </li>
+        ))}
+      </ol>
+
+      <p class="t-body-sm muted arch-foot">
+        Everything between Agent and the surfaces lives on your Mac. The team
+        relay only ever sees AES-GCM envelopes — see <a href="/privacy">/privacy</a> for crypto details.
+      </p>
+    </div>
+  </section>
+
+  <section class="sec cta">
+    <div class="wrap">
+      <h2 class="t-title-lg">Want to see all of this in your terminal?</h2>
+      <div class="cta-actions">
+        <LeafButton variant="primary" size="lg" href="/signup">Install for macOS →</LeafButton>
+        <LeafButton variant="ghost" size="lg" href="https://leaf-docs.gundem.tech" external>Read the whitepaper ↗</LeafButton>
+      </div>
+    </div>
+  </section>
+
+  <LeafFooter slot="footer" />
+</BaseLayout>
+
+<style>
+.product-hero { padding: var(--space-4xl) 0 var(--space-3xl); }
+.product-hero .lead { color: var(--text-secondary); margin-top: var(--space-lg); max-width: 60ch; }
+
+.sec { padding: var(--space-4xl) 0; }
+.sec-alt { background: color-mix(in srgb, var(--surface-raised) 60%, transparent); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+.sec h2 { margin: var(--space-md) 0 var(--space-xl); max-width: 30ch; }
+.muted { color: var(--text-secondary); }
+
+/* §01 capture */
+.grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--space-xl); }
+@media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+.list { display: flex; flex-direction: column; gap: var(--space-lg); }
+.list li { padding-left: var(--space-md); border-left: 2px solid var(--border-subtle); }
+.list li p:first-child { color: var(--text-primary); margin-bottom: 2px; }
+.never .t-label { color: var(--accent-primary); margin-bottom: var(--space-md); }
+.never-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+.never-list li { color: var(--text-secondary); display: flex; gap: var(--space-sm); align-items: baseline; font-size: 14px; }
+.never-list .x { color: var(--status-danger); width: 12px; }
+
+/* §02 integrations */
+.provider-grid { display: flex; flex-direction: column; gap: var(--space-lg); }
+.provider-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--space-lg); padding-bottom: var(--space-md); border-bottom: 1px solid var(--border-subtle); }
+.provider-head .meta { color: var(--text-tertiary); font-size: 12px; }
+.provider-cols { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--space-xl); }
+@media (max-width: 768px) { .provider-cols { grid-template-columns: 1fr; } }
+.provider-cols .t-label { color: var(--text-tertiary); margin-bottom: var(--space-sm); }
+.dotted { display: flex; flex-direction: column; gap: 6px; }
+.dotted li { position: relative; padding-left: 18px; color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
+.dotted li::before { content: '·'; position: absolute; left: 6px; color: var(--accent-primary); font-weight: 700; }
+.dotted-x li::before { content: '×'; color: var(--text-quaternary); font-weight: 500; }
+
+/* §03 surfaces */
+.surfaces { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); }
+@media (max-width: 960px) { .surfaces { grid-template-columns: 1fr; } }
+.surface h3 { margin: var(--space-sm) 0; }
+.surface .t-body-sm { line-height: 1.55; }
+.tools { margin-top: var(--space-md); }
+.tools summary { color: var(--accent-primary); cursor: pointer; padding: var(--space-xs) 0; }
+.tools ul { display: flex; flex-direction: column; gap: 6px; margin-top: var(--space-sm); padding-top: var(--space-sm); border-top: 1px solid var(--border-subtle); }
+.tools li { display: flex; gap: var(--space-md); align-items: baseline; font-size: 12px; }
+.tools code { color: var(--accent-primary); font-size: 12px; }
+.tools span { color: var(--text-secondary); }
+
+/* §04 architecture */
+.arch { display: flex; flex-direction: column; gap: var(--space-sm); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: var(--space-xl); background: var(--surface-raised); }
+.arch-step { display: grid; grid-template-columns: 220px 24px 220px 1fr; gap: var(--space-md); align-items: baseline; }
+.arch-from, .arch-to { color: var(--text-primary); font-size: 13px; }
+.arch-arrow { color: var(--accent-primary); }
+.arch-via { font-size: 12px; }
+@media (max-width: 768px) {
+  .arch-step { grid-template-columns: 1fr; gap: 2px; }
+  .arch-arrow { display: none; }
+}
+.arch-foot { margin-top: var(--space-lg); }
+.arch-foot a { color: var(--accent-primary); }
+
+/* CTA */
+.cta { text-align: center; }
+.cta h2 { margin-left: auto; margin-right: auto; }
+.cta-actions { display: inline-flex; gap: var(--space-md); margin-top: var(--space-lg); flex-wrap: wrap; justify-content: center; }
+</style>
