@@ -14,7 +14,20 @@
 
 const STATS_URL = '/api/waitlist/stats';
 const HEARTBEAT_URL = '/api/waitlist/heartbeat';
-const POLL_MS = 30_000;
+const LEAVE_URL = '/api/waitlist/leave';
+// Phase 1 tuning (2026-05-19): poll 3× more often. Worker now uses a 25s
+// PRESENCE_WINDOW (was 90s), so a missed tick still keeps the row alive.
+const POLL_MS = 10_000;
+// Phase 3 idle gating: if no user input for this long, suspend heartbeat —
+// the row decays out of the 25s window naturally so an open-but-untouched
+// tab stops counting as "viewing".
+const IDLE_THRESHOLD_MS = 120_000;
+const ACTIVITY_EVENTS = ['mousemove', 'keydown', 'wheel', 'touchstart', 'click', 'scroll'] as const;
+// Phase 2 leader election: tabs of the same browser dedupe heartbeats via a
+// BroadcastChannel. Lowest live tab-id wins.
+const BC_CHANNEL_NAME = 'leaf-presence';
+const TAB_ANNOUNCE_MS = 5_000;
+const TAB_STALE_MS = 15_000;
 const ANIM_MS = 1400;
 const ANIM_DELAY_BASE_MS = 200;
 const ANIM_DELAY_STEP_MS = 220;
@@ -26,12 +39,15 @@ interface Stats {
   viewing_now: number;
 }
 
-async function fetchStats(): Promise<Stats | null> {
+async function fetchStats(sendHeartbeat: boolean): Promise<Stats | null> {
   try {
-    const [, statsRes] = await Promise.all([
-      fetch(HEARTBEAT_URL, { method: 'POST', credentials: 'same-origin' }),
-      fetch(STATS_URL, { credentials: 'same-origin' }),
-    ]);
+    const requests: Promise<Response>[] = [];
+    if (sendHeartbeat) {
+      requests.push(fetch(HEARTBEAT_URL, { method: 'POST', credentials: 'same-origin' }));
+    }
+    requests.push(fetch(STATS_URL, { credentials: 'same-origin' }));
+    const results = await Promise.all(requests);
+    const statsRes = results[results.length - 1]!;
     if (!statsRes.ok) return null;
     const row = await statsRes.json() as Partial<Stats> | null;
     if (!row) return null;
@@ -43,6 +59,75 @@ async function fetchStats(): Promise<Stats | null> {
   } catch {
     return null;
   }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Phase 2/3 helpers: activity tracking, leader election, leave beacon.
+// ────────────────────────────────────────────────────────────────────────────
+
+// Activity timestamp — bumped on user input. rAF-debounced so noisy events
+// (mousemove every pixel) don't dominate the main thread.
+let lastActivityAt = Date.now();
+function installActivityListeners(): void {
+  let pending = false;
+  const bump = () => {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(() => {
+      lastActivityAt = Date.now();
+      pending = false;
+    });
+  };
+  for (const ev of ACTIVITY_EVENTS) {
+    document.addEventListener(ev, bump, { passive: true, capture: true });
+  }
+}
+const isIdle = (): boolean => Date.now() - lastActivityAt > IDLE_THRESHOLD_MS;
+
+// Per-tab id + peers map for leader election. Smallest live id is leader.
+// Live = announced within TAB_STALE_MS. Pruned lazily on each isLeader() call.
+const tabId = crypto.randomUUID();
+const peers = new Map<string, number>();
+peers.set(tabId, Date.now());
+let bc: BroadcastChannel | null = null;
+
+function isLeader(): boolean {
+  const now = Date.now();
+  for (const [id, ts] of peers) {
+    if (now - ts > TAB_STALE_MS && id !== tabId) peers.delete(id);
+  }
+  peers.set(tabId, now);
+  let leaderId = tabId;
+  for (const id of peers.keys()) if (id < leaderId) leaderId = id;
+  return leaderId === tabId;
+}
+
+function initBroadcastChannel(): void {
+  if (typeof BroadcastChannel === 'undefined') return;
+  try { bc = new BroadcastChannel(BC_CHANNEL_NAME); }
+  catch { return; }
+  bc.addEventListener('message', (e: MessageEvent) => {
+    const msg = e.data as { type?: string; id?: string } | undefined;
+    if (!msg || typeof msg.id !== 'string' || msg.id === tabId) return;
+    if (msg.type === 'announce') peers.set(msg.id, Date.now());
+    else if (msg.type === 'leave') peers.delete(msg.id);
+  });
+  const announce = () => bc?.postMessage({ type: 'announce', id: tabId });
+  announce();
+  setInterval(announce, TAB_ANNOUNCE_MS);
+}
+
+// pagehide is the modern, mobile-friendly equivalent of unload. sendBeacon is
+// fire-and-forget — survives the navigation even if the document is gone.
+function installLeaveBeacon(): void {
+  window.addEventListener('pagehide', () => {
+    bc?.postMessage({ type: 'leave', id: tabId });
+    // Only the leader's row exists in D1 (peer tabs piggyback). Telling the
+    // server to delete it is meaningful only from the leader.
+    if (isLeader() && typeof navigator.sendBeacon === 'function') {
+      navigator.sendBeacon(LEAVE_URL);
+    }
+  });
 }
 
 function applyVisibility(root: HTMLElement, s: Stats) {
@@ -118,6 +203,13 @@ export async function initWaitlistStats(): Promise<void> {
   if (!root) return;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Phase 2/3: wire up activity tracking, leader election, leave beacon.
+  // Done before first fetch so the first heartbeat (sent during initial paint
+  // race) carries correct leader/idle semantics if announces arrived already.
+  installActivityListeners();
+  initBroadcastChannel();
+  installLeaveBeacon();
+
   let liveStats: Stats | null = null;
   let firstPaintDone = false;
 
@@ -129,7 +221,10 @@ export async function initWaitlistStats(): Promise<void> {
     else countUp(root, s);
   };
 
-  const fetchPromise = fetchStats().then((s) => {
+  // First fetch always sends a heartbeat — at load there are no peers yet so
+  // self is leader, and the user just opened the page so is by definition not
+  // idle. This guarantees the visitor shows up in viewing_now immediately.
+  const fetchPromise = fetchStats(true).then((s) => {
     if (!s) return;
     liveStats = s;
     if (!firstPaintDone) paintFirst(s);
@@ -150,7 +245,10 @@ export async function initWaitlistStats(): Promise<void> {
 
   let timer: number | undefined;
   const tick = async () => {
-    const s = await fetchStats();
+    // Heartbeat only if we're the elected leader for this browser AND the user
+    // has interacted recently. Otherwise just refresh the displayed stats.
+    const sendHeartbeat = isLeader() && !isIdle();
+    const s = await fetchStats(sendHeartbeat);
     if (!s) return;
     liveStats = s;
     if (firstPaintDone) { applyVisibility(root, s); snap(root, s); }
