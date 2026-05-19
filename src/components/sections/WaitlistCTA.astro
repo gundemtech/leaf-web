@@ -4,17 +4,28 @@ import LeafInput from '../LeafInput.astro';
 ---
 <section id="waitlist" class="waitlist">
   <div class="wrap">
-    <!-- thin stats strip at the very top, hairline only -->
+    <!-- thin stats strip at the very top, hairline only.
+         data-count* values are last-known-good fallbacks used until the live
+         RPC settles (or if it fails). Live numbers come from waitlist-stats.ts. -->
     <div class="waitlist-stats" data-stats data-reveal>
       <span class="stat">
         <span class="stat-dot"></span>
-        <span class="stat-num mono" data-count="312">0</span>
+        <span class="stat-num mono" data-count-total data-count="312">0</span>
         <span class="stat-label mono">leafs already in line</span>
       </span>
-      <span class="stat-sep mono" aria-hidden="true">·</span>
-      <span class="stat">
-        <span class="stat-num mono" data-count="47">0</span>
-        <span class="stat-label mono">joined this week</span>
+      <span class="stat-week-block" data-stat-week>
+        <span class="stat-sep mono" aria-hidden="true">·</span>
+        <span class="stat">
+          <span class="stat-num mono" data-count-week data-count="47">0</span>
+          <span class="stat-label mono">joined this week</span>
+        </span>
+      </span>
+      <span class="stat-viewing-block" data-stat-viewing>
+        <span class="stat-sep mono" aria-hidden="true">·</span>
+        <span class="stat">
+          <span class="stat-num mono" data-count-viewing data-count="1">0</span>
+          <span class="stat-label mono">viewing now</span>
+        </span>
       </span>
       <span class="stat tail mono">v1 ships when we're sure it's ready</span>
     </div>
@@ -80,40 +91,9 @@ import LeafInput from '../LeafInput.astro';
 </script>
 
 <script>
-  // count-up for stats on scroll-in
-  const statsEl = document.querySelector<HTMLElement>('[data-stats]');
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (statsEl) {
-    const cells = statsEl.querySelectorAll<HTMLElement>('.stat-num[data-count]');
-    if (reduceMotion) {
-      cells.forEach(c => c.textContent = c.dataset.count ?? '0');
-    } else {
-      const io = new IntersectionObserver((entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            cells.forEach((cell, i) => {
-              const target = parseInt(cell.dataset.count ?? '0', 10);
-              animateCount(cell, target, 1400, 200 + i * 220);
-            });
-            io.unobserve(e.target);
-          }
-        }
-      }, { threshold: 0.3 });
-      io.observe(statsEl);
-    }
-  }
-  function animateCount(el: HTMLElement, target: number, durationMs: number, delayMs: number) {
-    const start = performance.now() + delayMs;
-    const ease = (t: number) => 1 - Math.pow(1 - t, 3);
-    const step = (now: number) => {
-      if (now < start) { requestAnimationFrame(step); return; }
-      const t = Math.min(1, (now - start) / durationMs);
-      el.textContent = String(Math.round(target * ease(t)));
-      if (t < 1) requestAnimationFrame(step);
-      else el.textContent = String(target);
-    };
-    requestAnimationFrame(step);
-  }
+  // Live counter — fetch + IntersectionObserver count-up + polling.
+  // See src/scripts/waitlist-stats.ts for the full flow.
+  import '../../scripts/waitlist-stats';
 </script>
 
 <style>
@@ -147,6 +127,14 @@ import LeafInput from '../LeafInput.astro';
   color: var(--text-tertiary);
 }
 .stat { display: inline-flex; align-items: center; gap: 6px; }
+/* Sub-blocks group their leading separator with the stat so the whole
+   segment collapses cleanly when hidden (this_week=0 case). */
+.stat-week-block:not([hidden]),
+.stat-viewing-block:not([hidden]) {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-md);
+}
 .stat-dot {
   width: 7px; height: 7px;
   border-radius: 50%;
