@@ -58,7 +58,18 @@ const CELLS: Array<readonly [string, keyof Stats]> = [
   ['[data-count-viewing]', 'viewing_now'],
 ];
 
+// Active count-up animations. Each animation closes over its own target value,
+// so when fetch resolves *after* IO has fired (and IO triggered count-up using
+// the inline fallbacks), the in-flight animations would otherwise keep
+// over-writing the fresh textContent set by snap() — ending on the stale
+// fallback in their final frame. snap() flips `cancelled` on every in-flight
+// animation before writing the live numbers, so they bail out on next RAF.
+type AbortFlag = { cancelled: boolean };
+const liveAnimations = new Set<AbortFlag>();
+
 function snap(root: HTMLElement, s: Stats) {
+  for (const flag of liveAnimations) flag.cancelled = true;
+  liveAnimations.clear();
   for (const [sel, key] of CELLS) {
     const el = root.querySelector<HTMLElement>(sel);
     if (el) el.textContent = String(s[key]);
@@ -66,14 +77,20 @@ function snap(root: HTMLElement, s: Stats) {
 }
 
 function animateCount(el: HTMLElement, target: number, durationMs: number, delayMs: number) {
+  const flag: AbortFlag = { cancelled: false };
+  liveAnimations.add(flag);
   const start = performance.now() + delayMs;
   const ease = (t: number) => 1 - Math.pow(1 - t, 3);
   const step = (now: number) => {
+    if (flag.cancelled) return;
     if (now < start) { requestAnimationFrame(step); return; }
     const t = Math.min(1, (now - start) / durationMs);
     el.textContent = String(Math.round(target * ease(t)));
     if (t < 1) requestAnimationFrame(step);
-    else el.textContent = String(target);
+    else {
+      el.textContent = String(target);
+      liveAnimations.delete(flag);
+    }
   };
   requestAnimationFrame(step);
 }
