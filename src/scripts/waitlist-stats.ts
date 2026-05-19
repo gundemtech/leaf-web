@@ -168,6 +168,34 @@ export async function initWaitlistStats(): Promise<void> {
     if (document.hidden) stop(); else start();
   });
   start();
+
+  // Optimistic +1 when the waitlist form fires a successful signup. The
+  // Worker also invalidates the /stats edge cache on the same request, so
+  // the next polling tick reads the fresh total — these two together avoid
+  // any visible dip back to the pre-signup value.
+  document.addEventListener('leaf:waitlist-signup', () => {
+    if (!liveStats) {
+      // No fetch yet — synthesize from whatever is on screen so the bump
+      // applies on top of fallback / mid-animation values.
+      const readNum = (sel: string, dflt: number) => {
+        const el = root.querySelector<HTMLElement>(sel);
+        const n = parseInt(el?.textContent ?? '', 10);
+        return Number.isFinite(n) ? n : dflt;
+      };
+      liveStats = {
+        total:       readNum('[data-count-total]',
+                       parseInt(root.querySelector<HTMLElement>('[data-count-total]')?.dataset.count ?? '0', 10) || 0),
+        this_week:   readNum('[data-count-week]',
+                       parseInt(root.querySelector<HTMLElement>('[data-count-week]')?.dataset.count ?? '0', 10) || 0),
+        viewing_now: readNum('[data-count-viewing]', 1),
+      };
+    }
+    liveStats.total += 1;
+    liveStats.this_week += 1;
+    applyVisibility(root, liveStats);
+    snap(root, liveStats);  // also cancels any in-flight count-up animation
+    firstPaintDone = true;  // we've now overridden whatever paint was pending
+  });
 }
 
 initWaitlistStats();

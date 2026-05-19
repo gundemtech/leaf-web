@@ -62,6 +62,10 @@ export function initWaitlist(): void {
       setStatus(status, 'Thanks — we\'ll email you on release.', 'success');
       form.reset();
       window.turnstile?.reset(turnstileEl ?? undefined);
+      // Tell the live-counter to bump total + this_week immediately — no need
+      // to wait the next 30s polling tick. The Worker invalidates the /stats
+      // edge cache on the same request, so polling won't visually revert.
+      document.dispatchEvent(new CustomEvent('leaf:waitlist-signup'));
     } catch (err) {
       setStatus(status, 'Could not submit — try again in a moment.', 'error');
     } finally {
