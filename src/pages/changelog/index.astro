@@ -99,6 +99,8 @@ import LeafBadge from '../../components/LeafBadge.astro';
 </style>
 
 <script>
+import { sanitizeChangelogHTML } from '../../scripts/sanitize-html';
+
 type FeedEntry = {
   id?: string;
   title: string;
@@ -135,7 +137,7 @@ function render(entries: FeedEntry[]): void {
     const li = document.createElement('li');
     li.className = 'entry';
     const tag = (e.tags && e.tags[0]) || 'release';
-    const body = e.content_html ?? (e.content_text ? escapeHTML(e.content_text).replace(/\n/g,'<br/>') : '');
+    const body = e.content_html != null ? sanitizeChangelogHTML(e.content_html) : (e.content_text ? escapeHTML(e.content_text).replace(/\n/g,'<br/>') : '');
     li.innerHTML = `
       <header class="entry-head">
         <span class="entry-date">${escapeHTML(fmtDate(e.date_published))}</span>

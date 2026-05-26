@@ -9,16 +9,21 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "vitest run"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",
-    "astro": "^6.3.3"
+    "astro": "^6.3.3",
+    "isomorphic-dompurify": "^3.14.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",
       "sharp"
     ]
+  },
+  "devDependencies": {
+    "vitest": "^4.1.7"
   }
 }
