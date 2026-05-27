@@ -43,6 +43,10 @@ export const GET: APIRoute = async () => {
 
   const xmlItems = items.map((e) => {
     const url = e.url ?? `${SITE}/changelog#${e.id ?? ''}`;
+    // CDATA-safety: the sanitized branch (DOMPurify) escapes `>` inside text
+    // nodes, so `]]>` cannot survive verbatim — the replaceAll() guard is only
+    // needed on the content_text fallback path. Do not "symmetrize" without
+    // re-reading: applying replaceAll on sanitized HTML would double-encode.
     const body = e.content_html != null
       ? sanitizeChangelogHTML(e.content_html)
       : (e.content_text ?? '').replaceAll(']]>', ']]&gt;');
