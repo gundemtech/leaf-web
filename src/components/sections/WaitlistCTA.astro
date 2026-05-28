@@ -46,7 +46,7 @@ import LeafInput from '../LeafInput.astro';
   challenge scripts, is served without the CORS header SRI requires, and
   Cloudflare revs it unannounced — a pinned hash would break the widget.
   Integrity is enforced instead by CSP script-src + frame-src pinned to
-  challenges.cloudflare.com (see deploy/nginx-leaf-headers.conf + astro.config).
+  challenges.cloudflare.com (see deploy/nginx-leaf-headers.conf).
 -->
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
