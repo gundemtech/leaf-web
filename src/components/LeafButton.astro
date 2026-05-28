@@ -7,8 +7,9 @@ interface Props {
   disabled?: boolean;
   external?: boolean;
   class?: string;
+  id?: string;
 }
-const { variant = 'primary', size = 'md', href, type = 'button', disabled = false, external = false, class: extraClass } = Astro.props;
+const { variant = 'primary', size = 'md', href, type = 'button', disabled = false, external = false, class: extraClass, id } = Astro.props;
 const Tag = href ? 'a' : 'button';
 const rel = external ? 'noopener noreferrer' : undefined;
 const target = external ? '_blank' : undefined;
@@ -16,6 +17,7 @@ const classes = `btn btn-${variant} btn-${size}${extraClass ? ' ' + extraClass :
 ---
 <Tag
   class={classes}
+  id={id}
   href={href}
   type={Tag === 'button' ? type : undefined}
   disabled={Tag === 'button' ? disabled : undefined}
