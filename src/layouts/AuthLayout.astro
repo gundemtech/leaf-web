@@ -2,6 +2,9 @@
 import '../styles/tokens.css';
 import '../styles/reset.css';
 import '../styles/global.css';
+// Self-hosted JetBrains Mono (same-origin woff2) — see BaseLayout note.
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/500.css';
 
 interface Props {
   title: string;
@@ -20,9 +23,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <link rel="canonical" href={canonical} />
     <meta name="robots" content="noindex" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" />
   </head>
   <body class="auth-body">
     <slot />
