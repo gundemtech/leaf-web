@@ -28,6 +28,10 @@ green() { printf "\033[1;32m%s\033[0m\n" "$*"; }
 red()   { printf "\033[1;31m%s\033[0m\n" "$*"; }
 
 cyan "[1/5] Build"
+# Fail fast on any package.json / lockfile drift before touching production.
+# Runs even with SKIP_BUILD=1: reusing an existing dist/ still requires the
+# installed deps to match the committed lockfile exactly.
+pnpm install --frozen-lockfile
 if [[ "${SKIP_BUILD:-0}" == "1" ]]; then
   echo "  → skipped (SKIP_BUILD=1)"
 else
