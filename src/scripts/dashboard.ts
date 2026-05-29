@@ -1,5 +1,6 @@
 // /dashboard wiring — auth gate, populate user fields, sign out, delete account.
 import { getSupabase } from './supabase-client';
+import { wireDeleteAccount } from './account-delete';
 
 const sb = getSupabase();
 
@@ -35,31 +36,40 @@ function setField(field: string, value: string): void {
   if (echo) echo.textContent = user.email ?? '-';
 })();
 
-// Sign out (button handler already wired inline in dashboard.astro,
-// but listening here too ensures clean Supabase signOut even if inline JS misses).
+// Sign out.
 document.getElementById('signout-btn')?.addEventListener('click', async (e) => {
   e.preventDefault();
   await sb.auth.signOut();
   window.location.href = '/';
 });
 
-// Delete account — calls Supabase's RPC, then signs out and redirects.
-// Backed by an SQL function `delete_self_account()` defined server-side
-// (security definer, idempotent). If the RPC is missing, surface the error.
-document.getElementById('delete-btn')?.addEventListener('click', async (e) => {
-  e.preventDefault();
-  const ok = confirm(
-    'Delete your account?\n\n' +
-    'This removes team memberships and identity keys held on the relay.\n' +
-    'Your local Mac data is not touched — wipe that from the macOS app\'s ' +
-    'Settings → Danger zone.'
-  );
-  if (!ok) return;
-  const { error } = await sb.rpc('delete_self_account');
-  if (error) {
-    alert(`Account deletion failed: ${error.message}`);
-    return;
-  }
-  await sb.auth.signOut();
-  window.location.href = '/';
-});
+// Delete account — gated behind a typed "DELETE" confirmation (see account-delete.ts).
+// Backed by the server-side SQL function `delete_self_account()` (security definer,
+// idempotent). The typed gate stops accidental deletion; see OT-SEC-7b for the XSS
+// residual. If the RPC is missing/fails, surface the error without signing out.
+const deleteInput = document.getElementById('delete-confirm-input') as HTMLInputElement | null;
+const deleteButton = document.getElementById('delete-btn') as HTMLButtonElement | null;
+if (deleteInput && deleteButton) {
+  wireDeleteAccount({
+    input: deleteInput,
+    button: deleteButton,
+    confirmFn: () =>
+      confirm(
+        'Delete your account?\n\n' +
+          'This removes team memberships and identity keys held on the relay.\n' +
+          'Your local Mac data is not touched — wipe that from the macOS app\'s ' +
+          'Settings → Danger zone.',
+      ),
+    rpc: async () => {
+      const { error } = await sb.rpc('delete_self_account');
+      return { error: error ? { message: error.message } : null };
+    },
+    signOut: async () => {
+      await sb.auth.signOut();
+    },
+    redirect: (url) => {
+      window.location.href = url;
+    },
+    onError: (msg) => alert(`Account deletion failed: ${msg}`),
+  });
+}

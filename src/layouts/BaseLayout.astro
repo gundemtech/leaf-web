@@ -2,6 +2,10 @@
 import '../styles/tokens.css';
 import '../styles/reset.css';
 import '../styles/global.css';
+// Self-hosted JetBrains Mono (same-origin woff2) — replaces the Google Fonts
+// CDN so CSP can stay font-src 'self' and no third-party request leaks.
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/500.css';
 
 interface Props {
   title: string;
@@ -36,10 +40,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(ogImage, Astro.site).href} />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" />
 
     <link rel="alternate" type="application/rss+xml" href="/changelog/feed.xml" title="Leaf changelog" />
   </head>

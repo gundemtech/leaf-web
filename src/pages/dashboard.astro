@@ -48,12 +48,25 @@ const DMG_URL = 'https://updates.gundem.tech/Leaf.dmg';
 
       <LeafCard variant="raised" padding="generous" class="card-section danger-card">
         <h2 class="t-title-md">Danger zone</h2>
-        <p class="t-body muted">
+        <p id="delete-confirm-help" class="t-body muted">
           Delete your account, including all team memberships, share lists, and
           identity keys held on the relay. <strong>Your local Mac data is not affected.</strong>
           Wipe that from the macOS app's Settings → Danger zone.
         </p>
-        <LeafButton variant="destructive" size="md" id="delete-btn">Delete account →</LeafButton>
+        <label class="delete-confirm-label t-body-sm muted" for="delete-confirm-input">
+          Type <strong>DELETE</strong> to confirm:
+        </label>
+        <input
+          type="text"
+          id="delete-confirm-input"
+          class="delete-confirm-input mono"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          aria-describedby="delete-confirm-help"
+          placeholder="DELETE"
+        />
+        <LeafButton variant="destructive" size="md" id="delete-btn" disabled>Delete account →</LeafButton>
       </LeafCard>
     </main>
   </div>
@@ -100,30 +113,27 @@ const DMG_URL = 'https://updates.gundem.tech/Leaf.dmg';
 .danger-card { border-color: color-mix(in srgb, var(--status-danger) 30%, var(--border-subtle)); }
 .danger-card h2 { color: var(--status-danger); }
 .danger-card .muted { margin-bottom: var(--space-md); }
+.delete-confirm-label { display: block; margin-bottom: var(--space-xs); }
+.delete-confirm-input {
+  display: block;
+  width: 100%;
+  max-width: 220px;
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+.delete-confirm-input:focus-visible {
+  outline: 2px solid var(--status-danger);
+  outline-offset: 1px;
+}
 
 .email-echo { color: var(--text-primary); font-size: 12px; }
 </style>
 
 <script>
   import '../scripts/dashboard';
-</script>
-
-<script>
-// Inline fallback handlers (run before module bundle resolves).
-// Real auth-gate + Supabase flow lives in src/scripts/dashboard.ts.
-const signoutBtn = document.getElementById('signout-btn') as HTMLButtonElement | null;
-const deleteBtn = document.getElementById('delete-btn') as HTMLButtonElement | null;
-
-signoutBtn?.addEventListener('click', async () => {
-  const sb = (window as any).supabase;
-  if (!sb) { window.location.href = '/signup'; return; }
-  await sb.auth.signOut();
-  window.location.href = '/';
-});
-
-deleteBtn?.addEventListener('click', async () => {
-  if (!confirm('Delete your account? This removes team memberships and relay-held keys. Your local Mac data is untouched.')) return;
-  // Real deletion calls the Cloudflare Worker delete endpoint (wired in T5).
-  alert('Account deletion will be available after T5 wiring lands.');
-});
 </script>
