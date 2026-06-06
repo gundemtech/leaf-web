@@ -16,7 +16,8 @@
   transition: background var(--dur-snap) var(--ease-standard), color var(--dur-snap) var(--ease-standard);
 }
 .theme-toggle:hover { background: var(--surface-raised); color: var(--text-primary); }
-.theme-toggle svg { display: block; }
+/* Icon visibility is token-driven ONLY — an extra `.theme-toggle svg` display
+   rule would out-specificity these two and show both icons at once. */
 .i-sun { display: var(--theme-toggle-sun, none); }
 .i-moon { display: var(--theme-toggle-moon, block); }
 </style>
