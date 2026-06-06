@@ -12,6 +12,11 @@ const navItems = [
   { href: '/changelog', label: 'Changelog' },
   { href: 'https://leaf-docs.gundem.tech', label: 'Docs', external: true },
 ];
+// Active page highlight — same mechanic as the worker's hardcoded
+// aria-current="page" on its Changelog link (trailingSlash: 'never').
+const current = Astro.url.pathname;
+const isCurrent = (item: (typeof navItems)[number]) =>
+  !item.external && (current === item.href || current.startsWith(item.href + '/'));
 ---
 <header class="nav">
   <div class="nav-inner">
@@ -19,7 +24,7 @@ const navItems = [
     <ul class="nav-links">
       {navItems.map(item => (
         <li>
-          <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noopener' : undefined}>
+          <a href={item.href} aria-current={isCurrent(item) ? 'page' : undefined} target={item.external ? '_blank' : undefined} rel={item.external ? 'noopener' : undefined}>
             {item.label}{item.external && ' ↗'}
           </a>
         </li>
@@ -50,7 +55,7 @@ const navItems = [
   color: var(--text-secondary); font: 500 14px/1 var(--font-body);
   transition: color var(--dur-snap) var(--ease-standard);
 }
-.nav-links a:hover { color: var(--text-primary); }
+.nav-links a:hover, .nav-links a[aria-current] { color: var(--text-primary); }
 @media (max-width: 768px) {
   .nav-links { display: none; }
 }
