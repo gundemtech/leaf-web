@@ -14,11 +14,14 @@
 
 set -euo pipefail
 
-SSH_HOST="${SSH_HOST:-root@gundem.tech}"
+# leaf-vps — алиас из ~/.ssh/config на деплой-машине (host+user там, не в
+# публичном репо: origin за Cloudflare). Деплой-юзер имеет rsync в
+# /var/www/leaf без sudo и NOPASSWD на nginx -t / systemctl reload nginx.
+SSH_HOST="${SSH_HOST:-leaf-vps}"
 REMOTE_PATH="${REMOTE_PATH:-/var/www/leaf}"
-BACKUP_DIR="${BACKUP_DIR:-/var/backups}"
+BACKUP_DIR="${BACKUP_DIR:-~/backups}"
 STAMP="$(date +%Y%m%d-%H%M%S)"
-BACKUP_FILE="${BACKUP_DIR}/leaf-pre-redesign-${STAMP}.tar.gz"
+BACKUP_FILE="${BACKUP_DIR}/leaf-pre-deploy-${STAMP}.tar.gz"
 SITE_URL="${SITE_URL:-https://leaf.gundem.tech}"
 
 cd "$(dirname "$0")/.."
@@ -42,7 +45,7 @@ cyan "[2/5] Backup current site on VPS"
 if [[ "${SKIP_BACKUP:-0}" == "1" ]]; then
   red "  → WARNING: SKIP_BACKUP=1 — production swap with no rollback tarball"
 else
-  ssh "$SSH_HOST" "sudo mkdir -p ${BACKUP_DIR} && sudo tar -czf ${BACKUP_FILE} -C $(dirname ${REMOTE_PATH}) $(basename ${REMOTE_PATH}) && ls -lh ${BACKUP_FILE}"
+  ssh "$SSH_HOST" "mkdir -p ${BACKUP_DIR} && tar -czf ${BACKUP_FILE} -C $(dirname ${REMOTE_PATH}) $(basename ${REMOTE_PATH}) && ls -lh ${BACKUP_FILE}"
   green "  → backup at $SSH_HOST:${BACKUP_FILE}"
 fi
 
@@ -77,9 +80,31 @@ else
   red   "  ✗ /changelog/feed.xml not recognized as RSS"
 fi
 
+# Version badge must match the live Sparkle appcast (single source of truth —
+# src/lib/version.ts fetches it at build time; mismatch = stale build artifact).
+# Load-bearing check: a mismatch FAILS the deploy (exit 1 below) so callers
+# (release.sh step_site) don't stamp a stale site as success.
+VERSION_VERIFY_FAILED=0
+appcast_ver="$(curl -s https://updates.gundem.tech/appcast.xml \
+  | grep -oE '<sparkle:shortVersionString>[^<]+' | sed 's/.*>//' | head -1)"
+site_ver="$(curl -s "${SITE_URL}/" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?' | head -1)"
+if [[ -n "$appcast_ver" && "v${appcast_ver}" == "$site_ver" ]]; then
+  green "  ✓ site version ${site_ver} matches appcast"
+else
+  red   "  ✗ site version '${site_ver}' ≠ appcast 'v${appcast_ver}' — rebuild without SKIP_BUILD?"
+  VERSION_VERIFY_FAILED=1
+fi
+
 # /api/contact must still be proxied (we excluded it from rsync delete)
 api_code="$(curl -s -o /dev/null -w '%{http_code}' -X POST "${SITE_URL}/api/contact" -H 'Content-Type: application/json' -d '{}')"
 echo "  api/contact responded ${api_code} (expect 400/422 — endpoint reachable, body invalid)"
 
 cyan "Done."
-[[ "${SKIP_BACKUP:-0}" != "1" ]] && echo "Rollback if needed:  ssh ${SSH_HOST} 'sudo tar -xzf ${BACKUP_FILE} -C $(dirname ${REMOTE_PATH})'"
+if [[ "${SKIP_BACKUP:-0}" != "1" ]]; then
+  echo "Rollback if needed:  ssh ${SSH_HOST} 'tar -xzf ${BACKUP_FILE} -C $(dirname ${REMOTE_PATH})'"
+fi
+
+if [[ "$VERSION_VERIFY_FAILED" -eq 1 ]]; then
+  red "DEPLOY VERIFY FAILED: live site version ≠ appcast. Deploy is NOT successful."
+  exit 1
+fi
