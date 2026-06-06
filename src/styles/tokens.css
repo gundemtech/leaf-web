@@ -80,6 +80,10 @@
   --theme-toggle-sun: none;
   --theme-toggle-moon: block;
 
+  /* Logo mark variant — ink mark on light surfaces, white mark on dark */
+  --logo-on-dark: none;
+  --logo-on-light: block;
+
   color-scheme: light dark;
 }
 
@@ -115,6 +119,9 @@
 
     --theme-toggle-sun: block;
     --theme-toggle-moon: none;
+
+    --logo-on-dark: block;
+    --logo-on-light: none;
   }
 }
 
@@ -151,6 +158,9 @@
 
   --theme-toggle-sun: block;
   --theme-toggle-moon: none;
+
+  --logo-on-dark: block;
+  --logo-on-light: none;
 
   color-scheme: dark;
 }

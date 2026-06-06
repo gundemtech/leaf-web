@@ -11,9 +11,13 @@ const { size = 24, withWordmark = true, href } = Astro.props;
 const Tag = href ? 'a' : 'span';
 ---
 <Tag class="leaf-logo" href={href} aria-label="Leaf home" style={`--logo-size: ${size}px`}>
-  <picture>
+  <picture class="logo-on-dark">
     <source srcset={`/assets/logo/leaf-3x.png 3x, /assets/logo/leaf-2x.png 2x, /assets/logo/leaf-1x.png 1x`} />
     <img src="/assets/logo/leaf-1x.png" alt="Leaf" width={size} height={size} />
+  </picture>
+  <picture class="logo-on-light">
+    <source srcset={`/assets/logo/leaf-dark-3x.png 3x, /assets/logo/leaf-dark-2x.png 2x, /assets/logo/leaf-dark-1x.png 1x`} />
+    <img src="/assets/logo/leaf-dark-1x.png" alt="Leaf" width={size} height={size} />
   </picture>
   {withWordmark && <span class="wordmark">Leaf</span>}
 </Tag>
@@ -21,6 +25,10 @@ const Tag = href ? 'a' : 'span';
 <style>
 .leaf-logo { display: inline-flex; align-items: center; gap: var(--space-sm); }
 .leaf-logo img { width: var(--logo-size); height: var(--logo-size); }
+/* The white mark is for dark surfaces, the ink mark for light — visibility is
+   token-driven (same mechanic as the theme-toggle icons, see tokens.css). */
+.logo-on-dark { display: var(--logo-on-dark, block); }
+.logo-on-light { display: var(--logo-on-light, none); }
 .wordmark { font: 600 17px/1 var(--font-body); letter-spacing: -0.01em; color: var(--text-primary); }
 a.leaf-logo { text-decoration: none; }
 </style>

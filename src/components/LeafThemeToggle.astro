@@ -32,4 +32,14 @@ document.querySelectorAll<HTMLButtonElement>('.theme-toggle').forEach((btn) => {
     try { localStorage.setItem('leaf-theme', next); } catch {}
   });
 });
+
+// Already-open tabs follow a switch made elsewhere (storage fires cross-tab only).
+window.addEventListener('storage', (e) => {
+  if (e.key !== 'leaf-theme') return;
+  if (e.newValue === 'light' || e.newValue === 'dark') {
+    document.documentElement.setAttribute('data-theme', e.newValue);
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+});
 </script>
