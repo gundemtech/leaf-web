@@ -4,6 +4,7 @@ import LeafLogo from '../components/LeafLogo.astro';
 import LeafButton from '../components/LeafButton.astro';
 import LeafCard from '../components/LeafCard.astro';
 import LeafBadge from '../components/LeafBadge.astro';
+import LeafThemeToggle from '../components/LeafThemeToggle.astro';
 
 const DMG_URL = 'https://updates.gundem.tech/Leaf.dmg';
 ---
@@ -13,6 +14,7 @@ const DMG_URL = 'https://updates.gundem.tech/Leaf.dmg';
       <a href="/" aria-label="Leaf home"><LeafLogo size={28} withWordmark /></a>
       <div class="head-right">
         <span class="t-body-sm muted">Signed in as <span class="email-echo mono" data-user-email>-</span></span>
+        <LeafThemeToggle />
         <LeafButton variant="ghost" size="sm" id="signout-btn">Sign out</LeafButton>
       </div>
     </header>

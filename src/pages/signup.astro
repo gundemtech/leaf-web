@@ -3,12 +3,16 @@ import AuthLayout from '../layouts/AuthLayout.astro';
 import LeafLogo from '../components/LeafLogo.astro';
 import LeafButton from '../components/LeafButton.astro';
 import LeafInput from '../components/LeafInput.astro';
+import LeafThemeToggle from '../components/LeafThemeToggle.astro';
 
 const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
 ---
 <AuthLayout title="Sign in: Leaf" description="Sign in or create your Leaf account.">
   <div class="auth-card">
-    <a class="brand" href="/" aria-label="Leaf home"><LeafLogo size={28} withWordmark /></a>
+    <div class="card-head">
+      <a class="brand" href="/" aria-label="Leaf home"><LeafLogo size={28} withWordmark /></a>
+      <LeafThemeToggle />
+    </div>
 
     <nav class="auth-tabs" role="tablist">
       <button class="auth-tab active" data-panel="signin" role="tab" aria-selected="true">Sign in</button>
@@ -132,7 +136,9 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
   border-radius: var(--radius-xl);
   box-shadow: var(--elev-modal);
 }
-.brand { display: inline-block; margin-bottom: var(--space-xl); }
+/* AuthLayout has no nav — the toggle lives in the card head, opposite the logo */
+.card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-xl); }
+.brand { display: inline-block; }
 .muted { color: var(--text-secondary); }
 
 .auth-tabs { display: flex; gap: var(--space-lg); border-bottom: 1px solid var(--border-subtle); margin-bottom: var(--space-xl); }
