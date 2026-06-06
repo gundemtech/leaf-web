@@ -5,8 +5,9 @@ import LeafButton from '../components/LeafButton.astro';
 import LeafCard from '../components/LeafCard.astro';
 import LeafBadge from '../components/LeafBadge.astro';
 import LeafThemeToggle from '../components/LeafThemeToggle.astro';
+import { LEAF_VERSION, LEAF_VERSION_TAG, LEAF_DMG_URL, LEAF_DMG_SHA256_URL } from '../lib/version';
 
-const DMG_URL = 'https://updates.gundem.tech/Leaf.dmg';
+const DMG_URL = LEAF_DMG_URL;
 ---
 <AuthLayout title="Dashboard: Leaf" description="Your Leaf account.">
   <div class="dash-wrap">
@@ -36,12 +37,12 @@ const DMG_URL = 'https://updates.gundem.tech/Leaf.dmg';
         <p class="t-body muted">macOS 14+ (Sonoma) · Apple Silicon &amp; Intel · ~24 MB · auto-updates via Sparkle</p>
         <div class="download-row">
           <LeafButton variant="primary" size="lg" href={DMG_URL} download>Download Leaf.dmg →</LeafButton>
-          <span class="t-body-sm muted">Latest: <span class="mono">v1.0.0-alpha.15</span></span>
+          <span class="t-body-sm muted">Latest: <span class="mono">{LEAF_VERSION_TAG}</span></span>
         </div>
         <details class="checksum">
           <summary class="t-body-sm">Checksums &amp; signatures</summary>
           <div class="checksum-body">
-            <p class="mono">SHA-256: <span class="dim">(verify against /Leaf.dmg.sha256)</span></p>
+            <p class="mono">SHA-256: <a class="dim" href={LEAF_DMG_SHA256_URL}>Leaf-{LEAF_VERSION}.dmg.sha256</a></p>
             <p class="mono">EdDSA sig: <span class="dim">(verified by Sparkle on install)</span></p>
             <p class="t-body-sm muted">Notarized by Apple · Developer ID signed.</p>
           </div>
