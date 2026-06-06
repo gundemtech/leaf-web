@@ -4,6 +4,7 @@
 // markup/styles. If you change it here — update the mirror there.
 import LeafLogo from './LeafLogo.astro';
 import LeafButton from './LeafButton.astro';
+import LeafThemeToggle from './LeafThemeToggle.astro';
 const navItems = [
   { href: '/product', label: 'Product' },
   { href: '/privacy', label: 'Privacy' },
@@ -24,6 +25,7 @@ const navItems = [
         </li>
       ))}
     </ul>
+    <LeafThemeToggle />
     <div class="nav-cta" data-auth="anon">
       <LeafButton href="/signup" variant="ghost" size="sm">Sign in</LeafButton>
     </div>

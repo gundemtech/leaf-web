@@ -76,11 +76,15 @@
   --content-max: 1360px;
   --content-narrow: 720px;
 
+  /* Theme toggle icon visibility — flipped in the dark blocks */
+  --theme-toggle-sun: none;
+  --theme-toggle-moon: block;
+
   color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --surface-canvas: #0A0A0B;
     --surface-raised: #131316;
     --surface-inset: #1D1D22;
@@ -108,5 +112,46 @@
     --elev-raised: 0 1px 3px rgba(0, 0, 0, .50);
     --elev-floating: 0 4px 12px rgba(0, 0, 0, .60);
     --elev-modal: 0 24px 48px rgba(0, 0, 0, .70);
+
+    --theme-toggle-sun: block;
+    --theme-toggle-moon: none;
   }
 }
+
+/* Explicit user choice (data-theme on <html>, set pre-paint from localStorage).
+   Duplicates the dark set above — keep the two blocks in sync. */
+:root[data-theme="dark"] {
+  --surface-canvas: #0A0A0B;
+  --surface-raised: #131316;
+  --surface-inset: #1D1D22;
+  --surface-glass-tint: #4ADE80;
+
+  --text-primary: #F4F4F7;
+  --text-secondary: #A0A0AB;
+  --text-tertiary: #7E7E89;
+  --text-quaternary: #595962;
+  --text-inverse: #0A0A0B;
+
+  --accent-primary: #4ADE80;
+  --accent-subtle: #14532D;
+  --accent-emphasis: #86EFAC;
+
+  --border-subtle: #1D1D22;
+  --border-strong: #2A2A30;
+  --border-focus: #4ADE80;
+
+  --status-success: #4ADE80;
+  --status-warning: #F59E0B;
+  --status-danger: #EF4444;
+  --status-info: #3B82F6;
+
+  --elev-raised: 0 1px 3px rgba(0, 0, 0, .50);
+  --elev-floating: 0 4px 12px rgba(0, 0, 0, .60);
+  --elev-modal: 0 24px 48px rgba(0, 0, 0, .70);
+
+  --theme-toggle-sun: block;
+  --theme-toggle-moon: none;
+
+  color-scheme: dark;
+}
+:root[data-theme="light"] { color-scheme: light; }

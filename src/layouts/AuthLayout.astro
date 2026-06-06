@@ -13,6 +13,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script is:inline>try{var t=localStorage.getItem('leaf-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
