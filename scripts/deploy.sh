@@ -64,12 +64,17 @@ ssh "$SSH_HOST" "sudo nginx -t && sudo systemctl reload nginx"
 green "  → nginx reloaded"
 
 cyan "[5/5] Verify"
+# Fail-loud: accumulate any verify failure and exit 1 at the end, so a bad deploy
+# never reports success. Each check below sets VERIFY_FAILED=1 on failure.
+VERIFY_FAILED=0
+
 for path in "/" "/product" "/pricing" "/privacy" "/open-source" "/changelog" "/changelog/feed.xml" "/signup" "/dashboard" "/terms"; do
   code="$(curl -s -o /dev/null -w '%{http_code}' "${SITE_URL}${path}")"
   if [[ "$code" =~ ^2 ]]; then
     green "  ✓ ${path} → ${code}"
   else
     red   "  ✗ ${path} → ${code}"
+    VERIFY_FAILED=1
   fi
 done
 
@@ -79,11 +84,30 @@ if grep -q '<rss' <<<"$rss_head"; then
   green "  ✓ /changelog/feed.xml is valid RSS"
 else
   red   "  ✗ /changelog/feed.xml not recognized as RSS"
+  VERIFY_FAILED=1
+fi
+
+# Version assertion — the deployed homepage HTML must contain the version string
+# we just built from src/data/releases.json (single build-time source, Phase 4).
+# Guards against shipping a stale/blank version (the alpha.15 git-frozen drift).
+EXPECTED_VERSION="$(node -p "'v' + require('./src/data/releases.json').releases[0].version")"
+home_html="$(curl -s "${SITE_URL}/")"
+if grep -qF "$EXPECTED_VERSION" <<<"$home_html"; then
+  green "  ✓ homepage shows ${EXPECTED_VERSION}"
+else
+  red   "  ✗ homepage does NOT contain ${EXPECTED_VERSION} (stale deploy?)"
+  VERIFY_FAILED=1
 fi
 
 # /api/contact must still be proxied (we excluded it from rsync delete)
 api_code="$(curl -s -o /dev/null -w '%{http_code}' -X POST "${SITE_URL}/api/contact" -H 'Content-Type: application/json' -d '{}')"
 echo "  api/contact responded ${api_code} (expect 400/422 — endpoint reachable, body invalid)"
+
+if [[ "$VERIFY_FAILED" == "1" ]]; then
+  red "Verify FAILED — one or more checks did not pass. See ✗ lines above."
+  [[ "${SKIP_BACKUP:-0}" != "1" ]] && echo "Rollback if needed:  ssh ${SSH_HOST} 'sudo tar -xzf ${BACKUP_FILE} -C $(dirname ${REMOTE_PATH})'"
+  exit 1
+fi
 
 cyan "Done."
 [[ "${SKIP_BACKUP:-0}" != "1" ]] && echo "Rollback if needed:  ssh ${SSH_HOST} 'sudo tar -xzf ${BACKUP_FILE} -C $(dirname ${REMOTE_PATH})'"
