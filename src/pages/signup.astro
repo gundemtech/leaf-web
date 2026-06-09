@@ -71,6 +71,8 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
         <li class="requirement" data-rule="symbol"><span class="req-icon" aria-hidden="true"></span>A symbol</li>
       </ul>
 
+      <LeafInput name="confirm" type="password" label="Confirm password" autocomplete="new-password" />
+
       <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="create" data-theme="auto"></div>
 
       <LeafButton type="submit" variant="primary" size="lg" class="full">Send verification code →</LeafButton>
