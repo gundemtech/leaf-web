@@ -4,6 +4,17 @@
 // the actual Supabase auth calls and post-submit redirects.
 import { getSupabase } from './supabase-client';
 
+// Cloudflare Turnstile global (loaded via challenges.cloudflare.com/turnstile/v0/api.js).
+declare global {
+  interface Window {
+    turnstile?: {
+      getResponse(widget?: string | HTMLElement): string | undefined;
+      reset(widget?: string | HTMLElement): void;
+      render(el: string | HTMLElement, opts: Record<string, unknown>): string;
+    };
+  }
+}
+
 const REDIRECT_AFTER_AUTH = '/dashboard';
 const RESET_REDIRECT = `${window.location.origin}/signup?panel=reset`;
 
@@ -16,6 +27,24 @@ function setError(panel: string, msg: string): void {
   if (!msg) { el.hidden = true; el.textContent = ''; return; }
   el.hidden = false;
   el.textContent = msg;
+}
+
+// Returns the Turnstile token for the widget inside the named panel, or ''.
+function captchaTokenFor(panel: string): string {
+  const widget = document.querySelector<HTMLElement>(
+    `.auth-panel[data-panel="${panel}"] .cf-turnstile`,
+  );
+  if (!widget || !window.turnstile) return '';
+  return window.turnstile.getResponse(widget) ?? '';
+}
+
+// Resets the Turnstile widget inside the named panel so a fresh token is
+// required for the next attempt (tokens are single-use).
+function resetCaptcha(panel: string): void {
+  const widget = document.querySelector<HTMLElement>(
+    `.auth-panel[data-panel="${panel}"] .cf-turnstile`,
+  );
+  if (widget && window.turnstile) window.turnstile.reset(widget);
 }
 
 function showPanel(name: string): void {
@@ -79,7 +108,14 @@ signinForm?.addEventListener('submit', async (e) => {
   const email = String(data.get('email') ?? '').trim();
   const password = String(data.get('password') ?? '');
   if (!email || !password) { setError('signin', 'Email and password are required.'); return; }
-  const { error } = await sb.auth.signInWithPassword({ email, password });
+  const captchaToken = captchaTokenFor('signin');
+  if (!captchaToken) { setError('signin', 'Please complete the CAPTCHA.'); return; }
+  const { error } = await sb.auth.signInWithPassword({
+    email,
+    password,
+    options: { captchaToken },
+  });
+  resetCaptcha('signin');
   if (error) { setError('signin', error.message); return; }
   window.location.href = REDIRECT_AFTER_AUTH;
 });
@@ -97,11 +133,14 @@ createForm?.addEventListener('submit', async (e) => {
     setError('create', 'Email and a password of 8+ chars are required.');
     return;
   }
+  const captchaToken = captchaTokenFor('create');
+  if (!captchaToken) { setError('create', 'Please complete the CAPTCHA.'); return; }
   const { error } = await sb.auth.signUp({
     email,
     password,
-    options: { data: { full_name: name } },
+    options: { data: { full_name: name }, captchaToken },
   });
+  resetCaptcha('create');
   if (error) { setError('create', error.message); return; }
   lastVerifyEmail = email;
   const emailEcho = document.querySelector<HTMLElement>('.email-echo');
@@ -132,7 +171,10 @@ const resendBtn = document.querySelector<HTMLButtonElement>('[data-action="resen
 resendBtn?.addEventListener('click', async () => {
   if (!lastVerifyEmail) return;
   setError('verify', '');
-  const { error } = await sb.auth.resend({ type: 'signup', email: lastVerifyEmail });
+  const captchaToken = captchaTokenFor('verify');
+  if (!captchaToken) { setError('verify', 'Please complete the CAPTCHA.'); return; }
+  const { error } = await sb.auth.resend({ type: 'signup', email: lastVerifyEmail, options: { captchaToken } });
+  resetCaptcha('verify');
   if (error) { setError('verify', error.message); return; }
   startResendCooldown(30);
 });
@@ -145,7 +187,10 @@ forgotForm?.addEventListener('submit', async (e) => {
   const data = new FormData(forgotForm);
   const email = String(data.get('email') ?? '').trim();
   if (!email) { setError('forgot', 'Email is required.'); return; }
-  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: RESET_REDIRECT });
+  const captchaToken = captchaTokenFor('forgot');
+  if (!captchaToken) { setError('forgot', 'Please complete the CAPTCHA.'); return; }
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: RESET_REDIRECT, captchaToken });
+  resetCaptcha('forgot');
   if (error) { setError('forgot', error.message); return; }
   setError('forgot', 'Check your inbox — reset link sent.');
 });
