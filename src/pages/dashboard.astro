@@ -30,6 +30,40 @@ const DMG_URL = LEAF_DMG_URL;
           <dt>Member since</dt>   <dd data-field="memberSince">-</dd>
           <dt>Plan</dt>           <dd><LeafBadge variant="accent">Solo</LeafBadge></dd>
         </dl>
+
+        <div class="set-password" data-set-password hidden>
+          <div class="set-password-head">
+            <p class="t-body-sm muted">Want to sign in with email + password too? Set a password for your account.</p>
+            <LeafButton variant="secondary" size="sm" id="set-password-toggle">Set a password</LeafButton>
+          </div>
+
+          <form class="set-password-form" data-set-password-form hidden novalidate>
+            <label class="sp-field">
+              <span class="sp-label t-body-sm">New password</span>
+              <input type="password" name="password" autocomplete="new-password" data-sp-password />
+            </label>
+
+            <ul class="password-requirements" data-sp-requirements aria-live="polite">
+              <li class="requirement" data-rule="length"><span class="req-icon" aria-hidden="true"></span>At least 8 characters</li>
+              <li class="requirement" data-rule="upper"><span class="req-icon" aria-hidden="true"></span>An uppercase letter</li>
+              <li class="requirement" data-rule="lower"><span class="req-icon" aria-hidden="true"></span>A lowercase letter</li>
+              <li class="requirement" data-rule="number"><span class="req-icon" aria-hidden="true"></span>A number</li>
+              <li class="requirement" data-rule="symbol"><span class="req-icon" aria-hidden="true"></span>A symbol</li>
+            </ul>
+
+            <label class="sp-field">
+              <span class="sp-label t-body-sm">Confirm password</span>
+              <input type="password" name="confirm" autocomplete="new-password" data-sp-confirm />
+            </label>
+
+            <div class="sp-actions">
+              <LeafButton type="submit" variant="primary" size="sm">Save password</LeafButton>
+            </div>
+
+            <p class="sp-error" data-sp-error role="alert" hidden></p>
+            <p class="sp-success" data-sp-success role="status" hidden></p>
+          </form>
+        </div>
       </LeafCard>
 
       <LeafCard variant="raised" padding="generous" class="card-section">
@@ -105,6 +139,79 @@ const DMG_URL = LEAF_DMG_URL;
 .danger-card .muted { margin-bottom: var(--space-md); }
 
 .email-echo { color: var(--text-primary); font-size: 12px; }
+
+/* Set-password control (OAuth users only) */
+.set-password {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-subtle);
+}
+.set-password-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+.set-password-head .muted { margin: 0; flex: 1; min-width: 200px; }
+
+.set-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  background: var(--surface-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.sp-field { display: flex; flex-direction: column; gap: var(--space-xs); }
+.sp-label { color: var(--text-secondary); font-weight: 500; }
+.sp-field input {
+  height: 36px;
+  padding: 0 var(--space-md);
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font: 400 15px/1 var(--font-body);
+  transition: border-color var(--dur-snap) var(--ease-standard);
+}
+.sp-field input:hover { border-color: var(--border-strong); }
+.sp-field input:focus-visible { outline: none; border-color: var(--border-focus); }
+
+.set-password-form .password-requirements {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xs) var(--space-md);
+}
+.set-password-form .requirement {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--text-tertiary);
+  font-size: 12px;
+  line-height: 1.4;
+  transition: color var(--dur-snap) var(--ease-standard);
+}
+.set-password-form .req-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+.set-password-form .req-icon::before { content: '✗'; font-size: 11px; line-height: 1; }
+.set-password-form .requirement.met { color: var(--status-success); }
+.set-password-form .requirement.met .req-icon::before { content: '✓'; }
+
+.sp-actions { display: flex; }
+.sp-error { color: var(--status-danger); font-size: 13px; margin: 0; }
+.sp-success { color: var(--status-success); font-size: 13px; margin: 0; }
 </style>
 
 <script>

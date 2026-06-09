@@ -33,6 +33,89 @@ function setField(field: string, value: string): void {
 
   const echo = document.querySelector<HTMLElement>('[data-user-email]');
   if (echo) echo.textContent = user.email ?? '-';
+
+  // Reveal the "Set a password" control for OAuth users (non-email providers).
+  if (provider !== 'email') {
+    document.querySelector<HTMLElement>('[data-set-password]')?.removeAttribute('hidden');
+  }
+})();
+
+// ─── Set a password (OAuth users) ──────────────────────────────────────
+// Lets Google/GitHub users add an email+password credential so they can
+// also sign in with email. The control is hidden by default and revealed
+// above once we know the provider is not "email".
+(() => {
+  const toggle = document.getElementById('set-password-toggle');
+  const form = document.querySelector<HTMLFormElement>('[data-set-password-form]');
+  const pwInput = document.querySelector<HTMLInputElement>('[data-sp-password]');
+  const confirmInput = document.querySelector<HTMLInputElement>('[data-sp-confirm]');
+  const reqList = document.querySelector<HTMLElement>('[data-sp-requirements]');
+  const errEl = document.querySelector<HTMLElement>('[data-sp-error]');
+  const okEl = document.querySelector<HTMLElement>('[data-sp-success]');
+  if (!toggle || !form || !pwInput || !confirmInput || !reqList) return;
+
+  const rules: Record<string, (v: string) => boolean> = {
+    length: (v) => v.length >= 8,
+    upper: (v) => /[A-Z]/.test(v),
+    lower: (v) => /[a-z]/.test(v),
+    number: (v) => /[0-9]/.test(v),
+    symbol: (v) => /[^A-Za-z0-9]/.test(v),
+  };
+  const meetsAllRules = (v: string): boolean =>
+    Object.values(rules).every((fn) => fn(v));
+
+  const setSpError = (msg: string): void => {
+    if (!errEl) return;
+    if (!msg) { errEl.hidden = true; errEl.textContent = ''; return; }
+    errEl.hidden = false;
+    errEl.textContent = msg;
+  };
+  const setSpSuccess = (msg: string): void => {
+    if (!okEl) return;
+    if (!msg) { okEl.hidden = true; okEl.textContent = ''; return; }
+    okEl.hidden = false;
+    okEl.textContent = msg;
+  };
+
+  const updateRequirements = (): void => {
+    const v = pwInput.value;
+    reqList.querySelectorAll<HTMLElement>('.requirement').forEach((row) => {
+      const rule = rules[row.dataset.rule ?? ''];
+      row.classList.toggle('met', !!rule && rule(v));
+    });
+  };
+  pwInput.addEventListener('input', updateRequirements);
+  updateRequirements();
+
+  toggle.addEventListener('click', () => {
+    const isHidden = form.hasAttribute('hidden');
+    form.toggleAttribute('hidden', !isHidden);
+    if (!isHidden) return; // was open → now closed, nothing else to do
+    setSpError('');
+    setSpSuccess('');
+    pwInput.focus();
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    setSpError('');
+    setSpSuccess('');
+    const password = pwInput.value;
+    const confirm = confirmInput.value;
+    if (!meetsAllRules(password)) {
+      setSpError('Password must meet all requirements.');
+      return;
+    }
+    if (password !== confirm) {
+      setSpError('Passwords do not match.');
+      return;
+    }
+    const { error } = await sb.auth.updateUser({ password });
+    if (error) { setSpError(error.message); return; }
+    form.reset();
+    updateRequirements();
+    setSpSuccess('Password set — you can now sign in with email + password too.');
+  });
 })();
 
 // Sign out (button handler already wired inline in dashboard.astro,
