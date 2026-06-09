@@ -87,8 +87,6 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
       <LeafButton type="submit" variant="primary" size="lg" class="full">Verify and continue</LeafButton>
       <p class="form-error" data-error="verify" role="alert" hidden></p>
 
-      <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="verify" data-theme="auto"></div>
-
       <div class="resend-row">
         <button type="button" class="link-btn" data-action="resend" disabled>Resend code</button>
         <span class="resend-timer mono" data-timer>30s</span>
@@ -105,8 +103,6 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
       <p class="t-body-sm muted">Enter your email: we'll send a reset link.</p>
 
       <LeafInput name="email" type="email" label="Email" placeholder="you@email.com" autocomplete="email" />
-
-      <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="forgot" data-theme="auto"></div>
 
       <LeafButton type="submit" variant="primary" size="lg" class="full">Send reset link</LeafButton>
       <p class="form-error" data-error="forgot" role="alert" hidden></p>

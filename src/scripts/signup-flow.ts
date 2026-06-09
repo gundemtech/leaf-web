@@ -171,10 +171,7 @@ const resendBtn = document.querySelector<HTMLButtonElement>('[data-action="resen
 resendBtn?.addEventListener('click', async () => {
   if (!lastVerifyEmail) return;
   setError('verify', '');
-  const captchaToken = captchaTokenFor('verify');
-  if (!captchaToken) { setError('verify', 'Please complete the CAPTCHA.'); return; }
-  const { error } = await sb.auth.resend({ type: 'signup', email: lastVerifyEmail, options: { captchaToken } });
-  resetCaptcha('verify');
+  const { error } = await sb.auth.resend({ type: 'signup', email: lastVerifyEmail });
   if (error) { setError('verify', error.message); return; }
   startResendCooldown(30);
 });
@@ -187,10 +184,7 @@ forgotForm?.addEventListener('submit', async (e) => {
   const data = new FormData(forgotForm);
   const email = String(data.get('email') ?? '').trim();
   if (!email) { setError('forgot', 'Email is required.'); return; }
-  const captchaToken = captchaTokenFor('forgot');
-  if (!captchaToken) { setError('forgot', 'Please complete the CAPTCHA.'); return; }
-  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: RESET_REDIRECT, captchaToken });
-  resetCaptcha('forgot');
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: RESET_REDIRECT });
   if (error) { setError('forgot', error.message); return; }
   setError('forgot', 'Check your inbox — reset link sent.');
 });
