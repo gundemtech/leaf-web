@@ -129,6 +129,15 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
       <p class="t-body-sm muted">Use 8+ characters with a mix of letters and numbers.</p>
 
       <LeafInput name="password" type="password" label="New password" autocomplete="new-password" />
+
+      <ul class="password-requirements" data-reset-password-requirements aria-live="polite">
+        <li class="requirement" data-rule="length"><span class="req-icon" aria-hidden="true"></span>At least 8 characters</li>
+        <li class="requirement" data-rule="upper"><span class="req-icon" aria-hidden="true"></span>An uppercase letter</li>
+        <li class="requirement" data-rule="lower"><span class="req-icon" aria-hidden="true"></span>A lowercase letter</li>
+        <li class="requirement" data-rule="number"><span class="req-icon" aria-hidden="true"></span>A number</li>
+        <li class="requirement" data-rule="symbol"><span class="req-icon" aria-hidden="true"></span>A symbol</li>
+      </ul>
+
       <LeafInput name="confirm" type="password" label="Confirm new password" autocomplete="new-password" />
 
       <LeafButton type="submit" variant="primary" size="lg" class="full">Update password</LeafButton>
@@ -296,6 +305,29 @@ if (createPwInput && reqList) {
   };
   createPwInput.addEventListener('input', updateRequirements);
   updateRequirements();
+}
+
+// Live password-requirements indicator (reset panel — its own scoped instance).
+const resetPanel = document.querySelector<HTMLElement>('.auth-panel[data-panel="reset"]');
+const resetPwInput = resetPanel?.querySelector<HTMLInputElement>('input[name="password"]');
+const resetReqList = document.querySelector<HTMLElement>('[data-reset-password-requirements]');
+if (resetPwInput && resetReqList) {
+  const rules: Record<string, (v: string) => boolean> = {
+    length: (v) => v.length >= 8,
+    upper: (v) => /[A-Z]/.test(v),
+    lower: (v) => /[a-z]/.test(v),
+    number: (v) => /[0-9]/.test(v),
+    symbol: (v) => /[^A-Za-z0-9]/.test(v),
+  };
+  const updateResetRequirements = () => {
+    const v = resetPwInput.value;
+    resetReqList.querySelectorAll<HTMLElement>('.requirement').forEach((row) => {
+      const rule = rules[row.dataset.rule ?? ''];
+      row.classList.toggle('met', !!rule && rule(v));
+    });
+  };
+  resetPwInput.addEventListener('input', updateResetRequirements);
+  updateResetRequirements();
 }
 
 // OTP: auto-advance + paste + AutoFill support, no submit logic yet.

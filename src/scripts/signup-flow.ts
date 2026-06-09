@@ -214,7 +214,13 @@ resetForm?.addEventListener('submit', async (e) => {
   const data = new FormData(resetForm);
   const password = String(data.get('password') ?? '');
   const confirm = String(data.get('confirm') ?? '');
-  if (password.length < 8) { setError('reset', 'Password must be 8+ characters.'); return; }
+  const passwordMeetsRules =
+    password.length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /[0-9]/.test(password) &&
+    /[^A-Za-z0-9]/.test(password);
+  if (!passwordMeetsRules) { setError('reset', 'Password must meet all requirements.'); return; }
   if (password !== confirm) { setError('reset', 'Passwords do not match.'); return; }
   const { error } = await sb.auth.updateUser({ password });
   if (error) { setError('reset', error.message); return; }
