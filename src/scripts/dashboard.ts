@@ -126,23 +126,78 @@ document.getElementById('signout-btn')?.addEventListener('click', async (e) => {
   window.location.href = '/';
 });
 
-// Delete account — calls Supabase's RPC, then signs out and redirects.
+// Delete account — opens an in-page animated confirmation modal, then on
+// confirm calls Supabase's RPC, signs out and redirects.
 // Backed by an SQL function `delete_self_account()` defined server-side
-// (security definer, idempotent). If the RPC is missing, surface the error.
-document.getElementById('delete-btn')?.addEventListener('click', async (e) => {
-  e.preventDefault();
-  const ok = confirm(
-    'Delete your account?\n\n' +
-    'This removes team memberships and identity keys held on the relay.\n' +
-    'Your local Mac data is not touched — wipe that from the macOS app\'s ' +
-    'Settings → Danger zone.'
-  );
-  if (!ok) return;
-  const { error } = await sb.rpc('delete_self_account');
-  if (error) {
-    alert(`Account deletion failed: ${error.message}`);
-    return;
-  }
-  await sb.auth.signOut();
-  window.location.href = '/';
-});
+// (security definer, idempotent). If the RPC is missing, surface the error
+// inside the modal (no native dialogs).
+(() => {
+  const openBtn = document.getElementById('delete-btn');
+  const overlay = document.querySelector<HTMLElement>('[data-delete-modal]');
+  const dialog = document.querySelector<HTMLElement>('[data-delete-dialog]');
+  const cancelBtn = document.getElementById('delete-cancel-btn');
+  const confirmBtn = document.getElementById('delete-confirm-btn') as HTMLButtonElement | null;
+  const errEl = document.querySelector<HTMLElement>('[data-delete-error]');
+  if (!openBtn || !overlay || !dialog || !cancelBtn || !confirmBtn) return;
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const setDeleteError = (msg: string): void => {
+    if (!errEl) return;
+    if (!msg) { errEl.hidden = true; errEl.textContent = ''; return; }
+    errEl.hidden = false;
+    errEl.textContent = msg;
+  };
+
+  const openModal = (): void => {
+    setDeleteError('');
+    overlay.classList.remove('is-closing');
+    overlay.hidden = false;
+    confirmBtn.focus();
+  };
+
+  const closeModal = (): void => {
+    if (prefersReducedMotion) {
+      overlay.hidden = true;
+      overlay.classList.remove('is-closing');
+      openBtn.focus();
+      return;
+    }
+    overlay.classList.add('is-closing');
+    const onEnd = (ev: AnimationEvent): void => {
+      if (ev.target !== overlay) return; // wait for the overlay's own fade-out
+      overlay.hidden = true;
+      overlay.classList.remove('is-closing');
+      overlay.removeEventListener('animationend', onEnd);
+      openBtn.focus();
+    };
+    overlay.addEventListener('animationend', onEnd);
+  };
+
+  openBtn.addEventListener('click', (e) => { e.preventDefault(); openModal(); });
+  cancelBtn.addEventListener('click', (e) => { e.preventDefault(); closeModal(); });
+
+  // Backdrop click (outside the dialog) closes.
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeModal();
+  });
+
+  // Escape closes while the modal is open.
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !overlay.hidden) closeModal();
+  });
+
+  confirmBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    setDeleteError('');
+    confirmBtn.setAttribute('aria-disabled', 'true');
+    const { error } = await sb.rpc('delete_self_account');
+    if (error) {
+      confirmBtn.removeAttribute('aria-disabled');
+      setDeleteError(`Account deletion failed: ${error.message}`);
+      return;
+    }
+    await sb.auth.signOut();
+    window.location.href = '/';
+  });
+})();

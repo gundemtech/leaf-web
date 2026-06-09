@@ -94,6 +94,23 @@ const DMG_URL = LEAF_DMG_URL;
       </LeafCard>
     </main>
   </div>
+
+  <!-- Delete-account confirmation modal (hidden by default; wired in dashboard.ts) -->
+  <div class="modal-overlay" data-delete-modal role="presentation" hidden>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title" data-delete-dialog>
+      <h2 class="t-title-md" id="delete-modal-title">Delete account?</h2>
+      <p class="t-body modal-text">
+        This removes team memberships and identity keys held on the relay.
+        Your local Mac data is not touched — wipe that from the macOS app's
+        Settings → Danger zone.
+      </p>
+      <p class="modal-error" data-delete-error role="alert" hidden></p>
+      <div class="modal-actions">
+        <LeafButton variant="secondary" size="md" id="delete-cancel-btn">Cancel</LeafButton>
+        <LeafButton variant="destructive" size="md" id="delete-confirm-btn">Delete account</LeafButton>
+      </div>
+    </div>
+  </div>
 </AuthLayout>
 
 <style>
@@ -215,6 +232,85 @@ const DMG_URL = LEAF_DMG_URL;
 .sp-actions { display: flex; }
 .sp-error { color: var(--status-danger); font-size: 13px; margin: 0; }
 .sp-success { color: var(--status-success); font-size: 13px; margin: 0; }
+
+/* Reveal animation: when the form un-hides (hidden attr removed), it's flex
+   again — animate it in (fade + slide-down). */
+.set-password-form:not([hidden]) {
+  animation: sp-form-in var(--dur-short) var(--ease-standard) both;
+}
+@keyframes sp-form-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Set-password success/error: subtle fade-in when they appear. */
+.sp-error:not([hidden]),
+.sp-success:not([hidden]) {
+  animation: sp-msg-in var(--dur-short) var(--ease-standard) both;
+}
+@keyframes sp-msg-in {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Delete-account modal ─── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  background: color-mix(in srgb, var(--surface-canvas) 70%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: modal-overlay-in var(--dur-short) var(--ease-standard) both;
+}
+/* [hidden] must win over the flex display above. */
+.modal-overlay[hidden] { display: none; }
+.modal-overlay.is-closing { animation: modal-overlay-out var(--dur-short) var(--ease-standard) both; }
+
+.modal-dialog {
+  width: 100%;
+  max-width: 420px;
+  padding: var(--space-xl);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elev-modal);
+  animation: modal-dialog-in 180ms var(--ease-emphasized) both;
+}
+.modal-overlay.is-closing .modal-dialog { animation: modal-dialog-out 180ms var(--ease-standard) both; }
+.modal-dialog h2 { margin: 0 0 var(--space-sm); color: var(--status-danger); }
+.modal-dialog .modal-text { color: var(--text-secondary); margin: 0 0 var(--space-lg); }
+.modal-error { color: var(--status-danger); font-size: 13px; margin: 0 0 var(--space-md); }
+.modal-error:not([hidden]) { animation: sp-msg-in var(--dur-short) var(--ease-standard) both; }
+.modal-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
+
+@keyframes modal-overlay-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modal-overlay-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes modal-dialog-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes modal-dialog-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(8px) scale(0.97); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .set-password-form:not([hidden]),
+  .sp-error:not([hidden]),
+  .sp-success:not([hidden]),
+  .modal-overlay,
+  .modal-overlay.is-closing,
+  .modal-dialog,
+  .modal-overlay.is-closing .modal-dialog,
+  .modal-error:not([hidden]) {
+    animation: none;
+  }
+}
 </style>
 
 <script>
@@ -222,21 +318,16 @@ const DMG_URL = LEAF_DMG_URL;
 </script>
 
 <script>
-// Inline fallback handlers (run before module bundle resolves).
+// Inline fallback handler (runs before module bundle resolves).
 // Real auth-gate + Supabase flow lives in src/scripts/dashboard.ts.
+// Delete is handled entirely by the module (custom in-page modal) — no inline
+// fallback, so no native confirm()/alert() can fire before the bundle loads.
 const signoutBtn = document.getElementById('signout-btn') as HTMLButtonElement | null;
-const deleteBtn = document.getElementById('delete-btn') as HTMLButtonElement | null;
 
 signoutBtn?.addEventListener('click', async () => {
   const sb = (window as any).supabase;
   if (!sb) { window.location.href = '/signup'; return; }
   await sb.auth.signOut();
   window.location.href = '/';
-});
-
-deleteBtn?.addEventListener('click', async () => {
-  if (!confirm('Delete your account? This removes team memberships and relay-held keys. Your local Mac data is untouched.')) return;
-  // Real deletion calls the Cloudflare Worker delete endpoint (wired in T5).
-  alert('Account deletion will be available after T5 wiring lands.');
 });
 </script>
