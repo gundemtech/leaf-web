@@ -2,8 +2,8 @@
 // `window.supabase` so legacy snippets and the session-aware nav can read it.
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = 'https://jpzqmtmmypnzqhdltcvr.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_bgsd10ucTMsf6D-S8jwpvg_bMo53xF_';
+const SUPABASE_URL = 'https://jwxnhwyqjzjmjnmwpwyq.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_aLmrqTtLXf0gAWAIfTWOjA_FfnLISEE';
 
 declare global {
   interface Window {
