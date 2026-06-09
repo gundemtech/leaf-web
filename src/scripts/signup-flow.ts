@@ -129,8 +129,14 @@ createForm?.addEventListener('submit', async (e) => {
   const name = String(data.get('name') ?? '').trim();
   const email = String(data.get('email') ?? '').trim();
   const password = String(data.get('password') ?? '');
-  if (!email || password.length < 8) {
-    setError('create', 'Email and a password of 8+ chars are required.');
+  const passwordMeetsRules =
+    password.length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /[0-9]/.test(password) &&
+    /[^A-Za-z0-9]/.test(password);
+  if (!email || !passwordMeetsRules) {
+    setError('create', 'Password must meet all requirements.');
     return;
   }
   const captchaToken = captchaTokenFor('create');

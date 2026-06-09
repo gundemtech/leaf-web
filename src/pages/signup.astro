@@ -63,6 +63,14 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
       <LeafInput name="email" type="email" label="Email" placeholder="you@email.com" autocomplete="email" />
       <LeafInput name="password" type="password" label="Password (min 8 chars)" autocomplete="new-password" />
 
+      <ul class="password-requirements" data-password-requirements aria-live="polite">
+        <li class="requirement" data-rule="length"><span class="req-icon" aria-hidden="true"></span>At least 8 characters</li>
+        <li class="requirement" data-rule="upper"><span class="req-icon" aria-hidden="true"></span>An uppercase letter</li>
+        <li class="requirement" data-rule="lower"><span class="req-icon" aria-hidden="true"></span>A lowercase letter</li>
+        <li class="requirement" data-rule="number"><span class="req-icon" aria-hidden="true"></span>A number</li>
+        <li class="requirement" data-rule="symbol"><span class="req-icon" aria-hidden="true"></span>A symbol</li>
+      </ul>
+
       <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="create" data-theme="auto"></div>
 
       <LeafButton type="submit" variant="primary" size="lg" class="full">Send verification code →</LeafButton>
@@ -185,6 +193,36 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
 .form-error { color: var(--status-danger); font-size: 13px; }
 .swap-prompt { text-align: center; color: var(--text-tertiary); margin-top: var(--space-sm); }
 
+/* Live password-requirements checklist (create panel) */
+.password-requirements {
+  list-style: none;
+  margin: calc(-1 * var(--space-xs)) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xs) var(--space-md);
+}
+.requirement {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--text-tertiary);
+  font-size: 12px;
+  line-height: 1.4;
+  transition: color var(--dur-snap) var(--ease-standard);
+}
+.requirement .req-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+.requirement .req-icon::before { content: '✗'; font-size: 11px; line-height: 1; }
+.requirement.met { color: var(--status-success); }
+.requirement.met .req-icon::before { content: '✓'; }
+
 /* OTP */
 .otp-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-sm); }
 .otp-box {
@@ -233,6 +271,29 @@ tabs.forEach(t => t.addEventListener('click', () => showPanel(t.dataset.panel!))
 document.querySelectorAll<HTMLButtonElement>('[data-goto]').forEach(btn => {
   btn.addEventListener('click', () => showPanel(btn.dataset.goto!));
 });
+
+// Live password-requirements indicator (create panel).
+const createPanel = document.querySelector<HTMLElement>('.auth-panel[data-panel="create"]');
+const createPwInput = createPanel?.querySelector<HTMLInputElement>('input[name="password"]');
+const reqList = document.querySelector<HTMLElement>('[data-password-requirements]');
+if (createPwInput && reqList) {
+  const rules: Record<string, (v: string) => boolean> = {
+    length: (v) => v.length >= 8,
+    upper: (v) => /[A-Z]/.test(v),
+    lower: (v) => /[a-z]/.test(v),
+    number: (v) => /[0-9]/.test(v),
+    symbol: (v) => /[^A-Za-z0-9]/.test(v),
+  };
+  const updateRequirements = () => {
+    const v = createPwInput.value;
+    reqList.querySelectorAll<HTMLElement>('.requirement').forEach((row) => {
+      const rule = rules[row.dataset.rule ?? ''];
+      row.classList.toggle('met', !!rule && rule(v));
+    });
+  };
+  createPwInput.addEventListener('input', updateRequirements);
+  updateRequirements();
+}
 
 // OTP: auto-advance + paste-paste support, no submit logic yet.
 const otpBoxes = Array.from(document.querySelectorAll<HTMLInputElement>('.otp-box'));
