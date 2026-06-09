@@ -165,6 +165,9 @@ const DMG_URL = LEAF_DMG_URL;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
 }
+/* The `hidden` attribute must win over the flex display above (UA [hidden] has
+   too-low specificity), so the form stays collapsed until "Set a password". */
+.set-password[hidden], .set-password-form[hidden] { display: none; }
 .sp-field { display: flex; flex-direction: column; gap: var(--space-xs); }
 .sp-label { color: var(--text-secondary); font-weight: 500; }
 .sp-field input {

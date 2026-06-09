@@ -85,16 +85,22 @@ function startResendCooldown(seconds = 30): void {
 
 let lastVerifyEmail = '';
 
-// ─── Already signed in? Send straight to /dashboard ────────────────────
-(async () => {
-  try {
-    const { data } = await sb.auth.getSession();
-    if (data?.session) window.location.href = REDIRECT_AFTER_AUTH;
-  } catch { /* anonymous */ }
-})();
-
 // ─── URL-driven initial panel (e.g. /signup?panel=reset from email link) ─
 const urlPanel = new URLSearchParams(window.location.search).get('panel');
+
+// ─── Already signed in? Send straight to /dashboard ────────────────────
+// EXCEPT during password recovery (panel=reset): the reset link establishes a
+// session, but the user must set a new password on the reset panel first — so
+// don't bounce them to the dashboard.
+if (urlPanel !== 'reset') {
+  (async () => {
+    try {
+      const { data } = await sb.auth.getSession();
+      if (data?.session) window.location.href = REDIRECT_AFTER_AUTH;
+    } catch { /* anonymous */ }
+  })();
+}
+
 if (urlPanel && ['signin','create','verify','forgot','reset'].includes(urlPanel)) {
   showPanel(urlPanel);
 }
