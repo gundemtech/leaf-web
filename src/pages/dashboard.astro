@@ -4,8 +4,11 @@ import LeafLogo from '../components/LeafLogo.astro';
 import LeafButton from '../components/LeafButton.astro';
 import LeafCard from '../components/LeafCard.astro';
 import LeafBadge from '../components/LeafBadge.astro';
+import { vLatest } from '../lib/version';
 
+// Stable "always latest" permalink — the served redirect points at the newest DMG.
 const DMG_URL = 'https://updates.gundem.tech/Leaf.dmg';
+// Build-time fallback version label (enriched at runtime by the live fetch below).
 ---
 <AuthLayout title="Dashboard: Leaf" description="Your Leaf account.">
   <div class="dash-wrap">
@@ -34,12 +37,26 @@ const DMG_URL = 'https://updates.gundem.tech/Leaf.dmg';
         <p class="t-body muted">macOS 14+ (Sonoma) · Apple Silicon &amp; Intel · ~24 MB · auto-updates via Sparkle</p>
         <div class="download-row">
           <LeafButton variant="primary" size="lg" href={DMG_URL} download>Download Leaf.dmg →</LeafButton>
-          <span class="t-body-sm muted">Latest: <span class="mono">v1.0.0-alpha.15</span></span>
+          {/* Build-time fallback label — enriched at runtime by the live fetch in dashboard.ts. */}
+          <span class="t-body-sm muted">Latest: <span class="mono" data-version-label>{vLatest}</span></span>
         </div>
+
+        {/* Live version detail, populated client-side from updates.gundem.tech/releases.json.
+            Hidden until the fetch succeeds; the static label above is the no-JS fallback. */}
+        <div class="version-live" data-version-live hidden>
+          <a class="version-dmg mono t-body-sm" data-version-dmg href={DMG_URL} download>
+            Download <span data-version-dmg-name>this version</span> →
+          </a>
+          <details class="version-history">
+            <summary class="t-body-sm" data-version-history-summary>Version history</summary>
+            <ol class="version-history-list" data-version-history-list></ol>
+          </details>
+        </div>
+
         <details class="checksum">
           <summary class="t-body-sm">Checksums &amp; signatures</summary>
           <div class="checksum-body">
-            <p class="mono">SHA-256: <span class="dim">(verify against /Leaf.dmg.sha256)</span></p>
+            <p class="mono">SHA-256: <span class="dim">(verify against <a href="https://updates.gundem.tech/Leaf.dmg.sha256" target="_blank" rel="noopener">updates.gundem.tech/Leaf.dmg.sha256</a>)</span></p>
             <p class="mono">EdDSA sig: <span class="dim">(verified by Sparkle on install)</span></p>
             <p class="t-body-sm muted">Notarized by Apple · Developer ID signed.</p>
           </div>
@@ -132,8 +149,32 @@ const DMG_URL = 'https://updates.gundem.tech/Leaf.dmg';
 }
 
 .email-echo { color: var(--text-primary); font-size: 12px; }
+
+/* Live version detail (populated client-side) */
+.version-live { margin-top: var(--space-md); display: flex; flex-direction: column; gap: var(--space-sm); }
+.version-dmg { color: var(--accent-primary); text-decoration: none; }
+.version-dmg:hover { text-decoration: underline; }
+.version-history summary { color: var(--accent-primary); cursor: pointer; font-size: 13px; }
+.version-history-list {
+  list-style: none;
+  margin: var(--space-sm) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.version-history-item { padding-top: var(--space-sm); border-top: 1px solid var(--border-subtle); }
+.version-history-item:first-child { border-top: none; padding-top: 0; }
+.version-history-head { display: flex; align-items: baseline; gap: var(--space-sm); flex-wrap: wrap; }
+.version-history-head .ver { color: var(--text-primary); font-size: 13px; }
+.version-history-head .date { color: var(--text-tertiary); font-size: 12px; }
+.version-history-head .yanked { color: var(--status-danger); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.version-history-notes { margin: var(--space-xs) 0 0; padding-left: var(--space-lg); display: flex; flex-direction: column; gap: 2px; }
+.version-history-notes li { color: var(--text-secondary); font-size: 12px; line-height: 1.45; list-style: disc; }
+.version-history-notes li .kind { color: var(--text-tertiary); }
 </style>
 
 <script>
   import '../scripts/dashboard';
+  import '../scripts/dashboard-versions';
 </script>
