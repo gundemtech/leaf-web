@@ -28,12 +28,18 @@ type ReleasesFile = {
   releases?: Release[];
 };
 
-function el(container: HTMLElement | null): HTMLElement | null {
-  return container;
-}
-
 function setText(node: HTMLElement | null, text: string): void {
   if (node) node.textContent = text;
+}
+
+// Allowlist for DMG hrefs assigned from the fetched feed. connect-src does NOT
+// constrain anchor navigation, so a compromised feed could otherwise inject a
+// `javascript:` URL or an off-host link. Only same-origin updates.gundem.tech
+// https URLs are accepted; anything else leaves the static permalink in place.
+const DMG_URL_ALLOWLIST = /^https:\/\/updates\.gundem\.tech\//;
+
+function isAllowedDmgURL(url: unknown): url is string {
+  return typeof url === 'string' && DMG_URL_ALLOWLIST.test(url);
 }
 
 // Builds an <li> for one release using only textContent — no HTML injection.
@@ -95,11 +101,11 @@ function buildHistoryItem(rel: Release): HTMLLIElement {
 }
 
 (async () => {
-  const live = el(document.querySelector<HTMLElement>('[data-version-live]'));
-  const label = el(document.querySelector<HTMLElement>('[data-version-label]'));
+  const live = document.querySelector<HTMLElement>('[data-version-live]');
+  const label = document.querySelector<HTMLElement>('[data-version-label]');
   const dmgLink = document.querySelector<HTMLAnchorElement>('[data-version-dmg]');
-  const dmgName = el(document.querySelector<HTMLElement>('[data-version-dmg-name]'));
-  const summary = el(document.querySelector<HTMLElement>('[data-version-history-summary]'));
+  const dmgName = document.querySelector<HTMLElement>('[data-version-dmg-name]');
+  const summary = document.querySelector<HTMLElement>('[data-version-history-summary]');
   const list = document.querySelector<HTMLOListElement>('[data-version-history-list]');
 
   // No-op (keep the static fallback) if the markup isn't present.
@@ -124,8 +130,9 @@ function buildHistoryItem(rel: Release): HTMLLIElement {
   // Enrich the static label with the live latest version.
   setText(label, `v${latest.version}`);
 
-  // Versioned DMG link for the latest release (falls back to the permalink href).
-  if (dmgLink && typeof latest.dmgURL === 'string' && latest.dmgURL) {
+  // Versioned DMG link for the latest release — only honoured if it passes the
+  // updates.gundem.tech allowlist; otherwise the static permalink href stays.
+  if (dmgLink && isAllowedDmgURL(latest.dmgURL)) {
     dmgLink.href = latest.dmgURL;
   }
   setText(dmgName, `v${latest.version}`);

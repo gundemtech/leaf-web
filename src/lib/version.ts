@@ -44,6 +44,3 @@ export const latestVersion: string = latestRelease.version;
 
 /** Display version with leading "v", e.g. "v1.0.0-alpha.30". */
 export const vLatest = `v${latestVersion}`;
-
-/** Versioned DMG download URL for the latest release. */
-export const latestDmgURL: string = latestRelease.dmgURL;
