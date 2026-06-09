@@ -88,7 +88,8 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
 
       <div class="otp-row" role="group" aria-label="One-time code">
         {[0,1,2,3,4,5].map(i => (
-          <input class="otp-box mono" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete={i === 0 ? 'one-time-code' : 'off'} data-otp={i} />
+          <!-- No maxlength: iOS/macOS AutoFill inserts the whole code into one box; JS enforces per-box length and distributes. -->
+          <input class="otp-box mono" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete={i === 0 ? 'one-time-code' : 'off'} data-otp={i} />
         ))}
       </div>
 
@@ -295,11 +296,18 @@ if (createPwInput && reqList) {
   updateRequirements();
 }
 
-// OTP: auto-advance + paste-paste support, no submit logic yet.
+// OTP: auto-advance + paste + AutoFill support, no submit logic yet.
 const otpBoxes = Array.from(document.querySelectorAll<HTMLInputElement>('.otp-box'));
 otpBoxes.forEach((box, i) => {
   box.addEventListener('input', () => {
-    box.value = box.value.replace(/\D/g, '').slice(0, 1);
+    const digits = box.value.replace(/\D/g, '');
+    if (digits.length >= otpBoxes.length) {
+      // Whole code landed in one box (iOS/macOS AutoFill fires input, not paste).
+      otpBoxes.forEach((b, j) => { b.value = digits[j] ?? ''; });
+      otpBoxes[otpBoxes.length - 1].focus();
+      return;
+    }
+    box.value = digits.slice(-1);
     if (box.value && i < otpBoxes.length - 1) otpBoxes[i + 1].focus();
   });
   box.addEventListener('keydown', (e) => {
