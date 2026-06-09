@@ -12,19 +12,44 @@ interface Props {
 }
 const { size = 'md', type = 'text', name, id, placeholder, required = false, autocomplete, error, label } = Astro.props;
 const inputId = id || name;
+const isPassword = type === 'password';
 ---
 <label class={`field field-${size}`}>
   {label && <span class="field-label t-body-sm">{label}</span>}
-  <input
-    type={type}
-    name={name}
-    id={inputId}
-    placeholder={placeholder}
-    required={required}
-    autocomplete={autocomplete}
-    aria-invalid={error ? 'true' : undefined}
-    aria-describedby={error ? `${inputId}-error` : undefined}
-  />
+  {isPassword ? (
+    <span class="field-control has-reveal">
+      <input
+        type={type}
+        name={name}
+        id={inputId}
+        placeholder={placeholder}
+        required={required}
+        autocomplete={autocomplete}
+        aria-invalid={error ? 'true' : undefined}
+        aria-describedby={error ? `${inputId}-error` : undefined}
+      />
+      <button type="button" class="reveal-btn" aria-label="Show password" aria-pressed="false" tabindex="-1">
+        <svg class="i-eye" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M1 8s2.5-4.5 7-4.5S15 8 15 8s-2.5 4.5-7 4.5S1 8 1 8z" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="8" cy="8" r="2"/>
+        </svg>
+        <svg class="i-eye-off" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M6.2 3.3A6.6 6.6 0 0 1 8 3.5c4.5 0 7 4.5 7 4.5a12 12 0 0 1-2 2.5M3.9 4.9A12 12 0 0 0 1 8s2.5 4.5 7 4.5a6.6 6.6 0 0 0 2.5-.5M2 2l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </span>
+  ) : (
+    <input
+      type={type}
+      name={name}
+      id={inputId}
+      placeholder={placeholder}
+      required={required}
+      autocomplete={autocomplete}
+      aria-invalid={error ? 'true' : undefined}
+      aria-describedby={error ? `${inputId}-error` : undefined}
+    />
+  )}
   {error && <span id={`${inputId}-error`} class="field-error t-body-sm">{error}</span>}
 </label>
 
@@ -46,4 +71,37 @@ const inputId = id || name;
 .field input:focus-visible { outline: none; border-color: var(--border-focus); border-width: 2px; padding: 0 calc(var(--space-md) - 1px); }
 .field input[aria-invalid="true"] { border-color: var(--status-danger); }
 .field-error { color: var(--status-danger); }
+
+/* Password reveal toggle (only rendered for type=password) */
+.field-control { position: relative; display: block; width: 100%; }
+.field-control input { width: 100%; box-sizing: border-box; }
+.field-control.has-reveal input { padding-right: 40px; }
+.field-control.has-reveal input:focus-visible { padding-right: 39px; }
+.reveal-btn {
+  position: absolute; top: 0; right: 0; height: 100%; width: 38px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; border: 0; padding: 0; cursor: pointer;
+  color: var(--text-tertiary);
+  transition: color var(--dur-snap) var(--ease-standard);
+}
+.reveal-btn:hover { color: var(--text-secondary); }
+.reveal-btn .i-eye-off { display: none; }
+.reveal-btn[aria-pressed="true"] .i-eye { display: none; }
+.reveal-btn[aria-pressed="true"] .i-eye-off { display: inline; }
 </style>
+
+<script>
+  // Password reveal toggle — delegated, bundled once by Astro even if LeafInput
+  // renders multiple times. Toggles the sibling input between password/text.
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const btn = target.closest?.('.reveal-btn');
+    if (!btn) return;
+    const input = btn.parentElement?.querySelector('input');
+    if (!input) return;
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.setAttribute('aria-pressed', String(show));
+    btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+  });
+</script>
