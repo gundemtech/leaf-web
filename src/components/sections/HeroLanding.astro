@@ -1,5 +1,6 @@
 ---
 import LeafButton from '../LeafButton.astro';
+import { vLatest } from '../../lib/version';
 ---
 <section class="hero">
   <div class="wrap hero-body">
@@ -59,7 +60,7 @@ import LeafButton from '../LeafButton.astro';
       <span class="sep">·</span>
       <span class="mono">the shared brain for engineering orgs</span>
       <span class="sep">·</span>
-      <span class="mono dim">v1.0.0-alpha.15</span>
+      <span class="mono dim">{vLatest}</span>
       <span class="rec"><span class="rec-dot"></span></span>
       <span class="proof tail"><span class="mono dim">open source · MIT</span></span>
     </div>

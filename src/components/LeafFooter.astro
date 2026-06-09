@@ -1,5 +1,6 @@
 ---
 import LeafLogo from './LeafLogo.astro';
+import { vLatest } from '../lib/version';
 const cols = [
   { title: 'Product', links: [
     { href: '/product', label: 'Product' },
@@ -37,7 +38,7 @@ const cols = [
     </div>
     <div class="bottom t-caption">
       <span>© 2026 Gundem Technologies</span>
-      <span class="mono">v1.0.0-alpha.15</span>
+      <span class="mono">{vLatest}</span>
     </div>
   </div>
 </footer>
