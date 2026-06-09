@@ -44,6 +44,8 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
         <button type="button" class="link-btn" data-goto="forgot">Forgot password?</button>
       </div>
 
+      <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="signin" data-theme="auto"></div>
+
       <LeafButton type="submit" variant="primary" size="lg" class="full">Sign in</LeafButton>
       <p class="form-error" data-error="signin" role="alert" hidden></p>
 
@@ -60,6 +62,8 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
       <LeafInput name="name" type="text" label="Full name" placeholder="Anton" autocomplete="name" />
       <LeafInput name="email" type="email" label="Email" placeholder="you@email.com" autocomplete="email" />
       <LeafInput name="password" type="password" label="Password (min 8 chars)" autocomplete="new-password" />
+
+      <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="create" data-theme="auto"></div>
 
       <LeafButton type="submit" variant="primary" size="lg" class="full">Send verification code →</LeafButton>
       <p class="form-error" data-error="create" role="alert" hidden></p>
@@ -83,6 +87,8 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
       <LeafButton type="submit" variant="primary" size="lg" class="full">Verify and continue</LeafButton>
       <p class="form-error" data-error="verify" role="alert" hidden></p>
 
+      <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="verify" data-theme="auto"></div>
+
       <div class="resend-row">
         <button type="button" class="link-btn" data-action="resend" disabled>Resend code</button>
         <span class="resend-timer mono" data-timer>30s</span>
@@ -99,6 +105,8 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
       <p class="t-body-sm muted">Enter your email: we'll send a reset link.</p>
 
       <LeafInput name="email" type="email" label="Email" placeholder="you@email.com" autocomplete="email" />
+
+      <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="forgot" data-theme="auto"></div>
 
       <LeafButton type="submit" variant="primary" size="lg" class="full">Send reset link</LeafButton>
       <p class="form-error" data-error="forgot" role="alert" hidden></p>
@@ -202,6 +210,8 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
 .legal { margin-top: var(--space-xl); text-align: center; color: var(--text-tertiary); }
 .legal a { color: var(--text-secondary); text-decoration: underline; text-underline-offset: 2px; }
 </style>
+
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <script>
   import '../scripts/signup-flow';
