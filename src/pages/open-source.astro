@@ -7,6 +7,7 @@ import LeafCard from '../components/LeafCard.astro';
 import LeafButton from '../components/LeafButton.astro';
 import LeafBadge from '../components/LeafBadge.astro';
 import LeafTable from '../components/LeafTable.astro';
+import { vLatest } from '../lib/version';
 
 const matrix = [
   { feature: 'Client source (full, MIT)',                     leaf: '✓',                  closed: '-' },
@@ -99,7 +100,7 @@ const matrix = [
             <p class="t-title-sm"><span class="mono">gundemtech/leaf</span></p>
             <p class="t-body-sm muted">Swift 6 · GRDB 7 · SQLCipher · CryptoKit · Sparkle 2</p>
           </div>
-          <LeafBadge variant="accent">v1.0.0-alpha.15</LeafBadge>
+          <LeafBadge variant="accent">{vLatest}</LeafBadge>
         </div>
         <p class="t-body" style="margin-top: var(--space-md);">
           Full macOS client. Mac-native capture (Layer A), three connected
