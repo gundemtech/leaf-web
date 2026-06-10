@@ -24,9 +24,19 @@ const sb = getSupabase();
 function setError(panel: string, msg: string): void {
   const el = document.querySelector<HTMLElement>(`[data-error="${panel}"]`);
   if (!el) return;
+  el.classList.remove('is-success');
   if (!msg) { el.hidden = true; el.textContent = ''; return; }
   el.hidden = false;
   el.textContent = msg;
+}
+
+// Positive notification (e.g. "reset link sent") — green, not error-red.
+function setSuccess(panel: string, msg: string): void {
+  const el = document.querySelector<HTMLElement>(`[data-error="${panel}"]`);
+  if (!el) return;
+  el.hidden = false;
+  el.textContent = msg;
+  el.classList.add('is-success');
 }
 
 // Returns the Turnstile token for the widget inside the named panel, or ''.
@@ -215,7 +225,7 @@ forgotForm?.addEventListener('submit', async (e) => {
   if (!email) { setError('forgot', 'Email is required.'); return; }
   const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: RESET_REDIRECT });
   if (error) { setError('forgot', error.message); return; }
-  setError('forgot', 'Check your inbox — reset link sent.');
+  setSuccess('forgot', 'Check your inbox — reset link sent.');
 });
 
 // ─── Reset password ────────────────────────────────────────────────────
