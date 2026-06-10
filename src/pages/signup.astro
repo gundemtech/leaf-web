@@ -100,7 +100,7 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADCjktFBs6RTYJTZ';
 
       <div class="resend-row">
         <button type="button" class="link-btn" data-action="resend" disabled>Resend code</button>
-        <span class="resend-timer mono" data-timer>30s</span>
+        <span class="resend-timer mono" data-timer>60s</span>
         <svg class="resend-progress" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
           <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" opacity="0.2"/>
           <circle class="resend-arc" cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="56.55" stroke-dashoffset="0" transform="rotate(-90 12 12)"/>
@@ -357,11 +357,11 @@ otpBoxes.forEach((box, i) => {
   });
 });
 
-// Resend timer: counts 30s down, then enables button.
+// Resend timer: counts 60s down (matches Supabase server-side email cooldown), then enables button.
 const resendBtn = document.querySelector<HTMLButtonElement>('[data-action="resend"]');
 const resendTimer = document.querySelector<HTMLSpanElement>('[data-timer]');
 const resendArc = document.querySelector<SVGCircleElement>('.resend-arc');
-function startResendCooldown(seconds = 30) {
+function startResendCooldown(seconds = 60) {
   if (!resendBtn || !resendTimer || !resendArc) return;
   resendBtn.disabled = true;
   let left = seconds;
@@ -383,5 +383,5 @@ function startResendCooldown(seconds = 30) {
 }
 // Wire to verify panel arrival: call when create-submit succeeds (in T5 wiring).
 // For now start automatically if verify panel is currently active (e.g., redirected).
-if (document.querySelector('.auth-panel[data-panel="verify"].active')) startResendCooldown(30);
+if (document.querySelector('.auth-panel[data-panel="verify"].active')) startResendCooldown(60);
 </script>

@@ -59,7 +59,7 @@ function showPanel(name: string): void {
   document.querySelector<HTMLElement>('.auth-tabs')?.toggleAttribute('hidden', !['signin','create'].includes(name));
 }
 
-function startResendCooldown(seconds = 30): void {
+function startResendCooldown(seconds = 60): void {
   const btn = document.querySelector<HTMLButtonElement>('[data-action="resend"]');
   const timer = document.querySelector<HTMLSpanElement>('[data-timer]');
   const arc = document.querySelector<SVGCircleElement>('.resend-arc');
@@ -83,7 +83,9 @@ function startResendCooldown(seconds = 30): void {
   }, 1000);
 }
 
-let lastVerifyEmail = '';
+// Survives page reloads — iOS Safari routinely evicts the tab while the user
+// is off reading the code in Mail; without this, Resend silently no-ops.
+let lastVerifyEmail = sessionStorage.getItem('leaf-pending-verify-email') ?? '';
 
 // ─── URL-driven initial panel (e.g. /signup?panel=reset from email link) ─
 const urlPanel = new URLSearchParams(window.location.search).get('panel');
@@ -167,10 +169,11 @@ createForm?.addEventListener('submit', async (e) => {
     return;
   }
   lastVerifyEmail = email;
+  sessionStorage.setItem('leaf-pending-verify-email', email);
   const emailEcho = document.querySelector<HTMLElement>('.email-echo');
   if (emailEcho) emailEcho.textContent = email;
   showPanel('verify');
-  startResendCooldown(30);
+  startResendCooldown(60);
 });
 
 // ─── Verify OTP ────────────────────────────────────────────────────────
@@ -187,17 +190,19 @@ verifyForm?.addEventListener('submit', async (e) => {
   if (!lastVerifyEmail) { setError('verify', 'Session lost — go back and re-enter your email.'); return; }
   const { error } = await sb.auth.verifyOtp({ email: lastVerifyEmail, token, type: 'signup' });
   if (error) { setError('verify', error.message); return; }
+  sessionStorage.removeItem('leaf-pending-verify-email');
   window.location.href = REDIRECT_AFTER_AUTH;
 });
 
 // ─── Resend OTP ────────────────────────────────────────────────────────
 const resendBtn = document.querySelector<HTMLButtonElement>('[data-action="resend"]');
 resendBtn?.addEventListener('click', async () => {
-  if (!lastVerifyEmail) return;
+  if (!lastVerifyEmail) { setError('verify', 'Session lost — go back and re-enter your email.'); return; }
   setError('verify', '');
   const { error } = await sb.auth.resend({ type: 'signup', email: lastVerifyEmail });
   if (error) { setError('verify', error.message); return; }
-  startResendCooldown(30);
+  setError('verify', 'New code sent — check your inbox.');
+  startResendCooldown(60);
 });
 
 // ─── Forgot password ───────────────────────────────────────────────────
