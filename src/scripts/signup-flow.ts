@@ -152,13 +152,20 @@ createForm?.addEventListener('submit', async (e) => {
   }
   const captchaToken = captchaTokenFor('create');
   if (!captchaToken) { setError('create', 'Please complete the CAPTCHA.'); return; }
-  const { error } = await sb.auth.signUp({
+  const { data, error } = await sb.auth.signUp({
     email,
     password,
     options: { data: { full_name: name }, captchaToken },
   });
   resetCaptcha('create');
   if (error) { setError('create', error.message); return; }
+  // With email confirmations on, signUp for an existing confirmed user returns an
+  // obfuscated user with empty identities and sends no email — surface it instead
+  // of advancing to a verify screen whose code will never arrive.
+  if (data.user && data.user.identities?.length === 0) {
+    setError('create', 'This email is already registered — sign in instead (you may have used Google or GitHub).');
+    return;
+  }
   lastVerifyEmail = email;
   const emailEcho = document.querySelector<HTMLElement>('.email-echo');
   if (emailEcho) emailEcho.textContent = email;
