@@ -34,9 +34,17 @@ function setField(field: string, value: string): void {
   const echo = document.querySelector<HTMLElement>('[data-user-email]');
   if (echo) echo.textContent = user.email ?? '-';
 
-  // Reveal the "Set a password" control for OAuth users (non-email providers).
-  if (provider !== 'email') {
-    document.querySelector<HTMLElement>('[data-set-password]')?.removeAttribute('hidden');
+  // Reveal the password control for everyone: OAuth users SET a password (so
+  // they can also sign in with email); email users CHANGE their password.
+  const spBlock = document.querySelector<HTMLElement>('[data-set-password]');
+  if (spBlock) {
+    spBlock.removeAttribute('hidden');
+    if (provider === 'email') {
+      const toggleBtn = document.getElementById('set-password-toggle');
+      if (toggleBtn) toggleBtn.textContent = 'Change password';
+      const intro = spBlock.querySelector<HTMLElement>('.set-password-head .muted');
+      if (intro) intro.textContent = 'Change your account password.';
+    }
   }
 })();
 
@@ -114,7 +122,10 @@ function setField(field: string, value: string): void {
     if (error) { setSpError(error.message); return; }
     form.reset();
     updateRequirements();
-    setSpSuccess('Password set — you can now sign in with email + password too.');
+    const prov = document.querySelector<HTMLElement>('[data-field="provider"]')?.textContent ?? 'email';
+    setSpSuccess(prov === 'email'
+      ? 'Password changed.'
+      : 'Password set — you can now sign in with email + password too.');
   });
 })();
 
