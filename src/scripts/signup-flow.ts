@@ -257,7 +257,15 @@ document.querySelectorAll<HTMLButtonElement>('.oauth-btn').forEach(btn => {
     setError('signin', '');
     const { error } = await sb.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: `${window.location.origin}${REDIRECT_AFTER_AUTH}` },
+      options: {
+        redirectTo: `${window.location.origin}${REDIRECT_AFTER_AUTH}`,
+        // GUN-63 parity: always show the account chooser. The provider keeps a
+        // live session in the browser and our sign-out only clears Leaf's local
+        // session, so without this the chooser never reappears and the user
+        // can't switch accounts. GoTrue forwards `prompt` to the provider; both
+        // Google and GitHub (since 2024-06) honour `select_account`.
+        queryParams: { prompt: 'select_account' },
+      },
     });
     if (error) setError('signin', error.message);
   });
