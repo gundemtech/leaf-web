@@ -14,31 +14,35 @@ const DMG_URL = LEAF_DMG_URL;
     <header class="dash-head">
       <a href="/" aria-label="Leaf home"><LeafLogo size={28} withWordmark /></a>
       <div class="head-right">
-        <span class="t-body-sm muted">Signed in as <span class="email-echo mono" data-user-email>-</span></span>
+        <span class="t-body-sm muted">Signed in as <span class="email-echo mono" data-user-email><span class="skel skel-w-md"></span></span></span>
         <LeafThemeToggle />
         <LeafButton variant="ghost" size="sm" id="signout-btn">Sign out</LeafButton>
       </div>
     </header>
 
-    <main class="dash-grid">
+    <main class="dash-grid" data-dash data-loading>
       <LeafCard variant="raised" padding="generous" class="card-section">
         <h2 class="t-title-md">Account</h2>
         <dl class="kv">
-          <dt>Name</dt>           <dd data-field="name">-</dd>
-          <dt>Email</dt>          <dd class="mono" data-field="email">-</dd>
-          <dt>Provider</dt>       <dd data-field="provider">-</dd>
-          <dt>Member since</dt>   <dd data-field="memberSince">-</dd>
-          <dt>Device</dt>         <dd data-field="device">-</dd>
+          <dt>Name</dt>           <dd data-field="name"><span class="skel skel-w-md"></span></dd>
+          <dt>Email</dt>          <dd class="mono" data-field="email"><span class="skel skel-w-lg"></span></dd>
+          <dt>Provider</dt>       <dd data-field="provider"><span class="skel skel-w-lg"></span></dd>
+          <dt>Member since</dt>   <dd data-field="memberSince"><span class="skel skel-w-sm"></span></dd>
+          <dt>Device</dt>         <dd data-field="device"><span class="skel skel-w-md"></span></dd>
           <dt>Plan</dt>           <dd><LeafBadge variant="accent">Solo</LeafBadge></dd>
         </dl>
 
-        <div class="set-password" data-set-password hidden>
-          <div class="set-password-head">
+        <div class="set-password" data-set-password>
+          <div class="sp-skeleton" data-sp-skeleton aria-hidden="true">
+            <span class="skel sp-skel-line"></span>
+            <span class="skel sp-skel-btn"></span>
+          </div>
+          <div class="set-password-head" data-sp-head hidden>
             <p class="t-body-sm muted">Want to sign in with email + password too? Set a password for your account.</p>
             <LeafButton variant="secondary" size="sm" id="set-password-toggle">Set a password</LeafButton>
           </div>
 
-          <form class="set-password-form" data-set-password-form hidden novalidate>
+          <form class="set-password-form" id="set-password-form" data-set-password-form hidden novalidate>
             <label class="sp-field">
               <span class="sp-label t-body-sm">New password</span>
               <input type="password" name="password" autocomplete="new-password" data-sp-password />
@@ -157,6 +161,59 @@ const DMG_URL = LEAF_DMG_URL;
 .danger-card .muted { margin-bottom: var(--space-md); }
 
 .email-echo { color: var(--text-primary); font-size: 12px; }
+
+/* ─── Skeleton loading state ─── */
+/* The grid paints with shimmer placeholders, then dashboard.ts fills every
+   field AND swaps the set-password skeleton for the real control in ONE paint
+   (see reveal()). Nothing arrives late, and the set-password block reserves its
+   space from the first frame, so the layout never jumps. */
+.skel {
+  display: inline-block;
+  height: 0.85em;
+  width: 140px;
+  border-radius: var(--radius-sm);
+  vertical-align: middle;
+  background-color: var(--surface-inset);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--text-tertiary) 16%, transparent) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: skel-shimmer 1.3s ease-in-out infinite;
+}
+.skel-w-sm { width: 84px; }
+.skel-w-md { width: 132px; }
+.skel-w-lg { width: 208px; max-width: 100%; }
+
+@keyframes skel-shimmer {
+  from { background-position: 150% 0; }
+  to   { background-position: -150% 0; }
+}
+
+.sp-skeleton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  min-height: 36px;
+}
+.sp-skel-line { flex: 1; min-width: 200px; height: 1.05em; }
+.sp-skel-btn { width: 116px; height: 28px; border-radius: var(--radius-md); flex: none; }
+/* [hidden] must beat the flex display these get below / from .set-password-head. */
+.sp-skeleton[hidden], [data-sp-head][hidden] { display: none; }
+
+/* Reveal: the populated fields and the real set-password control ease in
+   together when the loading flag drops — one cohesive appearance, not a cascade. */
+[data-dash]:not([data-loading]) .kv dd[data-field] {
+  animation: sp-msg-in var(--dur-short) var(--ease-standard) both;
+}
+[data-sp-head]:not([hidden]) {
+  animation: sp-form-in var(--dur-short) var(--ease-standard) both;
+}
 
 /* Set-password control (OAuth users only) */
 .set-password {
@@ -301,6 +358,9 @@ const DMG_URL = LEAF_DMG_URL;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .skel,
+  [data-dash]:not([data-loading]) .kv dd[data-field],
+  [data-sp-head]:not([hidden]),
   .set-password-form:not([hidden]),
   .sp-error:not([hidden]),
   .sp-success:not([hidden]),
@@ -326,6 +386,10 @@ const DMG_URL = LEAF_DMG_URL;
 const signoutBtn = document.getElementById('signout-btn') as HTMLButtonElement | null;
 
 signoutBtn?.addEventListener('click', async () => {
+  // Once the module bundle is live it owns sign-out (it sets this flag), so the
+  // inline handler must stand down — otherwise one click signs out + redirects
+  // twice. This branch only runs in the brief window before the bundle loads.
+  if ((window as any).__leafDashHydrated) return;
   const sb = (window as any).supabase;
   if (!sb) { window.location.href = '/signup'; return; }
   await sb.auth.signOut();
