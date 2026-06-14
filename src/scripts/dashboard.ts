@@ -14,6 +14,87 @@ function setField(field: string, value: string): void {
   if (el) el.textContent = value;
 }
 
+// ─── Shared account state ──────────────────────────────────────────────
+// Read AND mutated by both the init block below and the set-password
+// handler further down (two separate IIFEs), so it lives at module scope.
+let hasPwd = false;
+let firstProvider = 'Email';
+let oauthMethods: string[] = [];
+
+const PROVIDER_LABELS: Record<string, string> = {
+  google: 'Google',
+  github: 'GitHub',
+  gitlab: 'GitLab',
+  email: 'Email',
+};
+function providerLabel(p: string): string {
+  return PROVIDER_LABELS[p] ?? (p ? p[0].toUpperCase() + p.slice(1) : p);
+}
+
+// "Google (Google · GitHub · Password)" — first registration, then the
+// current set of sign-in methods in parens. Password appended when known.
+function renderProvider(): void {
+  const methods = [...oauthMethods, ...(hasPwd ? ['Password'] : [])];
+  setField('provider', methods.length ? `${firstProvider} (${methods.join(' · ')})` : firstProvider);
+}
+
+// Current device only (no history): "macOS · Chrome 142". Prefers the
+// structured userAgentData (Chromium), falls back to parsing userAgent.
+function describeDevice(): string {
+  const ua = navigator.userAgent;
+  const uaData = (navigator as Navigator & {
+    userAgentData?: { platform?: string; brands?: Array<{ brand: string; version: string }> };
+  }).userAgentData;
+
+  let os = '';
+  let browser = '';
+
+  if (uaData) {
+    os = uaData.platform ?? '';
+    const brand = (uaData.brands ?? []).find(
+      (b) => !/Not.?A.?Brand/i.test(b.brand) && b.brand !== 'Chromium',
+    );
+    if (brand) browser = `${brand.brand.replace(/^Google /, '')} ${brand.version}`;
+  }
+
+  if (!os) {
+    // iOS/Android first: their UAs also contain "Mac OS X"/"Linux".
+    os = /(iPhone|iPad|iPod)/.test(ua) ? 'iOS'
+      : /Android/.test(ua) ? 'Android'
+      : /Mac OS X/.test(ua) ? 'macOS'
+      : /Windows/.test(ua) ? 'Windows'
+      : /Linux/.test(ua) ? 'Linux'
+      : '';
+  }
+  if (!browser) {
+    let m: RegExpMatchArray | null;
+    if ((m = ua.match(/Edg\/(\d+)/)))                     browser = `Edge ${m[1]}`;
+    else if ((m = ua.match(/Firefox\/(\d+)/)))            browser = `Firefox ${m[1]}`;
+    else if ((m = ua.match(/Chrome\/(\d+)/)))             browser = `Chrome ${m[1]}`;
+    else if ((m = ua.match(/Version\/(\d+)[^ ]* Safari/))) browser = `Safari ${m[1]}`;
+    else if (/Safari/.test(ua))                           browser = 'Safari';
+  }
+
+  return [os, browser].filter(Boolean).join(' · ') || 'Unknown device';
+}
+
+// Password control copy reflects whether a password actually exists.
+function applyPasswordUi(): void {
+  const spBlock = document.querySelector<HTMLElement>('[data-set-password]');
+  if (!spBlock) return;
+  spBlock.removeAttribute('hidden');
+  const toggleBtn = document.getElementById('set-password-toggle');
+  const intro = spBlock.querySelector<HTMLElement>('.set-password-head .muted');
+  if (hasPwd) {
+    if (toggleBtn) toggleBtn.textContent = 'Change password';
+    if (intro) intro.textContent = 'Change your account password.';
+  } else {
+    if (toggleBtn) toggleBtn.textContent = 'Set a password';
+    if (intro) intro.textContent =
+      'Want to sign in with email + password too? Set a password for your account.';
+  }
+}
+
 (async () => {
   const { data } = await sb.auth.getSession();
   const session = data?.session;
@@ -24,28 +105,34 @@ function setField(field: string, value: string): void {
   const user = session.user;
   const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
   const fullName = String(meta.full_name ?? meta.name ?? meta.user_name ?? '-');
+
   const provider = String(user.app_metadata?.provider ?? 'email');
+  const providers = (user.app_metadata?.providers as string[] | undefined) ?? [provider];
+  firstProvider = providerLabel(provider);
+  oauthMethods = providers.filter((p) => p !== 'email').map(providerLabel);
 
   setField('name', fullName);
   setField('email', user.email ?? '-');
-  setField('provider', provider);
   setField('memberSince', user.created_at ? fmtDate(user.created_at) : '-');
+  setField('device', describeDevice());
 
   const echo = document.querySelector<HTMLElement>('[data-user-email]');
   if (echo) echo.textContent = user.email ?? '-';
 
-  // Reveal the password control for everyone: OAuth users SET a password (so
-  // they can also sign in with email); email users CHANGE their password.
-  const spBlock = document.querySelector<HTMLElement>('[data-set-password]');
-  if (spBlock) {
-    spBlock.removeAttribute('hidden');
-    if (provider === 'email') {
-      const toggleBtn = document.getElementById('set-password-toggle');
-      if (toggleBtn) toggleBtn.textContent = 'Change password';
-      const intro = spBlock.querySelector<HTMLElement>('.set-password-head .muted');
-      if (intro) intro.textContent = 'Change your account password.';
-    }
+  // Whether a password is set isn't visible client-side for OAuth users
+  // (Supabase stores the hash on auth.users without creating an email
+  // identity), so ask the server. 'email' among providers already implies a
+  // password. Treat RPC errors / missing function as "no password".
+  hasPwd = providers.includes('email');
+  if (!hasPwd) {
+    try {
+      const { data: hp } = await sb.rpc('has_password');
+      hasPwd = hp === true;
+    } catch { /* RPC absent or offline → assume no password */ }
   }
+
+  renderProvider();
+  applyPasswordUi();
 })();
 
 // ─── Set a password (OAuth users) ──────────────────────────────────────
@@ -122,10 +209,14 @@ function setField(field: string, value: string): void {
     if (error) { setSpError(error.message); return; }
     form.reset();
     updateRequirements();
-    const prov = document.querySelector<HTMLElement>('[data-field="provider"]')?.textContent ?? 'email';
-    setSpSuccess(prov === 'email'
+    // Message reflects the PRIOR state; then flip to "has password" and
+    // re-render the methods line + control copy live (no reload).
+    setSpSuccess(hasPwd
       ? 'Password changed.'
       : 'Password set — you can now sign in with email + password too.');
+    hasPwd = true;
+    renderProvider();
+    applyPasswordUi();
   });
 })();
 
