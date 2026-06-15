@@ -1,0 +1,81 @@
+---
+/*
+  PostHog analytics — privacy-respecting, explicit-events-only.
+
+  - EU residency (eu.i.posthog.com), autocapture OFF, session recording OFF,
+    localStorage persistence (no third-party cookies), DNT respected.
+  - The project key (phc_…) is a PUBLIC ingestion key — safe to ship in client
+    JS, same pattern as the Supabase publishable key in supabase-client.ts.
+  - DISABLED until the real key replaces the placeholder below: the script
+    no-ops (no network, no-op window.leafTrack) so the site is unaffected.
+  - Custom events + UTM convention: ~/Desktop/Leaf/.agents/analytics-tracking-plan.md
+  - Loaded site-wide via BaseLayout.astro <head>. Does NOT cover /changelog
+    (rendered by the leaf-contact Worker) — see tracking plan "Known gaps".
+*/
+---
+<script is:inline>
+  (function () {
+    // ── EDIT HERE: drop in the real PostHog project key to switch analytics ON ──
+    var POSTHOG_KEY = 'phc_oeZmRrpvnxETxpCpdy8Gw8FvztBZt8i2HQGYgjKWpXZy';
+    var POSTHOG_HOST = 'https://eu.i.posthog.com';
+
+    // Single safe entry point used across the site. No-ops if PostHog is
+    // disabled or failed to load, so callers (signup-flow.ts etc.) never break.
+    window.leafTrack = function (event, props) {
+      try {
+        if (window.posthog && window.posthog.capture) window.posthog.capture(event, props || {});
+      } catch (e) { /* analytics must never break the page */ }
+    };
+
+    // Off until a real key is configured.
+    if (!POSTHOG_KEY || POSTHOG_KEY.indexOf('REPLACE') !== -1) return;
+
+    // ── Official PostHog web snippet ──
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug getPageViewId captureTraceFeedback captureTraceMetric".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+
+    window.posthog.init(POSTHOG_KEY, {
+      api_host: POSTHOG_HOST,
+      ui_host: 'https://eu.posthog.com',
+      person_profiles: 'identified_only',
+      autocapture: false,            // explicit events only — no blanket click/PII capture
+      capture_pageview: true,
+      capture_pageleave: true,
+      disable_session_recording: true,
+      persistence: 'localStorage',   // first-party, no third-party cookies
+      respect_dnt: true,
+    });
+
+    // ── Custom funnel events (see analytics-tracking-plan.md) ──
+    var path = location.pathname.replace(/\/+$/, '') || '/';
+
+    // Key CTA + paid-intent clicks via delegation — robust to copy/markup
+    // changes, and avoids editing the mirrored Nav/Button components.
+    document.addEventListener('click', function (ev) {
+      var el = ev.target;
+      var a = el && el.closest ? el.closest('a') : null;
+      if (!a) return;
+      var href = a.getAttribute('href') || '';
+      var sect = a.closest('[id]');
+      var location_ = (sect && sect.id) || path;
+      if (href.indexOf('pay.oxapay.com') !== -1) {
+        window.leafTrack('checkout_intent', { plan: 'team', location: location_, page: path });
+      } else if (href.indexOf('mailto:hi@gundem.tech') === 0) {
+        window.leafTrack('cta_clicked', { target: 'enterprise_contact', location: location_, page: path });
+      } else if (href === '#waitlist' || href === '/#waitlist' || a.hasAttribute('data-cta-waitlist')) {
+        window.leafTrack('cta_clicked', { target: 'waitlist', location: location_, page: path });
+      } else if (href === '/signup' || href.indexOf('/signup') === 0) {
+        window.leafTrack('cta_clicked', { target: 'signup', location: location_, page: path });
+      } else if (/\/releases\/.*\.dmg/.test(href) || a.hasAttribute('download')) {
+        window.leafTrack('download_clicked', { location: location_, page: path });
+      }
+    }, true);
+
+    // Successful waitlist submit — waitlist.ts already dispatches this on 200 OK.
+    document.addEventListener('leaf:waitlist-signup', function () {
+      window.leafTrack('waitlist_submitted', { page: path });
+    });
+
+    // Pricing page view — the cheapest paid-interest read.
+    if (path === '/pricing') window.leafTrack('pricing_viewed', { page: path });
+  })();
+</script>

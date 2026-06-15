@@ -12,6 +12,8 @@ declare global {
       reset(widget?: string | HTMLElement): void;
       render(el: string | HTMLElement, opts: Record<string, unknown>): string;
     };
+    // Analytics — defined by Analytics.astro; no-ops if analytics is disabled.
+    leafTrack?: (event: string, props?: Record<string, unknown>) => void;
   }
 }
 
@@ -135,6 +137,7 @@ signinForm?.addEventListener('submit', async (e) => {
   });
   resetCaptcha('signin');
   if (error) { setError('signin', error.message); return; }
+  window.leafTrack?.('signin_completed', { method: 'email' });
   window.location.href = REDIRECT_AFTER_AUTH;
 });
 
@@ -178,6 +181,7 @@ createForm?.addEventListener('submit', async (e) => {
     setError('create', 'This email is already registered — sign in instead (you may have used Google or GitHub).');
     return;
   }
+  window.leafTrack?.('signup_started', { method: 'email' });
   lastVerifyEmail = email;
   sessionStorage.setItem('leaf-pending-verify-email', email);
   const emailEcho = document.querySelector<HTMLElement>('.email-echo');
@@ -201,6 +205,7 @@ verifyForm?.addEventListener('submit', async (e) => {
   const { error } = await sb.auth.verifyOtp({ email: lastVerifyEmail, token, type: 'signup' });
   if (error) { setError('verify', error.message); return; }
   sessionStorage.removeItem('leaf-pending-verify-email');
+  window.leafTrack?.('signup_completed', { method: 'email' });
   window.location.href = REDIRECT_AFTER_AUTH;
 });
 
@@ -254,6 +259,7 @@ document.querySelectorAll<HTMLButtonElement>('.oauth-btn').forEach(btn => {
   btn.addEventListener('click', async () => {
     const provider = btn.dataset.provider as 'google' | 'github' | undefined;
     if (!provider) return;
+    window.leafTrack?.('signup_started', { method: provider });
     setError('signin', '');
     const { error } = await sb.auth.signInWithOAuth({
       provider,
