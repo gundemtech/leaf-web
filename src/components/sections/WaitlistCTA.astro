@@ -44,9 +44,13 @@ import LeafInput from '../LeafInput.astro';
         <form id="waitlist-form" class="waitlist-form">
           <LeafInput type="email" name="email" placeholder="you@email.com" required autocomplete="email" />
           <input type="text" name="hp" class="honeypot" tabindex="-1" autocomplete="off" />
-          <div class="cf-turnstile" data-sitekey="0x4AAAAAADCjktFBs6RTYJTZ"></div>
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADCjktFBs6RTYJTZ" data-size="flexible"></div>
           <LeafButton type="submit" variant="primary">Put me on it →</LeafButton>
         </form>
+
+        <!-- Submit feedback (Sending… / errors), sits under the form. Cleared on
+             success; :empty hides it so it never reserves space at rest. -->
+        <p class="status t-body-sm" data-status></p>
 
         <!-- Success card — revealed in place of the form on a 200 OK (waitlist.ts).
              Mirrors the OAuth browser success page (LoopbackCallbackListener) on
@@ -60,8 +64,6 @@ import LeafInput from '../LeafInput.astro';
         </div>
       </div>
     </div>
-
-    <p class="status t-body-sm" data-status></p>
   </div>
 </section>
 
@@ -220,7 +222,12 @@ import LeafInput from '../LeafInput.astro';
 .honeypot { display: none; }
 
 /* ─────────── action column: form ⇄ success card ─────────── */
-.waitlist-action { width: 100%; }
+.waitlist-action {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
 /* `.waitlist-form { display: flex }` would otherwise beat the UA [hidden]
    rule, so the form must be collapsed explicitly when swapped out. */
 .waitlist-form[hidden] { display: none; }
@@ -299,10 +306,11 @@ import LeafInput from '../LeafInput.astro';
 }
 
 .status {
-  text-align: center;
-  margin-top: var(--space-lg);
+  margin: 0;
   color: var(--text-tertiary);
+  font-size: 13px;
 }
+.status:empty { display: none; }
 .status[data-state="success"] { color: var(--status-success); }
 .status[data-state="error"]   { color: var(--status-danger); }
 
