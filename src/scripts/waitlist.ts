@@ -23,7 +23,11 @@ export function initWaitlist(): void {
   const form = document.getElementById('waitlist-form') as HTMLFormElement | null;
   if (!form) return;
 
-  const status = form.parentElement?.querySelector<HTMLElement>('[data-status]') ?? null;
+  // Scope to the whole section: [data-status] lives outside .waitlist-grid, so
+  // form.parentElement would miss it (errors would silently never render).
+  const section = form.closest<HTMLElement>('.waitlist');
+  const status = section?.querySelector<HTMLElement>('[data-status]') ?? null;
+  const successCard = section?.querySelector<HTMLElement>('[data-waitlist-success]') ?? null;
   const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
   const turnstileEl = form.querySelector<HTMLElement>('.cf-turnstile');
 
@@ -59,12 +63,24 @@ export function initWaitlist(): void {
         const body = await res.text().catch(() => '');
         throw new Error(body || `HTTP ${res.status}`);
       }
-      setStatus(status, 'Thanks — we\'ll email you on release.', 'success');
-      form.reset();
-      window.turnstile?.reset(turnstileEl ?? undefined);
+      // Swap the form for the success card (same style as the app's OAuth
+      // browser success page). Clear the transient "Sending…" status so it
+      // doesn't linger beneath the card. If the card is missing for any reason,
+      // fall back to the inline success text.
+      if (successCard) {
+        setStatus(status, '', '');
+        form.hidden = true;
+        successCard.hidden = false;
+        successCard.focus();
+      } else {
+        setStatus(status, 'Thanks — we\'ll email you on release.', 'success');
+        form.reset();
+        window.turnstile?.reset(turnstileEl ?? undefined);
+      }
       // Tell the live-counter to bump total + this_week immediately — no need
       // to wait the next 30s polling tick. The Worker invalidates the /stats
       // edge cache on the same request, so polling won't visually revert.
+      // (Analytics.astro listens for this to fire `waitlist_submitted`.)
       document.dispatchEvent(new CustomEvent('leaf:waitlist-signup'));
     } catch (err) {
       setStatus(status, 'Could not submit — try again in a moment.', 'error');

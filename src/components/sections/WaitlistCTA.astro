@@ -40,12 +40,25 @@ import LeafInput from '../LeafInput.astro';
         </p>
       </div>
 
-      <form id="waitlist-form" class="waitlist-form" data-reveal>
-        <LeafInput type="email" name="email" placeholder="you@email.com" required autocomplete="email" />
-        <input type="text" name="hp" class="honeypot" tabindex="-1" autocomplete="off" />
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAADCjktFBs6RTYJTZ"></div>
-        <LeafButton type="submit" variant="primary">Put me on it →</LeafButton>
-      </form>
+      <div class="waitlist-action" data-reveal>
+        <form id="waitlist-form" class="waitlist-form">
+          <LeafInput type="email" name="email" placeholder="you@email.com" required autocomplete="email" />
+          <input type="text" name="hp" class="honeypot" tabindex="-1" autocomplete="off" />
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADCjktFBs6RTYJTZ"></div>
+          <LeafButton type="submit" variant="primary">Put me on it →</LeafButton>
+        </form>
+
+        <!-- Success card — revealed in place of the form on a 200 OK (waitlist.ts).
+             Mirrors the OAuth browser success page (LoopbackCallbackListener) on
+             leaf-web tokens: green check badge, rise + pop, draw-on checkmark. -->
+        <div class="waitlist-success" data-waitlist-success hidden role="status" aria-live="polite" tabindex="-1">
+          <div class="ws-badge">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg>
+          </div>
+          <h3 class="ws-title">You're on the list.</h3>
+          <p class="ws-sub">We'll email you once — the day v1 lands. Nothing else.</p>
+        </div>
+      </div>
     </div>
 
     <p class="status t-body-sm" data-status></p>
@@ -205,6 +218,85 @@ import LeafInput from '../LeafInput.astro';
 }
 .waitlist-form :global(.btn) { width: 100%; justify-content: center; }
 .honeypot { display: none; }
+
+/* ─────────── action column: form ⇄ success card ─────────── */
+.waitlist-action { width: 100%; }
+/* `.waitlist-form { display: flex }` would otherwise beat the UA [hidden]
+   rule, so the form must be collapsed explicitly when swapped out. */
+.waitlist-form[hidden] { display: none; }
+
+/* Success card — visual language mirrors the app's OAuth browser page. */
+.waitlist-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: var(--space-xl) var(--space-xl) calc(var(--space-xl) + 4px);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--elev-floating);
+  animation: wsRise 450ms var(--ease-emphasized) both;
+}
+/* Higher specificity than the base rule so [hidden] still collapses it. */
+.waitlist-success[hidden] { display: none; }
+.waitlist-success:focus { outline: none; }
+
+.ws-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--status-success) 16%, transparent);
+  animation: wsPop 550ms 80ms cubic-bezier(.18, .89, .32, 1.28) both;
+}
+.ws-badge svg {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: var(--status-success);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ws-badge svg path {
+  stroke-dasharray: 22;
+  stroke-dashoffset: 22;
+  animation: wsDraw 400ms 360ms var(--ease-standard) forwards;
+}
+.ws-title {
+  font: 600 21px/1.3 var(--font-body);
+  letter-spacing: -0.012em;
+  color: var(--text-primary);
+  margin: 0;
+}
+.ws-sub {
+  font: 400 15px/1.55 var(--font-body);
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 34ch;
+}
+
+@keyframes wsRise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes wsPop {
+  0%   { transform: scale(.6); opacity: 0; }
+  60%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+@keyframes wsDraw {
+  to { stroke-dashoffset: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .waitlist-success { animation: none; }
+  .ws-badge { animation: none; }
+  .ws-badge svg path { animation: none; stroke-dashoffset: 0; }
+}
 
 .status {
   text-align: center;
